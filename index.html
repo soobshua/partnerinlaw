@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Law IRAC Trainer</title>
+    <script src="https://cdn.jsdelivr.net/npm/@google/genai@0.1.1/dist/index.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --border: #cbd5e1;
+            --highlight-bg: #fef08a;
+            --error-bg: #fee2e2;
+            --error-border: #fca5a5;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 { margin-top: 0; font-size: 1.8rem; color: #0f172a; }
+        p { color: var(--text-muted); }
+
+        .config-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .config-box input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: end;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+
+        select, button {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: #fff;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        button.primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        button.primary:hover { background: var(--primary-hover); }
+
+        .timer-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ef4444;
+            text-align: center;
+            background: #fef2f2;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #fca5a5;
+        }
+
+        .fact-pattern-card {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .hints-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .hint-btn {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #b45309;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .hint-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .hint-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #92400e;
+        }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            box-sizing: border-box;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .submit-row {
+            margin-top: 15px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* Feedback & Socratic UI Styles */
+        .feedback-container {
+            margin-top: 30px;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 20px;
+        }
+
+        .highlighted-text-view {
+            background: #fff;
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 8px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            margin-bottom: 20px;
+        }
+
+        .issue-highlight {
+            background-color: var(--highlight-bg);
+            border-bottom: 2px dashed #ca8a04;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .comment-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .comment-card h4 { margin: 0 0 8px 0; color: #b91c1c; font-size: 0.95rem; }
+        
+        .socratic-chat-box {
+            margin-top: 10px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+        }
+        
+        .socratic-messages {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .socratic-input-row {
+            display: flex;
+            gap: 8px;
+        }
+        .socratic-input-row input {
+            flex: 1;
+            padding: 6px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        .loading {
+            text-align: center;
+            font-style: italic;
+            color: var(--text-muted);
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Contract Law IRAC Trainer</h1>
+    <p>Practice exam hypotheticals grounded in your syllabus notes with real-time feedback & Socratic dialogue.</p>
+
+    <!-- Configuration Box for API Key -->
+    <div class="config-box">
+        <input type="password" id="apiKeyInput" placeholder="Enter Gemini API Key (or set via environment)" />
+        <button onclick="saveApiKey()">Save Key</button>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-grid">
+        <div class="control-group">
+            <label>Topic Filter</label>
+            <select id="topicFilter">
+                <option value="All">All Contract Topics</option>
+                <option value="Formation">Formation & Consideration</option>
+                <option value="Terms">Terms & Exclusion Clauses</option>
+                <option value="Vitiating Factors">Vitiating Factors (Mistake/Misrep)</option>
+                <option value="Breach & Remedies">Breach & Remedies</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>Proficiency / Mode</label>
+            <select id="modeSelect">
+                <option value="Final Exam">Day of Final Exam (Hard)</option>
+                <option value="Just Started">Just Started Studying (Jeopardy Hints)</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>Exam Timer (Minutes)</label>
+            <select id="timerMinutes">
+                <option value="0">Untimed</option>
+                <option value="15">15 Minutes</option>
+                <option value="30" selected>30 Minutes</option>
+                <option value="45">45 Minutes</option>
+            </select>
+        </div>
+        <div>
+            <button class="primary" onclick="generateHypothetical()">New Prompt</button>
+        </div>
+    </div>
+
+    <div id="timerDisplayContainer" style="display:none; margin-bottom: 20px;">
+        <div class="timer-display" id="timerClock">30:00</div>
+    </div>
+
+    <!-- Fact Pattern Display -->
+    <div id="promptSection" style="display:none;">
+        <div class="fact-pattern-card" id="factPatternText">
+            <!-- Dynamic fact pattern goes here -->
+        </div>
+
+        <!-- Hints Section (Jeopardy Style) -->
+        <div class="hints-section" id="hintsSection" style="display:none;">
+            <button class="hint-btn" onclick="useHint(1)" id="hintBtn1">Hint 1 (Remaining)</button>
+            <button class="hint-btn" onclick="useHint(2)" id="hintBtn2">Hint 2 (Remaining)</button>
+            <button class="hint-btn" onclick="useHint(3)" id="hintBtn3">Hint 3 (Remaining)</button>
+        </div>
+        <div id="activeHintBox" class="hint-box" style="display:none;"></div>
+
+        <!-- IRAC Text Input -->
+        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Your IRAC Answer:</label>
+        <textarea id="studentAnswer" placeholder="Type your Issue, Rule, Application, and Conclusion here..."></textarea>
+        
+        <div class="submit-row">
+            <button class="primary" style="width: auto; padding: 12px 24px;" onclick="submitAnswer()">Submit for Inline Critique</button>
+        </div>
+    </div>
+
+    <!-- Evaluation Section -->
+    <div id="evaluationSection" class="feedback-container" style="display:none;">
+        <h3>AI Professor's Evaluation & Inline Critique</h3>
+        <div class="loading" id="evalLoading" style="display:none;">Analyzing your IRAC structure, case applications, and missing elements against syllabus...</div>
+        <div id="evaluationContent"></div>
+    </div>
+</div>
+
+<script>
+    const DOC_URL = "https://docs.google.com/document/d/1bIvzTm_aB2rSibgP6gXigV_g-aIo8648r9ZlS4qRXfE/export?format=txt";
+    let syllabusContext = "";
+    let currentHypothetical = "";
+    let hintsLeft = 3;
+    let timerInterval = null;
+
+    function saveApiKey() {
+        const key = document.getElementById('apiKeyInput').value.trim();
+        if(key) {
+            localStorage.setItem('GEMINI_API_KEY', key);
+            alert('API Key saved securely to browser session.');
+        }
+    }
+
+    function getApiKey() {
+        return localStorage.getItem('GEMINI_API_KEY') || "";
+    }
+
+    // Fetch Syllabus Google Doc on startup in the background
+    async function loadSyllabus() {
+        try {
+            const response = await fetch(DOC_URL);
+            if(response.ok) {
+                syllabusContext = await response.text();
+            }
+        } catch(e) {
+            console.log("CORS restriction on Google Doc fetch. AI will run on foundational common law framework instead.");
+        }
+    }
+    loadSyllabus();
+
+    function startTimer(minutes) {
+        if(timerInterval) clearInterval(timerInterval);
+        if(minutes <= 0) {
+            document.getElementById('timerDisplayContainer').style.display = 'none';
+            return;
+        }
+        
+        document.getElementById('timerDisplayContainer').style.display = 'block';
+        let totalSeconds = minutes * 60;
+        
+        timerInterval = setInterval(() => {
+            let m = Math.floor(totalSeconds / 60);
+            let s = totalSeconds % 60;
+            document.getElementById('timerClockinnerText' || 'timerClock').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            if(totalSeconds <= 0) {
+                clearInterval(timerInterval);
+                alert("Time is up! Complete your answer and submit.");
+            }
+            totalSeconds--;
+        }, 1000);
+    }
+
+    async function generateHypothetical() {
+        const apiKey = getApiKey();
+        if(!apiKey) {
+            alert("Please enter and save your Gemini API Key first.");
+            return;
+        }
+
+        const topic = document.getElementById('topicFilter').value;
+        const mode = document.getElementById('modeSelect').value;
+        const mins = parseInt(document.getElementById('timerMinutes').value);
+        
+        startTimer(mins);
+        
+        document.getElementById('promptSection').style.display = 'block';
+        document.getElementById('evaluationSection').style.display = 'none';
+        document.getElementById('factPatternText').innerHTML = "Generating law school contract hypothetical...";
+        document.getElementById('studentAnswer').value = "";
+        
+        hintsLeft = 3;
+        document.getElementById('hintsSection').style.display = (mode === 'Just Started') ? 'flex' : 'none';
+        updateHintButtons();
+        document.getElementById('activeHintBox').style.display = 'none';
+
+        try {
+            const client = new GoogleGenAI({ apiKey });
+            const prompt = `You are a strict common law contract law professor. 
+            Using this foundational syllabus context if relevant: "${syllabusContext.substring(0, 3000)}"
+            Generate a challenging contract law exam hypothetical problem question focusing on the topic: "${topic}".
+            Make it complex with multiple legal friction points (e.g., consideration issues, exclusion clauses, or misrepresentation). Return only the fact pattern text.`;
+
+            const response = await client.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: prompt,
+            });
+
+            currentHypothetical = response.text;
+            document.getElementById('factPatternText').innerText = currentHypothetical;
+        } catch(err) {
+            document.getElementById('factPatternText').innerText = "Error generating hypothetical. Check your API key. Details: " + err.message;
+        }
+    }
+
+    function updateHintButtons() {
+        for(let i=1; i<=3; i++) {
+            const btn = document.getElementById(`hintBtn${i}`);
+            if(i <= hintsLeft) {
+                btn.disabled = false;
+                btn.innerText = `Hint ${i}`;
+            } else {
+                btn.disabled = true;
+                btn.innerText = `Hint ${i} (Used)`;
+            }
+        }
+    }
+
+    async function useHint(hintNumber) {
+        if(hintsLeft <= 0) return;
+        hintsLeft--;
+        updateHintButtons();
+
+        const apiKey = getApiKey();
+        const client = new GoogleGenAI({ apiKey });
+        
+        const prompt = `For this contract law hypothetical: "${currentHypothetical}"
+        Provide Hint number ${hintNumber} out of 3. Give a progressive clue about the hidden legal issue or applicable case rule without giving away the complete answer.`;
+
+        const response = await client.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+        });
+
+        const box = document.getElementById('activeHintBox');
+        box.style.display = 'block';
+        box.innerHTML = `<strong>Hint ${hintNumber}:</strong> ${response.text}`;
+    }
+
+    async function submitAnswer() {
+        const apiKey = getApiKey();
+        const studentText = document.getElementById('studentAnswer').value.trim();
+        if(!studentText) {
+            alert("Please write your IRAC response first.");
+            return;
+        }
+
+        document.getElementById('evaluationSection').style.display = 'block';
+        document.getElementById('evalLoading').style.display = 'block';
+        document.getElementById('evaluationContent').innerHTML = "";
+
+        const client = new GoogleGenAI({ apiKey });
+        const prompt = `Evaluate this student's IRAC answer for the contract law hypothetical: "${currentHypothetical}"
+        
+        Student's Answer:
+        """${studentText}"""
+
+        Provide a structured evaluation in JSON format with an array of "critiques". 
+        Each critique object must have:
+        - "excerpt": exact phrase or sentence from the student's text that has an issue, missing case citation, or logical gap.
+        - "issueTitle": Short label of the flaw (e.g., "Missing Consideration Rule", "Incorrect Application of Hadley v Baxendale").
+        - "feedback": Detailed professor critique explaining why this part needs correction.
+        - "socraticPrompt": A probing Socratic question to challenge the student's reasoning.`;
+
+        try {
+            const response = await client.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: prompt,
+                config: { responseMimeType: "application/json" }
+            });
+
+            document.getElementById('evalLoading').style.display = 'none';
+            const data = JSON.parse(response.text);
+            renderInlineCritique(studentText, data.critiques);
+
+        } catch(err) {
+            document.getElementById('evalLoading').style.display = 'none';
+            document.getElementById('evaluationContent').innerHTML = "Error parsing evaluation: " + err.message;
+        }
+    }
+
+    function renderInlineCritique(originalText, critiques) {
+        let annotatedHtml = originalText;
+        
+        // Sort critiques by length descending to prevent bad replacement nesting
+        critiques.sort((a,b) => b.excerpt.length - a.excerpt.length);
+
+        critiques.forEach((c, index) => {
+            if(annotatedHtml.includes(c.excerpt)) {
+                annotatedHtml = annotatedHtml.replace(c.excerpt, `<span class="issue-highlight" onclick="toggleComment(${index})" title="Click to view professor critique">${c.excerpt}</span>`);
+            }
+        });
+
+        let html = `<strong>Annotated IRAC (Click highlighted sections to inspect professor commentary):</strong>`;
+        html += `<div class="highlighted-text-view">${annotatedHtml}</div>`;
+
+        html += `<h4>Detailed Critiques & Socratic Sparring:</h4>`;
+        critiques.forEach((c, index) => {
+            html += `
+                <div class="comment-card" id="comment-${index}">
+                    <h4>⚠️ ${c.issueTitle}</h4>
+                    <p><strong>Target Text:</strong> "${c.excerpt}"</p>
+                    <p><strong>Critique:</strong> ${c.feedback}</p>
+                    
+                    <div class="socratic-chat-box">
+                        <div class="socratic-messages" id="chat-msgs-${index}">
+                            <div><strong>Professor Socratic Query:</strong> ${c.socraticPrompt}</div>
+                        </div>
+                        <div class="socratic-input-row">
+                            <input type="text" id="chat-input-${index}" placeholder="Defend your legal reasoning to the professor..." />
+                            <button onclick="replyToProfessor(${index})">Argue Back</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('evaluationContent').innerHTML = html;
+    }
+
+    async function replyToProfessor(index) {
+        const inputEl = document.getElementById(`chat-input-${index}`);
+        const msgsEl = document.getElementById(`chat-msgs-${index}`);
+        const userMsg = inputEl.value.trim();
+        if(!userMsg) return;
+
+        msgsEl.innerHTML += `<div><strong>You:</strong> ${userMsg}</div>`;
+        inputEl.value = "";
+        
+        const apiKey = getApiKey();
+        const client = new GoogleGenAI({ apiKey });
+
+        try {
+            const response = await client.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: `You are a strict common law professor engaged in Socratic dialogue with a law student. 
+                The student is defending their contract law analysis. Student argument: "${userMsg}". 
+                Respond sharply and professionally in character, testing their logic further.`
+            });
+
+            msgsEl.innerHTML += `<div><strong>Professor:</strong> ${response.text}</div>`;
+            msgsEl.scrollTop = msgsEl.scrollHeight;
+        } catch(e) {
+            msgsEl.innerHTML += `<div style="color:red;">Error connecting to professor chat.</div>`;
+        }
+    }
+
+    function toggleComment(index) {
+        const el = document.getElementById(`comment-${index}`);
+        if(el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.style.borderColor = '#2563eb';
+            setTimeout(() => el.style.borderColor = 'var(--border)', 1500);
+        }
+    }
+</script>
+
+</body>
+</html>
