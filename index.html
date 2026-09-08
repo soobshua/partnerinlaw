@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contract Law IRAC Trainer</title>
-    <script src="https://cdn.jsdelivr.net/npm/@google/genai@0.1.1/dist/index.umd.min.js"></script>
     <style>
         :root {
             --bg-color: #f8fafc;
@@ -82,7 +81,7 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            max-height: 120px;
+            max-height: 130px;
             overflow-y: auto;
             background: #fff;
             padding: 8px;
@@ -96,6 +95,12 @@
             gap: 6px;
             cursor: pointer;
             color: var(--text-main);
+        }
+        .select-all-row {
+            font-weight: bold;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 4px;
+            margin-bottom: 4px;
         }
 
         /* Slider Styling */
@@ -305,8 +310,13 @@
     <div class="controls-grid">
         <!-- Topic Checklist -->
         <div class="control-group">
-            <label>Topic Filters (Select Multiple)</label>
+            <label>Topic Filters</label>
             <div class="checkbox-group">
+                <div class="select-all-row">
+                    <label class="checkbox-label" style="font-weight:bold; color:var(--primary);">
+                        <input type="checkbox" id="selectAllTopics" onclick="toggleSelectAll(this)" checked> Select All Topics
+                    </label>
+                </div>
                 <label class="checkbox-label"><input type="checkbox" name="topic" value="Offer & Acceptance" checked> Offer & Acceptance</label>
                 <label class="checkbox-label"><input type="checkbox" name="topic" value="Consideration & Intention" checked> Consideration & Intention</label>
                 <label class="checkbox-label"><input type="checkbox" name="topic" value="Terms & Exclusion Clauses" checked> Terms & Exclusion Clauses</label>
@@ -351,7 +361,7 @@
     <div id="promptSection" style="display:none; margin-top: 25px;">
         <div class="fact-pattern-card" id="factPatternText"></div>
 
-        <!-- Hints Section (Active on lower difficulty settings) -->
+        <!-- Hints Section -->
         <div class="hints-section" id="hintsSection" style="display:none;">
             <button class="hint-btn" onclick="useHint(1)" id="hintBtn1">Hint 1</button>
             <button class="hint-btn" onclick="useHint(2)" id="hintBtn2">Hint 2</button>
@@ -395,6 +405,12 @@
         return localStorage.getItem('GEMINI_API_KEY') || "";
     }
 
+    // Toggle all sub-checkboxes when "Select All" is clicked
+    function toggleSelectAll(master) {
+        const checkboxes = document.querySelectorAll('input[name="topic"]');
+        checkboxes.forEach(cb => cb.checked = master.checked);
+    }
+
     async function loadSyllabus() {
         try {
             const response = await fetch(DOC_URL);
@@ -402,7 +418,7 @@
                 syllabusContext = await response.text();
             }
         } catch(e) {
-            console.log("CORS restriction on Google Doc fetch. Using core common law framework.");
+            console.log("CORS restriction on Google Doc fetch. Using standard common law framework.");
         }
     }
     loadSyllabus();
@@ -448,6 +464,36 @@
         }, 1000);
     }
 
+    // Reliable direct REST API caller function
+    async function callGeminiAPI(promptText, expectJson = false) {
+        const apiKey = getApiKey();
+        if(!apiKey) throw new Error("Missing Gemini API Key. Please enter and save it above.");
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        
+        const payload = {
+            contents: [{ parts: [{ text: promptText }] }]
+        };
+
+        if (expectJson) {
+            payload.generationConfig = { responseMimeType: "application/json" };
+        }
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.error?.message || "API request failed.");
+        }
+
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+    }
+
     async function generateHypothetical() {
         const apiKey = getApiKey();
         if(!apiKey) {
@@ -455,7 +501,6 @@
             return;
         }
 
-        // Collect checked topics
         const checkedTopics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map(cb => cb.value);
         if(checkedTopics.length === 0) {
             alert("Please select at least one contract law topic.");
@@ -475,27 +520,21 @@
         document.getElementById('studentAnswer').value = "";
 
         hintsLeft = 3;
-        const showHints = difficulty <= 2; // Enable jeopardy hints for levels 1 and 2
+        const showHints = difficulty <= 2;
         document.getElementById('hintsSection').style.display = showHints ? 'flex' : 'none';
         updateHintButtons();
         document.getElementById('activeHintBox').style.display = 'none';
 
         try {
-            const client = new GoogleGenAI({ apiKey });
             const prompt = `You are a strict common law contract law professor. 
             Syllabus Context: "${syllabusContext.substring(0, 3000)}"
             Generate a contract law exam hypothetical problem question incorporating these selected topics: ${checkedTopics.join(", ")}.
             Design the complexity level to match difficulty rating ${difficulty} out of 5 (where 1 is straightforward and 5 is a brutal multidisciplinary multi-party fact pattern). Return only the fact pattern text.`;
 
-            const response = await client.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: prompt,
-            });
-
-            currentHypothetical = response.text;
+            currentHypothetical = await callGeminiAPI(prompt, false);
             document.getElementById('factPatternText').innerText = currentHypothetical;
         } catch(err) {
-            document.getElementById('factPatternText').innerText = "Error generating hypothetical. Check your API key. Details: " + err.message;
+            document.getElementById('factPatternText').innerText = "Error generating hypothetical: " + err.message;
         }
     }
 
@@ -516,22 +555,20 @@
         if(hintsLeft <= 0) return;
         hintsLeft--;
         updateHintButtons();
-
-        const apiKey = getApiKey();
-        const client = new GoogleGenAI({ apiKey });
         
-        const response = await client.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: `For this contract hypothetical: "${currentHypothetical}"\nProvide Hint number ${hintNumber} out of 3. Give a progressive legal clue without giving away the full resolution.`
-        });
+        try {
+            const prompt = `For this contract hypothetical: "${currentHypothetical}"\nProvide Hint number ${hintNumber} out of 3. Give a progressive legal clue without giving away the full resolution.`;
+            const hintText = await callGeminiAPI(prompt, false);
 
-        const box = document.getElementById('activeHintBox');
-        box.style.display = 'block';
-        box.innerHTML = `<strong>Hint ${hintNumber}:</strong> ${response.text}`;
+            const box = document.getElementById('activeHintBox');
+            box.style.display = 'block';
+            box.innerHTML = `<strong>Hint ${hintNumber}:</strong> ${hintText}`;
+        } catch(e) {
+            alert("Error fetching hint: " + e.message);
+        }
     }
 
     async function submitAnswer() {
-        const apiKey = getApiKey();
         const studentText = document.getElementById('studentAnswer').value.trim();
         if(!studentText) {
             alert("Please write your IRAC response first.");
@@ -542,7 +579,6 @@
         document.getElementById('evalLoading').style.display = 'block';
         document.getElementById('evaluationContent').innerHTML = "";
 
-        const client = new GoogleGenAI({ apiKey });
         const prompt = `Evaluate this student's IRAC answer for the contract law hypothetical: "${currentHypothetical}"
         
         Student's Answer:
@@ -556,16 +592,10 @@
         - "socraticPrompt": A probing Socratic question to challenge the student's legal reasoning.`;
 
         try {
-            const response = await client.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: prompt,
-                config: { responseMimeType: "application/json" }
-            });
-
+            const rawJson = await callGeminiAPI(prompt, true);
             document.getElementById('evalLoading').style.display = 'none';
-            const data = JSON.parse(response.text);
+            const data = JSON.parse(rawJson);
             renderInlineCritique(studentText, data.critiques);
-
         } catch(err) {
             document.getElementById('evalLoading').style.display = 'none';
             document.getElementById('evaluationContent').innerHTML = "Error parsing evaluation: " + err.message;
@@ -618,16 +648,11 @@
         msgsEl.innerHTML += `<div><strong>You:</strong> ${userMsg}</div>`;
         inputEl.value = "";
         
-        const apiKey = getApiKey();
-        const client = new GoogleGenAI({ apiKey });
-
         try {
-            const response = await client.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: `You are a strict common law professor engaged in Socratic dialogue. Student defense: "${userMsg}". Respond sharply in character, testing their logic further.`
-            });
+            const prompt = `You are a strict common law professor engaged in Socratic dialogue. Student defense: "${userMsg}". Respond sharply in character, testing their logic further.`;
+            const replyText = await callGeminiAPI(prompt, false);
 
-            msgsEl.innerHTML += `<div><strong>Professor:</strong> ${response.text}</div>`;
+            msgsEl.innerHTML += `<div><strong>Professor:</strong> ${replyText}</div>`;
             msgsEl.scrollTop = msgsEl.scrollHeight;
         } catch(e) {
             msgsEl.innerHTML += `<div style="color:red;">Error connecting to chat.</div>`;
