@@ -15,8 +15,6 @@
             --primary-hover: #1d4ed8;
             --border: #cbd5e1;
             --highlight-bg: #fef08a;
-            --error-bg: #fee2e2;
-            --error-border: #fca5a5;
         }
 
         body {
@@ -62,22 +60,82 @@
 
         .controls-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr auto;
-            gap: 15px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
             margin-bottom: 25px;
-            align-items: end;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
         }
 
         .control-group label {
             display: block;
             font-size: 0.85rem;
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             color: var(--text-main);
         }
 
-        select, button {
+        /* Checklist Styling */
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 120px;
+            overflow-y: auto;
+            background: #fff;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        .checkbox-label {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        /* Slider Styling */
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .slider-container input[type="range"] {
             width: 100%;
+            cursor: pointer;
+        }
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Time Input Styling */
+        .time-inputs {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .time-inputs input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .time-inputs span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        button {
             padding: 10px 12px;
             border-radius: 6px;
             border: 1px solid var(--border);
@@ -91,6 +149,9 @@
             color: white;
             border: none;
             font-weight: 600;
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
         }
         button.primary:hover { background: var(--primary-hover); }
 
@@ -160,7 +221,6 @@
             justify-content: flex-end;
         }
 
-        /* Feedback & Socratic UI Styles */
         .feedback-container {
             margin-top: 30px;
             border-top: 2px solid #e2e8f0;
@@ -237,58 +297,65 @@
 
     <!-- Configuration Box for API Key -->
     <div class="config-box">
-        <input type="password" id="apiKeyInput" placeholder="Enter Gemini API Key (or set via environment)" />
+        <input type="password" id="apiKeyInput" placeholder="Enter Gemini API Key" />
         <button onclick="saveApiKey()">Save Key</button>
     </div>
 
-    <!-- Controls -->
+    <!-- Controls Dashboard -->
     <div class="controls-grid">
+        <!-- Topic Checklist -->
         <div class="control-group">
-            <label>Topic Filter</label>
-            <select id="topicFilter">
-                <option value="All">All Contract Topics</option>
-                <option value="Formation">Formation & Consideration</option>
-                <option value="Terms">Terms & Exclusion Clauses</option>
-                <option value="Vitiating Factors">Vitiating Factors (Mistake/Misrep)</option>
-                <option value="Breach & Remedies">Breach & Remedies</option>
-            </select>
+            <label>Topic Filters (Select Multiple)</label>
+            <div class="checkbox-group">
+                <label class="checkbox-label"><input type="checkbox" name="topic" value="Offer & Acceptance" checked> Offer & Acceptance</label>
+                <label class="checkbox-label"><input type="checkbox" name="topic" value="Consideration & Intention" checked> Consideration & Intention</label>
+                <label class="checkbox-label"><input type="checkbox" name="topic" value="Terms & Exclusion Clauses" checked> Terms & Exclusion Clauses</label>
+                <label class="checkbox-label"><input type="checkbox" name="topic" value="Mistake & Misrepresentation" checked> Mistake & Misrepresentation</label>
+                <label class="checkbox-label"><input type="checkbox" name="topic" value="Duress & Undue Influence" checked> Duress & Undue Influence</label>
+                <label class="checkbox-label"><input type="checkbox" name="topic" value="Breach & Remedies" checked> Breach & Remedies</label>
+            </div>
         </div>
+
+        <!-- Difficulty Slider -->
         <div class="control-group">
-            <label>Proficiency / Mode</label>
-            <select id="modeSelect">
-                <option value="Final Exam">Day of Final Exam (Hard)</option>
-                <option value="Just Started">Just Started Studying (Jeopardy Hints)</option>
-            </select>
+            <label>Difficulty Level: <span id="difficultyLabel" style="color:var(--primary);">3 (Intermediate)</span></label>
+            <div class="slider-container" style="padding-top: 15px;">
+                <input type="range" id="difficultySlider" min="1" max="5" value="3" oninput="updateDifficultyLabel()">
+                <div class="slider-labels">
+                    <span>1 (Novice + Hints)</span>
+                    <span>3 (Mid)</span>
+                    <span>5 (Hardcore Exam)</span>
+                </div>
+            </div>
         </div>
+
+        <!-- Custom Timer (Hours / Minutes) -->
         <div class="control-group">
-            <label>Exam Timer (Minutes)</label>
-            <select id="timerMinutes">
-                <option value="0">Untimed</option>
-                <option value="15">15 Minutes</option>
-                <option value="30" selected>30 Minutes</option>
-                <option value="45">45 Minutes</option>
-            </select>
-        </div>
-        <div>
-            <button class="primary" onclick="generateHypothetical()">New Prompt</button>
+            <label>Exam Timer Duration</label>
+            <div class="time-inputs" style="padding-top: 10px;">
+                <input type="number" id="timerHours" min="0" max="5" value="0">
+                <span>hr</span>
+                <input type="number" id="timerMinutes" min="0" max="59" value="30">
+                <span>min</span>
+            </div>
         </div>
     </div>
 
-    <div id="timerDisplayContainer" style="display:none; margin-bottom: 20px;">
-        <div class="timer-display" id="timerClock">30:00</div>
+    <button class="primary" onclick="generateHypothetical()">Generate Custom Hypothetical</button>
+
+    <div id="timerDisplayContainer" style="display:none; margin: 20px 0 0 0;">
+        <div class="timer-display" id="timerClock">00:30:00</div>
     </div>
 
     <!-- Fact Pattern Display -->
-    <div id="promptSection" style="display:none;">
-        <div class="fact-pattern-card" id="factPatternText">
-            <!-- Dynamic fact pattern goes here -->
-        </div>
+    <div id="promptSection" style="display:none; margin-top: 25px;">
+        <div class="fact-pattern-card" id="factPatternText"></div>
 
-        <!-- Hints Section (Jeopardy Style) -->
+        <!-- Hints Section (Active on lower difficulty settings) -->
         <div class="hints-section" id="hintsSection" style="display:none;">
-            <button class="hint-btn" onclick="useHint(1)" id="hintBtn1">Hint 1 (Remaining)</button>
-            <button class="hint-btn" onclick="useHint(2)" id="hintBtn2">Hint 2 (Remaining)</button>
-            <button class="hint-btn" onclick="useHint(3)" id="hintBtn3">Hint 3 (Remaining)</button>
+            <button class="hint-btn" onclick="useHint(1)" id="hintBtn1">Hint 1</button>
+            <button class="hint-btn" onclick="useHint(2)" id="hintBtn2">Hint 2</button>
+            <button class="hint-btn" onclick="useHint(3)" id="hintBtn3">Hint 3</button>
         </div>
         <div id="activeHintBox" class="hint-box" style="display:none;"></div>
 
@@ -297,14 +364,14 @@
         <textarea id="studentAnswer" placeholder="Type your Issue, Rule, Application, and Conclusion here..."></textarea>
         
         <div class="submit-row">
-            <button class="primary" style="width: auto; padding: 12px 24px;" onclick="submitAnswer()">Submit for Inline Critique</button>
+            <button class="primary" style="width: auto; padding: 12px 24px; margin-top:0;" onclick="submitAnswer()">Submit for Inline Critique</button>
         </div>
     </div>
 
     <!-- Evaluation Section -->
     <div id="evaluationSection" class="feedback-container" style="display:none;">
         <h3>AI Professor's Evaluation & Inline Critique</h3>
-        <div class="loading" id="evalLoading" style="display:none;">Analyzing your IRAC structure, case applications, and missing elements against syllabus...</div>
+        <div class="loading" id="evalLoading" style="display:none;">Analyzing your IRAC structure and case applications against your syllabus notes...</div>
         <div id="evaluationContent"></div>
     </div>
 </div>
@@ -320,7 +387,7 @@
         const key = document.getElementById('apiKeyInput').value.trim();
         if(key) {
             localStorage.setItem('GEMINI_API_KEY', key);
-            alert('API Key saved securely to browser session.');
+            alert('API Key saved securely.');
         }
     }
 
@@ -328,7 +395,6 @@
         return localStorage.getItem('GEMINI_API_KEY') || "";
     }
 
-    // Fetch Syllabus Google Doc on startup in the background
     async function loadSyllabus() {
         try {
             const response = await fetch(DOC_URL);
@@ -336,30 +402,49 @@
                 syllabusContext = await response.text();
             }
         } catch(e) {
-            console.log("CORS restriction on Google Doc fetch. AI will run on foundational common law framework instead.");
+            console.log("CORS restriction on Google Doc fetch. Using core common law framework.");
         }
     }
     loadSyllabus();
 
-    function startTimer(minutes) {
+    function updateDifficultyLabel() {
+        const val = document.getElementById('difficultySlider').value;
+        const labels = {
+            1: "1 (Novice - Full Hints Enabled)",
+            2: "2 (Beginner)",
+            3: "3 (Intermediate)",
+            4: "4 (Advanced)",
+            5: "5 (Hardcore Exam - No Hints)"
+        };
+        document.getElementById('difficultyLabel').innerText = labels[val];
+    }
+
+    function startTimer(totalSeconds) {
         if(timerInterval) clearInterval(timerInterval);
-        if(minutes <= 0) {
+        if(totalSeconds <= 0) {
             document.getElementById('timerDisplayContainer').style.display = 'none';
             return;
         }
         
         document.getElementById('timerDisplayContainer').style.display = 'block';
-        let totalSeconds = minutes * 60;
         
+        const updateDisplay = (secs) => {
+            let h = Math.floor(secs / 3600);
+            let m = Math.floor((secs % 3600) / 60);
+            let s = secs % 60;
+            document.getElementById('timerClock').innerText = 
+                `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        };
+
+        updateDisplay(totalSeconds);
+
         timerInterval = setInterval(() => {
-            let m = Math.floor(totalSeconds / 60);
-            let s = totalSeconds % 60;
-            document.getElementById('timerClockinnerText' || 'timerClock').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            totalSeconds--;
+            updateDisplay(totalSeconds);
             if(totalSeconds <= 0) {
                 clearInterval(timerInterval);
-                alert("Time is up! Complete your answer and submit.");
+                alert("Time is up! Wrap up your answer and submit.");
             }
-            totalSeconds--;
         }, 1000);
     }
 
@@ -370,28 +455,37 @@
             return;
         }
 
-        const topic = document.getElementById('topicFilter').value;
-        const mode = document.getElementById('modeSelect').value;
-        const mins = parseInt(document.getElementById('timerMinutes').value);
-        
-        startTimer(mins);
-        
+        // Collect checked topics
+        const checkedTopics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map(cb => cb.value);
+        if(checkedTopics.length === 0) {
+            alert("Please select at least one contract law topic.");
+            return;
+        }
+
+        const difficulty = document.getElementById('difficultySlider').value;
+        const hours = parseInt(document.getElementById('timerHours').value) || 0;
+        const mins = parseInt(document.getElementById('timerMinutes').value) || 0;
+        const totalSeconds = (hours * 3600) + (mins * 60);
+
+        startTimer(totalSeconds);
+
         document.getElementById('promptSection').style.display = 'block';
         document.getElementById('evaluationSection').style.display = 'none';
-        document.getElementById('factPatternText').innerHTML = "Generating law school contract hypothetical...";
+        document.getElementById('factPatternText').innerHTML = "Generating custom law school contract hypothetical...";
         document.getElementById('studentAnswer').value = "";
-        
+
         hintsLeft = 3;
-        document.getElementById('hintsSection').style.display = (mode === 'Just Started') ? 'flex' : 'none';
+        const showHints = difficulty <= 2; // Enable jeopardy hints for levels 1 and 2
+        document.getElementById('hintsSection').style.display = showHints ? 'flex' : 'none';
         updateHintButtons();
         document.getElementById('activeHintBox').style.display = 'none';
 
         try {
             const client = new GoogleGenAI({ apiKey });
             const prompt = `You are a strict common law contract law professor. 
-            Using this foundational syllabus context if relevant: "${syllabusContext.substring(0, 3000)}"
-            Generate a challenging contract law exam hypothetical problem question focusing on the topic: "${topic}".
-            Make it complex with multiple legal friction points (e.g., consideration issues, exclusion clauses, or misrepresentation). Return only the fact pattern text.`;
+            Syllabus Context: "${syllabusContext.substring(0, 3000)}"
+            Generate a contract law exam hypothetical problem question incorporating these selected topics: ${checkedTopics.join(", ")}.
+            Design the complexity level to match difficulty rating ${difficulty} out of 5 (where 1 is straightforward and 5 is a brutal multidisciplinary multi-party fact pattern). Return only the fact pattern text.`;
 
             const response = await client.models.generateContent({
                 model: 'gemini-2.5-flash',
@@ -426,12 +520,9 @@
         const apiKey = getApiKey();
         const client = new GoogleGenAI({ apiKey });
         
-        const prompt = `For this contract law hypothetical: "${currentHypothetical}"
-        Provide Hint number ${hintNumber} out of 3. Give a progressive clue about the hidden legal issue or applicable case rule without giving away the complete answer.`;
-
         const response = await client.models.generateContent({
             model: 'gemini-2.5-flash',
-            contents: prompt,
+            contents: `For this contract hypothetical: "${currentHypothetical}"\nProvide Hint number ${hintNumber} out of 3. Give a progressive legal clue without giving away the full resolution.`
         });
 
         const box = document.getElementById('activeHintBox');
@@ -460,9 +551,9 @@
         Provide a structured evaluation in JSON format with an array of "critiques". 
         Each critique object must have:
         - "excerpt": exact phrase or sentence from the student's text that has an issue, missing case citation, or logical gap.
-        - "issueTitle": Short label of the flaw (e.g., "Missing Consideration Rule", "Incorrect Application of Hadley v Baxendale").
+        - "issueTitle": Short label of the flaw (e.g., "Missing Rule Element", "Incomplete Application").
         - "feedback": Detailed professor critique explaining why this part needs correction.
-        - "socraticPrompt": A probing Socratic question to challenge the student's reasoning.`;
+        - "socraticPrompt": A probing Socratic question to challenge the student's legal reasoning.`;
 
         try {
             const response = await client.models.generateContent({
@@ -483,13 +574,11 @@
 
     function renderInlineCritique(originalText, critiques) {
         let annotatedHtml = originalText;
-        
-        // Sort critiques by length descending to prevent bad replacement nesting
         critiques.sort((a,b) => b.excerpt.length - a.excerpt.length);
 
         critiques.forEach((c, index) => {
             if(annotatedHtml.includes(c.excerpt)) {
-                annotatedHtml = annotatedHtml.replace(c.excerpt, `<span class="issue-highlight" onclick="toggleComment(${index})" title="Click to view professor critique">${c.excerpt}</span>`);
+                annotatedHtml = annotatedHtml.replace(c.excerpt, `<span class="issue-highlight" onclick="toggleComment(${index})" title="Click to view critique">${c.excerpt}</span>`);
             }
         });
 
@@ -509,7 +598,7 @@
                             <div><strong>Professor Socratic Query:</strong> ${c.socraticPrompt}</div>
                         </div>
                         <div class="socratic-input-row">
-                            <input type="text" id="chat-input-${index}" placeholder="Defend your legal reasoning to the professor..." />
+                            <input type="text" id="chat-input-${index}" placeholder="Defend your legal reasoning..." />
                             <button onclick="replyToProfessor(${index})">Argue Back</button>
                         </div>
                     </div>
@@ -535,15 +624,13 @@
         try {
             const response = await client.models.generateContent({
                 model: 'gemini-2.5-flash',
-                contents: `You are a strict common law professor engaged in Socratic dialogue with a law student. 
-                The student is defending their contract law analysis. Student argument: "${userMsg}". 
-                Respond sharply and professionally in character, testing their logic further.`
+                contents: `You are a strict common law professor engaged in Socratic dialogue. Student defense: "${userMsg}". Respond sharply in character, testing their logic further.`
             });
 
             msgsEl.innerHTML += `<div><strong>Professor:</strong> ${response.text}</div>`;
             msgsEl.scrollTop = msgsEl.scrollHeight;
         } catch(e) {
-            msgsEl.innerHTML += `<div style="color:red;">Error connecting to professor chat.</div>`;
+            msgsEl.innerHTML += `<div style="color:red;">Error connecting to chat.</div>`;
         }
     }
 
