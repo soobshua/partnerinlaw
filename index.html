@@ -160,16 +160,33 @@
         }
         button.primary:hover { background: var(--primary-hover); }
 
+        .timer-box-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            padding: 8px 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
         .timer-display {
             font-size: 1.2rem;
             font-weight: bold;
             color: #ef4444;
-            text-align: center;
-            background: #fef2f2;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #fca5a5;
         }
+
+        .pause-btn {
+            background: #fff;
+            border: 1px solid #fca5a5;
+            color: #ef4444;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .pause-btn:hover { background: #fee2e2; }
 
         .fact-pattern-card {
             background: #eff6ff;
@@ -185,6 +202,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
+            flex-wrap: wrap;
         }
 
         .hint-btn {
@@ -196,7 +214,7 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        .hint-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .hint-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .hint-box {
             background: #fffbeb;
@@ -333,9 +351,9 @@
             <div class="slider-container" style="padding-top: 15px;">
                 <input type="range" id="difficultySlider" min="1" max="5" value="3" oninput="updateDifficultyLabel()">
                 <div class="slider-labels">
-                    <span>1 (Novice + Hints)</span>
-                    <span>3 (Mid)</span>
-                    <span>5 (Hardcore Exam)</span>
+                    <span>1 (4 Hints)</span>
+                    <span>3 (2 Hints)</span>
+                    <span>5 (0 Hints)</span>
                 </div>
             </div>
         </div>
@@ -354,8 +372,11 @@
 
     <button class="primary" onclick="generateHypothetical()">Generate Custom Hypothetical</button>
 
-    <div id="timerDisplayContainer" style="display:none; margin: 20px 0 0 0;">
-        <div class="timer-display" id="timerClock">00:30:00</div>
+    <div id="timerDisplayContainer" style="display:none;">
+        <div class="timer-box-wrapper">
+            <div class="timer-display" id="timerClock">00:30:00</div>
+            <button class="pause-btn" id="pauseBtn" onclick="togglePauseTimer()">Pause Timer</button>
+        </div>
     </div>
 
     <!-- Fact Pattern Display -->
@@ -363,11 +384,7 @@
         <div class="fact-pattern-card" id="factPatternText"></div>
 
         <!-- Hints Section -->
-        <div class="hints-section" id="hintsSection" style="display:none;">
-            <button class="hint-btn" onclick="useHint(1)" id="hintBtn1">Hint 1</button>
-            <button class="hint-btn" onclick="useHint(2)" id="hintBtn2">Hint 2</button>
-            <button class="hint-btn" onclick="useHint(3)" id="hintBtn3">Hint 3</button>
-        </div>
+        <div class="hints-section" id="hintsSection" style="display:none;"></div>
         <div id="activeHintBox" class="hint-box" style="display:none;"></div>
 
         <!-- IRAC Text Input -->
@@ -391,8 +408,12 @@
     const DOC_URL = "https://docs.google.com/document/d/1bIvzTm_aB2rSibgP6gXigV_g-aIo8648r9ZlS4qRXfE/export?format=txt";
     let syllabusContext = "";
     let currentHypothetical = "";
-    let hintsLeft = 3;
+    let totalHintsAllowed = 2;
+    let hintsUsedCount = 0;
+    
     let timerInterval = null;
+    let secondsRemaining = 0;
+    let isTimerPaused = false;
 
     function saveApiKey() {
         const key = document.getElementById('apiKeyInput').value.trim();
@@ -424,44 +445,63 @@
     loadSyllabus();
 
     function updateDifficultyLabel() {
-        const val = document.getElementById('difficultySlider').value;
+        const val = parseInt(document.getElementById('difficultySlider').value);
         const labels = {
-            1: "1 (Novice - Full Hints Enabled)",
-            2: "2 (Beginner)",
-            3: "3 (Intermediate)",
-            4: "4 (Advanced)",
-            5: "5 (Hardcore Exam - No Hints)"
+            1: "1 (Novice - 4 Hints)",
+            2: "2 (Beginner - 3 Hints)",
+            3: "3 (Intermediate - 2 Hints)",
+            4: "4 (Advanced - 1 Hint)",
+            5: "5 (Hardcore Exam - 0 Hints)"
         };
         document.getElementById('difficultyLabel').innerText = labels[val];
     }
 
     function startTimer(totalSeconds) {
         if(timerInterval) clearInterval(timerInterval);
-        if(totalSeconds <= 0) {
+        secondsRemaining = totalSeconds;
+        isTimerPaused = false;
+        document.getElementById('pauseBtn').innerText = "Pause Timer";
+
+        if(secondsRemaining <= 0) {
             document.getElementById('timerDisplayContainer').style.display = 'none';
             return;
         }
         
         document.getElementById('timerDisplayContainer').style.display = 'block';
-        
-        const updateDisplay = (secs) => {
-            let h = Math.floor(secs / 3600);
-            let m = Math.floor((secs % 3600) / 60);
-            let s = secs % 60;
-            document.getElementById('timerClock').innerText = 
-                `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        };
-
-        updateDisplay(totalSeconds);
+        updateTimerDisplay();
 
         timerInterval = setInterval(() => {
-            totalSeconds--;
-            updateDisplay(totalSeconds);
-            if(totalSeconds <= 0) {
-                clearInterval(timerInterval);
-                alert("Time is up! Wrap up your answer and submit.");
+            if(!isTimerPaused) {
+                secondsRemaining--;
+                updateTimerDisplay();
+                if(secondsRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Time is up! Wrap up your answer and submit.");
+                }
             }
         }, 1000);
+    }
+
+    function togglePauseTimer() {
+        isTimerPaused = !isTimerPaused;
+        const pauseBtn = document.getElementById('pauseBtn');
+        if(isTimerPaused) {
+            pauseBtn.innerText = "Resume Timer";
+            pauseBtn.style.background = "#fef08a";
+            pauseBtn.style.color = "#854d0e";
+        } else {
+            pauseBtn.innerText = "Pause Timer";
+            pauseBtn.style.background = "#fff";
+            pauseBtn.style.color = "#ef4444";
+        }
+    }
+
+    function updateTimerDisplay() {
+        let h = Math.floor(secondsRemaining / 3600);
+        let m = Math.floor((secondsRemaining % 3600) / 60);
+        let s = secondsRemaining % 60;
+        document.getElementById('timerClock').innerText = 
+            `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
 
     async function callGeminiAPI(promptText, expectJson = false) {
@@ -506,9 +546,13 @@
             return;
         }
 
-        const difficulty = document.getElementById('difficultySlider').value;
-        const hours = parseInt(document.getElementById('timerHours').value) | 0;
-        const mins = parseInt(document.getElementById('timerMinutes').value) | 0;
+        const difficulty = parseInt(document.getElementById('difficultySlider').value);
+        // Level 1 = 4 hints, Level 2 = 3 hints, Level 3 = 2 hints, Level 4 = 1 hint, Level 5 = 0 hints
+        totalHintsAllowed = 6 - difficulty; 
+        hintsUsedCount = 0;
+
+        const hours = parseInt(document.getElementById('timerHours').value) || 0;
+        const mins = parseInt(document.getElementById('timerMinutes').value) || 0;
         const totalSeconds = (hours * 3600) + (mins * 60);
 
         document.getElementById('promptSection').style.display = 'block';
@@ -518,10 +562,7 @@
         document.getElementById('timerDisplayContainer').style.display = 'none';
         if(timerInterval) clearInterval(timerInterval);
 
-        hintsLeft = 3;
-        const showHints = difficulty <= 2;
-        document.getElementById('hintsSection').style.display = showHints ? 'flex' : 'none';
-        updateHintButtons();
+        setupHintUI();
         document.getElementById('activeHintBox').style.display = 'none';
 
         try {
@@ -538,7 +579,7 @@
             currentHypothetical = await callGeminiAPI(prompt, false);
             document.getElementById('factPatternText').innerText = currentHypothetical;
 
-            // Start timer ONLY after the question is successfully generated and rendered
+            // Start timer ONLY after generation is complete
             startTimer(totalSeconds);
 
         } catch(err) {
@@ -546,26 +587,35 @@
         }
     }
 
-    function updateHintButtons() {
-        for(let i=1; i<=3; i++) {
-            const btn = document.getElementById(`hintBtn${i}`);
-            if(i <= hintsLeft) {
-                btn.disabled = false;
-                btn.innerText = `Hint ${i}`;
-            } else {
-                btn.disabled = true;
-                btn.innerText = `Hint ${i} (Used)`;
-            }
+    function setupHintUI() {
+        const hintsSection = document.getElementById('hintsSection');
+        hintsSection.innerHTML = "";
+        if(totalHintsAllowed <= 0) {
+            hintsSection.style.display = 'none';
+            return;
+        }
+
+        hintsSection.style.display = 'flex';
+        for(let i=1; i<=totalHintsAllowed; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'hint-btn';
+            btn.id = `hintBtn${i}`;
+            btn.innerText = `Hint ${i}`;
+            btn.onclick = () => useHint(i);
+            hintsSection.appendChild(btn);
         }
     }
 
     async function useHint(hintNumber) {
-        if(hintsLeft <= 0) return;
-        hintsLeft--;
-        updateHintButtons();
+        const btn = document.getElementById(`hintBtn${hintNumber}`);
+        if(!btn || btn.disabled) return;
         
+        btn.disabled = true;
+        btn.innerText = `Hint ${hintNumber} (Used)`;
+        hintsUsedCount++;
+
         try {
-            const prompt = `For this contract hypothetical: "${currentHypothetical}"\nProvide Hint number ${hintNumber} out of 3. Give a progressive legal clue without giving away the full resolution.`;
+            const prompt = `For this contract hypothetical: "${currentHypothetical}"\nProvide Hint number ${hintNumber} out of ${totalHintsAllowed} (Jeopardy style progressive legal clue). Give a targeted clue without giving away the full resolution.`;
             const hintText = await callGeminiAPI(prompt, false);
 
             const box = document.getElementById('activeHintBox');
