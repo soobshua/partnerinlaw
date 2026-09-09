@@ -178,6 +178,7 @@
             border-radius: 0 8px 8px 0;
             margin-bottom: 20px;
             line-height: 1.6;
+            white-space: pre-wrap;
         }
 
         .hints-section {
@@ -463,7 +464,6 @@
         }, 1000);
     }
 
-    // Updated with the new gemini-3.6-flash model endpoint
     async function callGeminiAPI(promptText, expectJson = false) {
         const apiKey = getApiKey();
         if(!apiKey) throw new Error("Missing Gemini API Key. Please enter and save it above.");
@@ -507,16 +507,16 @@
         }
 
         const difficulty = document.getElementById('difficultySlider').value;
-        const hours = parseInt(document.getElementById('timerHours').value) || 0;
-        const mins = parseInt(document.getElementById('timerMinutes').value) || 0;
+        const hours = parseInt(document.getElementById('timerHours').value) | 0;
+        const mins = parseInt(document.getElementById('timerMinutes').value) | 0;
         const totalSeconds = (hours * 3600) + (mins * 60);
-
-        startTimer(totalSeconds);
 
         document.getElementById('promptSection').style.display = 'block';
         document.getElementById('evaluationSection').style.display = 'none';
-        document.getElementById('factPatternText').innerHTML = "Generating custom law school contract hypothetical...";
+        document.getElementById('factPatternText').innerHTML = "Generating an original custom law school contract hypothetical...";
         document.getElementById('studentAnswer').value = "";
+        document.getElementById('timerDisplayContainer').style.display = 'none';
+        if(timerInterval) clearInterval(timerInterval);
 
         hintsLeft = 3;
         const showHints = difficulty <= 2;
@@ -525,13 +525,22 @@
         document.getElementById('activeHintBox').style.display = 'none';
 
         try {
-            const prompt = `You are a strict common law contract law professor. 
-            Syllabus Context: "${syllabusContext.substring(0, 3000)}"
-            Generate a contract law exam hypothetical problem question incorporating these selected topics: ${checkedTopics.join(", ")}.
-            Design the complexity level to match difficulty rating ${difficulty} out of 5 (where 1 is straightforward and 5 is a brutal multidisciplinary multi-party fact pattern). Return only the fact pattern text.`;
+            const prompt = `You are a rigorous common law contract law professor designing an exam paper. 
+            Here are excerpts or style samples from the course materials / previous exam guides for tone reference:
+            "${syllabusContext.substring(0, 2000)}"
+            
+            CRITICAL INSTRUCTIONS:
+            1. DO NOT copy text or names from the syllabus/sample text. Create a completely ORIGINAL fact pattern with entirely new character names and a brand new scenario.
+            2. The scenario must test the following selected topics: ${checkedTopics.join(", ")}.
+            3. Set the difficulty level to ${difficulty} out of 5 (where 1 is straightforward and 5 is an advanced multi-layered commercial law problem).
+            4. End the fact pattern with clear, law-school style question prompts broken down by letter (e.g., (a), (b), (c)) with explicit mark allocations, formatted precisely like authentic university exams.`;
 
             currentHypothetical = await callGeminiAPI(prompt, false);
             document.getElementById('factPatternText').innerText = currentHypothetical;
+
+            // Start timer ONLY after the question is successfully generated and rendered
+            startTimer(totalSeconds);
+
         } catch(err) {
             document.getElementById('factPatternText').innerText = "Error generating hypothetical: " + err.message;
         }
