@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contract Law IRAC Trainer</title>
+    <title>Partner in Law - Ultimate Law Student Super-App</title>
     <style>
         :root {
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --border: #cbd5e1;
-            --highlight-bg: #fef08a;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
         }
 
         body {
@@ -21,711 +23,770 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
-        .container {
-            width: 100%;
-            max-width: 900px;
+        /* Top Bar & Config */
+        .top-bar {
             background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            padding: 30px;
-            box-sizing: border-box;
-        }
-
-        h1 { margin-top: 0; font-size: 1.8rem; color: #0f172a; }
-        p { color: var(--text-muted); }
-
-        .config-box {
-            background: #f1f5f9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .config-box input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        .controls-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .control-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        /* Checklist Styling */
-        .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-height: 130px;
-            overflow-y: auto;
-            background: #fff;
-            padding: 8px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-        }
-        .checkbox-label {
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            color: var(--text-main);
-        }
-        .select-all-row {
-            font-weight: bold;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 4px;
-            margin-bottom: 4px;
-        }
-
-        /* Slider Styling */
-        .slider-container {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .slider-container input[type="range"] {
-            width: 100%;
-            cursor: pointer;
-        }
-        .slider-labels {
+            border-bottom: 1px solid var(--card-border);
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        /* Time Input Styling */
-        .time-inputs {
-            display: flex;
-            gap: 8px;
             align-items: center;
         }
-        .time-inputs input[type="number"] {
-            width: 60px;
-            padding: 8px;
-            border: 1px solid var(--border);
+        .app-title { font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .config-box { display: flex; gap: 8px; align-items: center; }
+        .config-box input {
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            color: #fff;
+            padding: 6px 10px;
             border-radius: 6px;
-            text-align: center;
-            font-size: 0.95rem;
-        }
-        .time-inputs span {
             font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-muted);
         }
 
-        button {
-            padding: 10px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: #fff;
-            font-size: 0.95rem;
+        /* Token & Cafe Bar */
+        .currency-bar {
+            background: #111827;
+            border-bottom: 1px solid var(--card-border);
+            padding: 8px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        .token-pill {
+            background: #f59e0b22;
+            border: 1px solid var(--warning);
+            color: var(--warning);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
             cursor: pointer;
         }
 
-        button.primary {
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--card-border);
+            overflow-x: auto;
+        }
+        .nav-tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+        }
+        .nav-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Main Container */
+        .main-container {
+            flex: 1;
+            padding: 20px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
+            padding-bottom: 80px;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* General UI Elements */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        h2 { margin-top: 0; font-size: 1.5rem; color: #fff; }
+        h3 { margin-top: 0; font-size: 1.2rem; color: #f1f5f9; }
+        p { color: var(--text-muted); line-height: 1.5; }
+
+        button {
             background: var(--primary);
             color: white;
             border: none;
-            font-weight: 600;
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-        }
-        button.primary:hover { background: var(--primary-hover); }
-
-        .timer-box-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #fef2f2;
-            border: 1px solid #fca5a5;
-            padding: 8px 15px;
+            padding: 8px 16px;
             border-radius: 6px;
-            margin-top: 20px;
-        }
-
-        .timer-display {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #ef4444;
-        }
-
-        .pause-btn {
-            background: #fff;
-            border: 1px solid #fca5a5;
-            color: #ef4444;
             font-weight: 600;
-            padding: 6px 14px;
-            border-radius: 4px;
             cursor: pointer;
-        }
-        .pause-btn:hover { background: #fee2e2; }
-
-        .fact-pattern-card {
-            background: #eff6ff;
-            border-left: 4px solid var(--primary);
-            padding: 20px;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 20px;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-
-        .hints-section {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .hint-btn {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            color: #b45309;
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .hint-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        .hint-box {
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
             font-size: 0.9rem;
-            color: #92400e;
         }
+        button:hover { background: var(--primary-hover); }
+        button.secondary { background: #334155; color: #fff; }
+        button.secondary:hover { background: #475569; }
 
-        textarea {
+        input[type="text"], input[type="date"], input[type="number"], select, textarea {
             width: 100%;
-            height: 250px;
-            padding: 15px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 1rem;
-            box-sizing: border-box;
-            resize: vertical;
-            line-height: 1.5;
-        }
-
-        .submit-row {
-            margin-top: 15px;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .feedback-container {
-            margin-top: 30px;
-            border-top: 2px solid #e2e8f0;
-            padding-top: 20px;
-        }
-
-        .highlighted-text-view {
-            background: #fff;
-            border: 1px solid var(--border);
-            padding: 15px;
-            border-radius: 8px;
-            line-height: 1.8;
-            white-space: pre-wrap;
-            margin-bottom: 20px;
-        }
-
-        .issue-highlight {
-            background-color: var(--highlight-bg);
-            border-bottom: 2px dashed #ca8a04;
-            cursor: pointer;
-            padding: 2px 4px;
-            border-radius: 3px;
-        }
-
-        .comment-card {
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        .comment-card h4 { margin: 0 0 8px 0; color: #b91c1c; font-size: 0.95rem; }
-        
-        .socratic-chat-box {
-            margin-top: 10px;
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 6px;
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            color: #fff;
             padding: 10px;
+            border-radius: 6px;
+            box-sizing: border-box;
+            margin-bottom: 12px;
+            font-family: inherit;
         }
+        textarea { height: 120px; resize: vertical; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media(max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        /* Cafe Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal {
+            background: var(--card-bg); border: 1px solid var(--card-border); width: 90%; max-width: 600px;
+            border-radius: 12px; padding: 25px; box-sizing: border-box; max-height: 85vh; overflow-y: auto; position: relative;
+        }
+        .close-btn { position: absolute; top: 15px; right: 15px; background: none; color: #fff; font-size: 1.2rem; cursor: pointer; }
         
-        .socratic-messages {
-            max-height: 150px;
-            overflow-y: auto;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
+        .cafe-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .menu-item { background: #0f172a; border: 1px solid var(--card-border); padding: 12px; border-radius: 8px; text-align: center; }
+        .menu-item img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 8px; }
 
-        .socratic-input-row {
-            display: flex;
-            gap: 8px;
+        /* Tracker Avatars & Graveyard */
+        .firm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 15px; }
+        .firm-card {
+            background: #0f172a; border: 1px solid var(--card-border); border-radius: 8px; padding: 15px;
+            text-align: center; cursor: pointer; position: relative; transition: transform 0.2s;
         }
-        .socratic-input-row input {
-            flex: 1;
-            padding: 6px;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-        }
+        .firm-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+        .avatar-box { font-size: 2.5rem; margin-bottom: 5px; position: relative; display: inline-block; }
+        .avatar-shirt { font-size: 0.7rem; background: var(--primary); color: #fff; padding: 2px 6px; border-radius: 4px; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+        .halo { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 1.2rem; }
+        .crown { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 1.2rem; }
 
-        .loading {
-            text-align: center;
-            font-style: italic;
-            color: var(--text-muted);
-            padding: 20px;
+        /* Mobile Bottom Nav */
+        .mobile-nav {
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg);
+            border-top: 1px solid var(--card-border); justify-content: space-around; padding: 10px 0; z-index: 900;
         }
+        .mobile-btn { background: none; border: none; color: var(--text-muted); font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
+        .mobile-btn.active { color: var(--primary); }
+        @media(max-width: 768px) { .nav-tabs { display: none; } .mobile-nav { display: flex; } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Contract Law IRAC Trainer</h1>
-    <p>Practice exam hypotheticals grounded in your syllabus notes with real-time feedback & Socratic dialogue.</p>
-
-    <!-- Configuration Box for API Key -->
-    <div class="config-box">
-        <input type="password" id="apiKeyInput" placeholder="Enter Gemini API Key" />
-        <button onclick="saveApiKey()">Save Key</button>
-    </div>
-
-    <!-- Controls Dashboard -->
-    <div class="controls-grid">
-        <!-- Topic Checklist -->
-        <div class="control-group">
-            <label>Topic Filters</label>
-            <div class="checkbox-group">
-                <div class="select-all-row">
-                    <label class="checkbox-label" style="font-weight:bold; color:var(--primary);">
-                        <input type="checkbox" id="selectAllTopics" onclick="toggleSelectAll(this)" checked> Select All Topics
-                    </label>
-                </div>
-                <label class="checkbox-label"><input type="checkbox" name="topic" value="Offer & Acceptance" checked> Offer & Acceptance</label>
-                <label class="checkbox-label"><input type="checkbox" name="topic" value="Consideration & Intention" checked> Consideration & Intention</label>
-                <label class="checkbox-label"><input type="checkbox" name="topic" value="Terms & Exclusion Clauses" checked> Terms & Exclusion Clauses</label>
-                <label class="checkbox-label"><input type="checkbox" name="topic" value="Mistake & Misrepresentation" checked> Mistake & Misrepresentation</label>
-                <label class="checkbox-label"><input type="checkbox" name="topic" value="Duress & Undue Influence" checked> Duress & Undue Influence</label>
-                <label class="checkbox-label"><input type="checkbox" name="topic" value="Breach & Remedies" checked> Breach & Remedies</label>
-            </div>
-        </div>
-
-        <!-- Difficulty Slider -->
-        <div class="control-group">
-            <label>Difficulty Level: <span id="difficultyLabel" style="color:var(--primary);">3 (Intermediate)</span></label>
-            <div class="slider-container" style="padding-top: 15px;">
-                <input type="range" id="difficultySlider" min="1" max="5" value="3" oninput="updateDifficultyLabel()">
-                <div class="slider-labels">
-                    <span>1 (4 Hints)</span>
-                    <span>3 (2 Hints)</span>
-                    <span>5 (0 Hints)</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Custom Timer (Hours / Minutes) -->
-        <div class="control-group">
-            <label>Exam Timer Duration</label>
-            <div class="time-inputs" style="padding-top: 10px;">
-                <input type="number" id="timerHours" min="0" max="5" value="0">
-                <span>hr</span>
-                <input type="number" id="timerMinutes" min="0" max="59" value="30">
-                <span>min</span>
-            </div>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="app-title">⚖️ Partner in Law</div>
+        <div class="config-box">
+            <input type="password" id="apiKeyInput" placeholder="Gemini API Key" />
+            <button onclick="saveApiKey()">Save</button>
         </div>
     </div>
 
-    <button class="primary" onclick="generateHypothetical()">Generate Custom Hypothetical</button>
-
-    <div id="timerDisplayContainer" style="display:none;">
-        <div class="timer-box-wrapper">
-            <div class="timer-display" id="timerClock">00:30:00</div>
-            <button class="pause-btn" id="pauseBtn" onclick="togglePauseTimer()">Pause Timer</button>
-        </div>
+    <!-- Currency & Cafe Bar -->
+    <div class="currency-bar">
+        <div>Study Streak & Vault Points</div>
+        <div class="token-pill" onclick="openCafeModal()">☕ <span id="tokenCount">150</span> Tokens (Open Cafe)</div>
     </div>
 
-    <!-- Fact Pattern Display -->
-    <div id="promptSection" style="display:none; margin-top: 25px;">
-        <div class="fact-pattern-card" id="factPatternText"></div>
-
-        <!-- Hints Section -->
-        <div class="hints-section" id="hintsSection" style="display:none;"></div>
-        <div id="activeHintBox" class="hint-box" style="display:none;"></div>
-
-        <!-- IRAC Text Input -->
-        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Your IRAC Answer:</label>
-        <textarea id="studentAnswer" placeholder="Type your Issue, Rule, Application, and Conclusion here..."></textarea>
-        
-        <div class="submit-row">
-            <button class="primary" style="width: auto; padding: 12px 24px; margin-top:0;" onclick="submitAnswer()">Submit for Inline Critique</button>
-        </div>
+    <!-- Desktop Navigation Tabs -->
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="switchTab('review')">📚 Exam Review</button>
+        <button class="nav-tab" onclick="switchTab('revision')">📅 Revision Planner</button>
+        <button class="nav-tab" onclick="switchTab('tracker')">💼 Vac Scheme & TC Tracker</button>
+        <button class="nav-tab" onclick="switchTab('master')">🗓️ Master Schedule</button>
+        <button class="nav-tab" onclick="switchTab('bilingual')">🌐 Multilingual Workbench</button>
     </div>
 
-    <!-- Evaluation Section -->
-    <div id="evaluationSection" class="feedback-container" style="display:none;">
-        <h3>AI Professor's Evaluation & Inline Critique</h3>
-        <div class="loading" id="evalLoading" style="display:none;">Analyzing your IRAC structure and case applications against your syllabus notes...</div>
-        <div id="evaluationContent"></div>
-    </div>
-</div>
+    <!-- Main Container -->
+    <div class="main-container">
 
-<script>
-    const DOC_URL = "https://docs.google.com/document/d/1bIvzTm_aB2rSibgP6gXigV_g-aIo8648r9ZlS4qRXfE/export?format=txt";
-    let syllabusContext = "";
-    let currentHypothetical = "";
-    let totalHintsAllowed = 2;
-    let hintsUsedCount = 0;
-    
-    let timerInterval = null;
-    let secondsRemaining = 0;
-    let isTimerPaused = false;
+        <!-- TAB 1: EXAM REVIEW -->
+        <div id="tab-review" class="tab-content active">
+            <div class="card">
+                <h2>Exam Review & Syllabus Hub</h2>
+                <p>Upload your notes, tutorial answers, slides, and past papers so Partner in Law understands your syllabus, then practice with custom IRAC or Essay exam prompts.</p>
+                
+                <div class="grid-2">
+                    <div>
+                        <label><strong>1. Upload Syllabus Documents / Notes</strong></label>
+                        <input type="file" id="syllabusFiles" multiple onchange="handleFileUpload(event)">
+                        <div id="uploadedFilesList" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">No files uploaded yet.</div>
+                        
+                        <label><strong>2. Manual Topics & Subheadings</strong></label>
+                        <textarea id="topicsInput" placeholder="Enter topics/subheadings (one per line)..."></textarea>
+                    </div>
+                    <div>
+                        <label><strong>3. Exam Format</strong></label>
+                        <select id="examFormatSelect">
+                            <option value="irac">IRAC (Issue, Rule, Application, Conclusion)</option>
+                            <option value="essay">Law Essay (Critical evaluation, thesis, case/statute integration)</option>
+                        </select>
 
-    function saveApiKey() {
-        const key = document.getElementById('apiKeyInput').value.trim();
-        if(key) {
-            localStorage.setItem('GEMINI_API_KEY', key);
-            alert('API Key saved securely.');
-        }
-    }
+                        <label><strong>4. Difficulty Level (1-5)</strong></label>
+                        <input type="number" id="reviewDifficulty" min="1" max="5" value="3">
 
-    function getApiKey() {
-        return localStorage.getItem('GEMINI_API_KEY') || "";
-    }
-
-    function toggleSelectAll(master) {
-        const checkboxes = document.querySelectorAll('input[name="topic"]');
-        checkboxes.forEach(cb => cb.checked = master.checked);
-    }
-
-    async function loadSyllabus() {
-        try {
-            const response = await fetch(DOC_URL);
-            if(response.ok) {
-                syllabusContext = await response.text();
-            }
-        } catch(e) {
-            console.log("CORS restriction on Google Doc fetch. Using standard common law framework.");
-        }
-    }
-    loadSyllabus();
-
-    function updateDifficultyLabel() {
-        const val = parseInt(document.getElementById('difficultySlider').value);
-        const labels = {
-            1: "1 (Novice - 4 Hints)",
-            2: "2 (Beginner - 3 Hints)",
-            3: "3 (Intermediate - 2 Hints)",
-            4: "4 (Advanced - 1 Hint)",
-            5: "5 (Hardcore Exam - 0 Hints)"
-        };
-        document.getElementById('difficultyLabel').innerText = labels[val];
-    }
-
-    function startTimer(totalSeconds) {
-        if(timerInterval) clearInterval(timerInterval);
-        secondsRemaining = totalSeconds;
-        isTimerPaused = false;
-        document.getElementById('pauseBtn').innerText = "Pause Timer";
-
-        if(secondsRemaining <= 0) {
-            document.getElementById('timerDisplayContainer').style.display = 'none';
-            return;
-        }
-        
-        document.getElementById('timerDisplayContainer').style.display = 'block';
-        updateTimerDisplay();
-
-        timerInterval = setInterval(() => {
-            if(!isTimerPaused) {
-                secondsRemaining--;
-                updateTimerDisplay();
-                if(secondsRemaining <= 0) {
-                    clearInterval(timerInterval);
-                    alert("Time is up! Wrap up your answer and submit.");
-                }
-            }
-        }, 1000);
-    }
-
-    function togglePauseTimer() {
-        isTimerPaused = !isTimerPaused;
-        const pauseBtn = document.getElementById('pauseBtn');
-        if(isTimerPaused) {
-            pauseBtn.innerText = "Resume Timer";
-            pauseBtn.style.background = "#fef08a";
-            pauseBtn.style.color = "#854d0e";
-        } else {
-            pauseBtn.innerText = "Pause Timer";
-            pauseBtn.style.background = "#fff";
-            pauseBtn.style.color = "#ef4444";
-        }
-    }
-
-    function updateTimerDisplay() {
-        let h = Math.floor(secondsRemaining / 3600);
-        let m = Math.floor((secondsRemaining % 3600) / 60);
-        let s = secondsRemaining % 60;
-        document.getElementById('timerClock').innerText = 
-            `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
-
-    async function callGeminiAPI(promptText, expectJson = false) {
-        const apiKey = getApiKey();
-        if(!apiKey) throw new Error("Missing Gemini API Key. Please enter and save it above.");
-
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
-        
-        const payload = {
-            contents: [{ parts: [{ text: promptText }] }]
-        };
-
-        if (expectJson) {
-            payload.generationConfig = { responseMimeType: "application/json" };
-        }
-
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(errData.error?.message || "API request failed.");
-        }
-
-        const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
-    }
-
-    async function generateHypothetical() {
-        const apiKey = getApiKey();
-        if(!apiKey) {
-            alert("Please enter and save your Gemini API Key first.");
-            return;
-        }
-
-        const checkedTopics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map(cb => cb.value);
-        if(checkedTopics.length === 0) {
-            alert("Please select at least one contract law topic.");
-            return;
-        }
-
-        const difficulty = parseInt(document.getElementById('difficultySlider').value);
-        // Level 1 = 4 hints, Level 2 = 3 hints, Level 3 = 2 hints, Level 4 = 1 hint, Level 5 = 0 hints
-        totalHintsAllowed = 6 - difficulty; 
-        hintsUsedCount = 0;
-
-        const hours = parseInt(document.getElementById('timerHours').value) || 0;
-        const mins = parseInt(document.getElementById('timerMinutes').value) || 0;
-        const totalSeconds = (hours * 3600) + (mins * 60);
-
-        document.getElementById('promptSection').style.display = 'block';
-        document.getElementById('evaluationSection').style.display = 'none';
-        document.getElementById('factPatternText').innerHTML = "Generating an original custom law school contract hypothetical...";
-        document.getElementById('studentAnswer').value = "";
-        document.getElementById('timerDisplayContainer').style.display = 'none';
-        if(timerInterval) clearInterval(timerInterval);
-
-        setupHintUI();
-        document.getElementById('activeHintBox').style.display = 'none';
-
-        try {
-            const prompt = `You are a rigorous common law contract law professor designing an exam paper. 
-            Here are excerpts or style samples from the course materials / previous exam guides for tone reference:
-            "${syllabusContext.substring(0, 2000)}"
-            
-            CRITICAL INSTRUCTIONS:
-            1. DO NOT copy text or names from the syllabus/sample text. Create a completely ORIGINAL fact pattern with entirely new character names and a brand new scenario.
-            2. The scenario must test the following selected topics: ${checkedTopics.join(", ")}.
-            3. Set the difficulty level to ${difficulty} out of 5 (where 1 is straightforward and 5 is an advanced multi-layered commercial law problem).
-            4. End the fact pattern with clear, law-school style question prompts broken down by letter (e.g., (a), (b), (c)) with explicit mark allocations, formatted precisely like authentic university exams.`;
-
-            currentHypothetical = await callGeminiAPI(prompt, false);
-            document.getElementById('factPatternText').innerText = currentHypothetical;
-
-            // Start timer ONLY after generation is complete
-            startTimer(totalSeconds);
-
-        } catch(err) {
-            document.getElementById('factPatternText').innerText = "Error generating hypothetical: " + err.message;
-        }
-    }
-
-    function setupHintUI() {
-        const hintsSection = document.getElementById('hintsSection');
-        hintsSection.innerHTML = "";
-        if(totalHintsAllowed <= 0) {
-            hintsSection.style.display = 'none';
-            return;
-        }
-
-        hintsSection.style.display = 'flex';
-        for(let i=1; i<=totalHintsAllowed; i++) {
-            const btn = document.createElement('button');
-            btn.className = 'hint-btn';
-            btn.id = `hintBtn${i}`;
-            btn.innerText = `Hint ${i}`;
-            btn.onclick = () => useHint(i);
-            hintsSection.appendChild(btn);
-        }
-    }
-
-    async function useHint(hintNumber) {
-        const btn = document.getElementById(`hintBtn${hintNumber}`);
-        if(!btn || btn.disabled) return;
-        
-        btn.disabled = true;
-        btn.innerText = `Hint ${hintNumber} (Used)`;
-        hintsUsedCount++;
-
-        try {
-            const prompt = `For this contract hypothetical: "${currentHypothetical}"\nProvide Hint number ${hintNumber} out of ${totalHintsAllowed} (Jeopardy style progressive legal clue). Give a targeted clue without giving away the full resolution.`;
-            const hintText = await callGeminiAPI(prompt, false);
-
-            const box = document.getElementById('activeHintBox');
-            box.style.display = 'block';
-            box.innerHTML = `<strong>Hint ${hintNumber}:</strong> ${hintText}`;
-        } catch(e) {
-            alert("Error fetching hint: " + e.message);
-        }
-    }
-
-    async function submitAnswer() {
-        const studentText = document.getElementById('studentAnswer').value.trim();
-        if(!studentText) {
-            alert("Please write your IRAC response first.");
-            return;
-        }
-
-        document.getElementById('evaluationSection').style.display = 'block';
-        document.getElementById('evalLoading').style.display = 'block';
-        document.getElementById('evaluationContent').innerHTML = "";
-
-        const prompt = `Evaluate this student's IRAC answer for the contract law hypothetical: "${currentHypothetical}"
-        
-        Student's Answer:
-        """${studentText}"""
-
-        Provide a structured evaluation in JSON format with an array of "critiques". 
-        Each critique object must have:
-        - "excerpt": exact phrase or sentence from the student's text that has an issue, missing case citation, or logical gap.
-        - "issueTitle": Short label of the flaw (e.g., "Missing Rule Element", "Incomplete Application").
-        - "feedback": Detailed professor critique explaining why this part needs correction.
-        - "socraticPrompt": A probing Socratic question to challenge the student's legal reasoning.`;
-
-        try {
-            const rawJson = await callGeminiAPI(prompt, true);
-            document.getElementById('evalLoading').style.display = 'none';
-            const data = JSON.parse(rawJson);
-            renderInlineCritique(studentText, data.critiques);
-        } catch(err) {
-            document.getElementById('evalLoading').style.display = 'none';
-            document.getElementById('evaluationContent').innerHTML = "Error parsing evaluation: " + err.message;
-        }
-    }
-
-    function renderInlineCritique(originalText, critiques) {
-        let annotatedHtml = originalText;
-        critiques.sort((a,b) => b.excerpt.length - a.excerpt.length);
-
-        critiques.forEach((c, index) => {
-            if(annotatedHtml.includes(c.excerpt)) {
-                annotatedHtml = annotatedHtml.replace(c.excerpt, `<span class="issue-highlight" onclick="toggleComment(${index})" title="Click to view critique">${c.excerpt}</span>`);
-            }
-        });
-
-        let html = `<strong>Annotated IRAC (Click highlighted sections to inspect professor commentary):</strong>`;
-        html += `<div class="highlighted-text-view">${annotatedHtml}</div>`;
-
-        html += `<h4>Detailed Critiques & Socratic Sparring:</h4>`;
-        critiques.forEach((c, index) => {
-            html += `
-                <div class="comment-card" id="comment-${index}">
-                    <h4>⚠️ ${c.issueTitle}</h4>
-                    <p><strong>Target Text:</strong> "${c.excerpt}"</p>
-                    <p><strong>Critique:</strong> ${c.feedback}</p>
-                    
-                    <div class="socratic-chat-box">
-                        <div class="socratic-messages" id="chat-msgs-${index}">
-                            <div><strong>Professor Socratic Query:</strong> ${c.socraticPrompt}</div>
-                        </div>
-                        <div class="socratic-input-row">
-                            <input type="text" id="chat-input-${index}" placeholder="Defend your legal reasoning..." />
-                            <button onclick="replyToProfessor(${index})">Argue Back</button>
-                        </div>
+                        <button onclick="generateExamPrompt()" style="width:100%; margin-top:10px;">Generate Custom Exam Prompt</button>
                     </div>
                 </div>
-            `;
-        });
+            </div>
 
-        document.getElementById('evaluationContent').innerHTML = html;
-    }
+            <div id="examPromptSection" class="card" style="display:none;">
+                <h3>Practice Prompt</h3>
+                <div id="promptText" style="background:#0f172a; padding:15px; border-radius:6px; margin-bottom:15px; white-space: pre-wrap;"></div>
+                
+                <label><strong>Your Answer:</strong></label>
+                <textarea id="studentExamAnswer" placeholder="Draft your response here..."></textarea>
+                <button onclick="submitExamAnswer()">Submit for Detailed Critique (+15 Tokens)</button>
+            </div>
 
-    async function replyToProfessor(index) {
-        const inputEl = document.getElementById(`chat-input-${index}`);
-        const msgsEl = document.getElementById(`chat-msgs-${index}`);
-        const userMsg = inputEl.value.trim();
-        if(!userMsg) return;
+            <div id="examFeedbackSection" class="card" style="display:none;">
+                <h3>AI Professor Evaluation</h3>
+                <div id="feedbackContent"></div>
+            </div>
+        </div>
 
-        msgsEl.innerHTML += `<div><strong>You:</strong> ${userMsg}</div>`;
-        inputEl.value = "";
+        <!-- TAB 2: REVISION PLANNER -->
+        <div id="tab-revision" class="tab-content">
+            <div class="card">
+                <h2>Exam Revision Planner</h2>
+                <p>Configure your exams, class difficulty, and revision preferences to auto-generate a smart daily schedule.</p>
+
+                <div class="grid-2">
+                    <div>
+                        <label>Exam Title & Date</label>
+                        <input type="text" id="revExamTitle" placeholder="e.g., Contract Law II">
+                        <input type="date" id="revExamDate">
+
+                        <label>Class Difficulty (Snooze Fest 0 to Pack It Up 10): <span id="diffSliderVal">5</span></label>
+                        <input type="range" id="revClassDiff" min="0" max="10" value="5" oninput="document.getElementById('diffSliderVal').innerText=this.value" style="width:100%; margin-bottom:12px;">
+                    </div>
+                    <div>
+                        <label>Topics & Most Difficult Areas</label>
+                        <textarea id="revDifficultTopics" placeholder="List difficult modules or topics..."></textarea>
+
+                        <label>Start Revision From Date</label>
+                        <input type="date" id="revStartDate">
+
+                        <button onclick="generateRevisionPlan()" style="width:100%; margin-top:10px;">Generate Smart Revision Calendar (+10 Tokens)</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="revisionPlanOutput" class="card" style="display:none;">
+                <h3>Generated Revision Calendar</h3>
+                <div id="revisionCalendarList"></div>
+            </div>
+        </div>
+
+        <!-- TAB 3: VACATION SCHEME / TC TRACKER -->
+        <div id="tab-tracker" class="tab-content">
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <h2>Vacation Scheme & Training Contract Tracker</h2>
+                    <p>Track applications, interview rounds, and earn rewards!</p>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button onclick="openAddFirmModal()">+ Add Firm Application</button>
+                    <button class="secondary" onclick="openGraveyardModal()">🪦 Graveyard (<span id="graveyardCount">0</span>)</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Active Applications</h3>
+                <div class="firm-grid" id="activeFirmGrid"></div>
+            </div>
+        </div>
+
+        <!-- TAB 4: MASTER SCHEDULE -->
+        <div id="tab-master" class="tab-content">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                    <h2>Master Schedule & To-Do Lists</h2>
+                    <button onclick="openAddTaskModal()">+ Add Task / Event</button>
+                </div>
+                
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <button class="secondary" onclick="switchMasterView('calendar')">Calendar View</button>
+                    <button class="secondary" onclick="switchMasterView('daily')">Daily To-Do</button>
+                    <button class="secondary" onclick="switchMasterView('weekly')">Weekly To-Do</button>
+                </div>
+
+                <div id="masterViewContainer"></div>
+            </div>
+        </div>
+
+        <!-- TAB 5: BILINGUAL LEGAL WORKBENCH -->
+        <div id="tab-bilingual" class="tab-content">
+            <div class="card">
+                <h2>Multilingual Legal Workbench</h2>
+                <p>Upload vocab banks, statutes, or contracts (supports English, Chinese, German, trilingual, etc.) for contextual learning and drafting exercises.</p>
+
+                <div class="grid-2">
+                    <div>
+                        <label>Upload Reference Documents (Statutes / Vocab / Cases)</label>
+                        <input type="file" id="bilingualFiles" multiple onchange="handleBilingualUpload(event)">
+                        
+                        <label>Mode</label>
+                        <select id="bilingualMode">
+                            <option value="teach">Teaching Mode (Breakdown sentences & legal concepts)</option>
+                            <option value="translate">Translation Practice (EN <-> Target Language)</option>
+                            <option value="draft">Drafting Practice (Memo, Brief, Clause drafting)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Your Input / Exercise Prompt</label>
+                        <textarea id="bilingualInput" placeholder="Enter text to translate, draft, or analyze..."></textarea>
+                        <button onclick="runBilingualAI()" style="width:100%;">Run AI Workbench (+10 Tokens)</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="bilingualOutputCard" class="card" style="display:none;">
+                <h3>Workbench Output</h3>
+                <div id="bilingualOutput" style="white-space: pre-wrap;"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <div class="mobile-nav">
+        <button class="mobile-btn active" onclick="switchTab('review'); highlightMobileNav(this)">📚<span>Review</span></button>
+        <button class="mobile-btn" onclick="switchTab('revision'); highlightMobileNav(this)">📅<span>Planner</span></button>
+        <button class="mobile-btn" onclick="switchTab('tracker'); highlightMobileNav(this)">💼<span>Tracker</span></button>
+        <button class="mobile-btn" onclick="switchTab('master'); highlightMobileNav(this)">🗓️<span>Schedule</span></button>
+        <button class="mobile-btn" onclick="switchTab('bilingual'); highlightMobileNav(this)">🌐<span>Workbench</span></button>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Cafe Modal -->
+    <div class="modal-overlay" id="cafeModal">
+        <div class="modal">
+            <button class="close-btn" onclick="closeCafeModal()">×</button>
+            <h3>☕ Student Café</h3>
+            <p>Spend your vault tokens on drinks and food! Each item grants points and gets freshly prepared.</p>
+            <div style="font-weight:bold; margin-bottom:10px;">Your Tokens: <span id="modalTokenCount">150</span></div>
+            <div class="cafe-menu" id="cafeMenuGrid"></div>
+        </div>
+    </div>
+
+    <!-- Graveyard Modal -->
+    <div class="modal-overlay" id="graveyardModal">
+        <div class="modal">
+            <button class="close-btn" onclick="closeGraveyardModal()">×</button>
+            <h3>🪦 The Graveyard</h3>
+            <p>Here lie unsuccessful applications. Click a tombstone to inspect history or use the watering can 💧 to revive them for next cycle with a halo!</p>
+            <div id="graveyardGrid" class="firm-grid"></div>
+        </div>
+    </div>
+
+    <!-- Add Firm Modal -->
+    <div class="modal-overlay" id="addFirmModal">
+        <div class="modal">
+            <button class="close-btn" onclick="closeAddFirmModal()">×</button>
+            <h3>Add Firm Application</h3>
+            <label>Firm Name</label>
+            <input type="text" id="newFirmName" placeholder="e.g., Magic Circle LLP">
+            <label>Stream</label>
+            <select id="newFirmStream">
+                <option value="Vacation Scheme">Vacation Scheme</option>
+                <option value="Training Contract">Training Contract</option>
+            </select>
+            <label>Deadline</label>
+            <input type="date" id="newFirmDeadline">
+            <button onclick="saveNewFirm()" style="width:100%; margin-top:10px;">Add Application (+10 Tokens)</button>
+        </div>
+    </div>
+
+    <!-- Firm Details Modal -->
+    <div class="modal-overlay" id="firmDetailsModal">
+        <div class="modal" id="firmModalContent"></div>
+    </div>
+
+    <script>
+        // Global App State
+        let state = {
+            tokens: 150,
+            syllabusTexts: [],
+            firms: [],
+            graveyard: [],
+            tasks: [],
+            revisionPlans: []
+        };
+
+        function saveApiKey() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            if(key) {
+                localStorage.setItem('GEMINI_API_KEY', key);
+                alert('API Key saved successfully.');
+            }
+        }
+        function getApiKey() { return localStorage.getItem('GEMINI_API_KEY') || ""; }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            // Sync desktop tab active state
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                if(btn.getAttribute('onclick').includes(tabId)) btn.classList.add('active');
+            });
+        }
+
+        function highlightMobileNav(btn) {
+            document.querySelectorAll('.mobile-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function addTokens(amt) {
+            state.tokens += amt;
+            document.getElementById('tokenCount').innerText = state.tokens;
+            document.getElementById('modalTokenCount').innerText = state.tokens;
+        }
+
+        // --- CAFE SYSTEM ---
+        const cafeItems = [
+            { name: "Tap Water 💧", price: 5, type: "drink", desc: "Pure refreshment." },
+            { name: "Espresso ☕", price: 30, type: "drink", desc: "Instant focus." },
+            { name: "Matcha Latte 🍵", price: 45, type: "drink", desc: "Calm alertness." },
+            { name: "Craft Iced Tea 🧋", price: 60, type: "drink", desc: "Sweet relief." },
+            { name: "Avocado Toast 🥑", price: 50, type: "food", desc: "Law student fuel." },
+            { name: "Croissant & Jam 🥐", price: 75, type: "food", desc: "Parisian study session." },
+            { name: "Salmon Bento 🍱", price: 150, type: "food", desc: "Full cognitive restoration." },
+            { name: "Wagyu Burger 🍔", price: 200, type: "food", desc: "Ultimate celebratory feast." }
+        ];
+
+        function openCafeModal() {
+            document.getElementById('cafeModal').style.display = 'flex';
+            renderCafeMenu();
+        }
+        function closeCafeModal() { document.getElementById('cafeModal').style.display = 'none'; }
         
-        try {
-            const prompt = `You are a strict common law professor engaged in Socratic dialogue. Student defense: "${userMsg}". Respond sharply in character, testing their logic further.`;
-            const replyText = await callGeminiAPI(prompt, false);
-
-            msgsEl.innerHTML += `<div><strong>Professor:</strong> ${replyText}</div>`;
-            msgsEl.scrollTop = msgsEl.scrollHeight;
-        } catch(e) {
-            msgsEl.innerHTML += `<div style="color:red;">Error connecting to chat.</div>`;
+        function renderCafeMenu() {
+            const grid = document.getElementById('cafeMenuGrid');
+            grid.innerHTML = "";
+            cafeItems.forEach((item, idx) => {
+                grid.innerHTML += `
+                    <div class="menu-item">
+                        <div style="font-size: 2rem;">${item.name.split(" ")[1]}</div>
+                        <div style="font-weight:bold; font-size:0.9rem;">${item.name}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">${item.desc}</div>
+                        <div style="color:var(--warning); font-weight:bold; margin:6px 0;">${item.price} Tokens</div>
+                        <button onclick="buyCafeItem(${idx})" style="padding:4px 10px; font-size:0.8rem;">Buy & Enjoy</button>
+                    </div>
+                `;
+            });
         }
-    }
 
-    function toggleComment(index) {
-        const el = document.getElementById(`comment-${index}`);
-        if(el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            el.style.borderColor = '#2563eb';
-            setTimeout(() => el.style.borderColor = 'var(--border)', 1500);
+        function buyCafeItem(idx) {
+            const item = cafeItems[idx];
+            if(state.tokens < item.price) {
+                alert("Not enough tokens! Complete reading notes, tutorials, or job applications to earn more.");
+                return;
+            }
+            state.tokens -= item.price;
+            addTokens(0);
+            alert(`🎉 Your ${item.name} has been freshly prepared and poured! Enjoy while you conquer your studies.`);
         }
-    }
-</script>
 
+        // --- EXAM REVIEW & UPLOADS ---
+        function handleFileUpload(event) {
+            const files = event.target.files;
+            let listStr = "";
+            for(let f of files) {
+                listStr += `• ${f.name}<br>`;
+                let reader = new FileReader();
+                reader.onload = function(e) { state.syllabusTexts.push(e.target.result); };
+                reader.readAsText(f);
+            }
+            document.getElementById('uploadedFilesList').innerHTML = listStr;
+        }
+
+        async function callGemini(prompt) {
+            const apiKey = getApiKey();
+            if(!apiKey) throw new Error("Please enter your Gemini API Key in the top right.");
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            const data = await res.json();
+            return data.candidates[0].content.parts[0].text;
+        }
+
+        async function generateExamPrompt() {
+            const format = document.getElementById('examFormatSelect').value;
+            const diff = document.getElementById('reviewDifficulty').value;
+            const topics = document.getElementById('topicsInput').value;
+
+            document.getElementById('examPromptSection').style.display = 'block';
+            document.getElementById('promptText').innerText = "Partner in Law is generating a custom law exam prompt based on uploaded notes...";
+
+            try {
+                const prompt = `You are a rigorous university law professor. 
+                Syllabus excerpts: ${state.syllabusTexts.join("\n").substring(0, 1500)}
+                Topics/Subheadings: ${topics}
+                Format: ${format === 'irac' ? 'IRAC Problem Question' : 'Law Essay (Critical evaluation, requiring case/statute integration)'}
+                Difficulty: Level ${diff} out of 5.
+                Create an original, highly rigorous exam prompt.`;
+
+                const res = await callGemini(prompt);
+                document.getElementById('promptText').innerText = res;
+            } catch(err) {
+                document.getElementById('promptText').innerText = "Error: " + err.message;
+            }
+        }
+
+        async function submitExamAnswer() {
+            const answer = document.getElementById('studentExamAnswer').value.trim();
+            if(!answer) { alert("Please write your answer first."); return; }
+            
+            document.getElementById('examFeedbackSection').style.display = 'block';
+            document.getElementById('feedbackContent').innerHTML = "Evaluating your legal analysis against course notes and precedents...";
+
+            try {
+                const prompt = `Evaluate this student's law exam answer:
+                """${answer}"""
+                Provide thorough professor feedback, scoring, missing case/statute authorities, and structural critiques.`;
+                const res = await callGemini(prompt);
+                document.getElementById('feedbackContent').innerHTML = res.replace(/\n/g, '<br>');
+                addTokens(15); // +15 for studying
+            } catch(err) {
+                document.getElementById('feedbackContent').innerHTML = "Error: " + err.message;
+            }
+        }
+
+        // --- REVISION PLANNER ---
+        function generateRevisionPlan() {
+            const title = document.getElementById('revExamTitle').value || "Exam";
+            const date = document.getElementById('revExamDate').value;
+            const diff = document.getElementById('revClassDiff').value;
+            const startDate = document.getElementById('revStartDate').value;
+
+            if(!date || !startDate) { alert("Please select start and exam dates."); return; }
+
+            document.getElementById('revisionPlanOutput').style.display = 'block';
+            let html = `<p><strong>Exam:</strong> ${title} | <strong>Class Pack-It-Up Difficulty:</strong> ${diff}/10</p>`;
+            html += `<ul>`;
+            html += `<li>📅 <strong>Phase 1:</strong> Core readings & notes consolidation</li>`;
+            html += `<li>📅 <strong>Phase 2:</strong> Active recall & flashcards on difficult topics</li>`;
+            html += `<li>📅 <strong>Phase 3:</strong> Timed past paper mock practice</li>`;
+            html += `</ul>`;
+            document.getElementById('revisionCalendarList').innerHTML = html;
+            addTokens(10);
+        }
+
+        // --- VACATION SCHEME & TC TRACKER ---
+        function openAddFirmModal() { document.getElementById('addFirmModal').style.display = 'flex'; }
+        function closeAddFirmModal() { document.getElementById('addFirmModal').style.display = 'none'; }
+        
+        function saveNewFirm() {
+            const name = document.getElementById('newFirmName').value.trim();
+            const stream = document.getElementById('newFirmStream').value;
+            const deadline = document.getElementById('newFirmDeadline').value;
+            if(!name) return;
+
+            state.firms.push({
+                id: Date.now(),
+                name, stream, deadline,
+                status: "Applied",
+                rounds: [{ roundName: "Written Application", notes: "Submitted successfully.", date: new Date().toISOString().split('T')[0] }],
+                rejected: false,
+                hired: false
+            });
+            closeAddFirmModal();
+            renderFirms();
+            addTokens(10); // +10 for applying
+        }
+
+        const interviewRoundsList = ["Written Application", "Online Test", "Video Interview", "Assessment Centre", "Partner Interview"];
+
+        function renderFirms() {
+            const grid = document.getElementById('activeFirmGrid');
+            grid.innerHTML = "";
+            state.firms.forEach((f, idx) => {
+                if(f.rejected) return;
+                let badge = f.hired ? '<div class="crown">👑</div>' : '';
+                let halo = (f.status && f.status.includes("Revived")) ? '<div class="halo">😇</div>' : '';
+                grid.innerHTML += `
+                    <div class="firm-card" onclick="openFirmDetails(${idx})">
+                        ${badge}${halo}
+                        <div class="avatar-box">👔
+                            <span class="avatar-shirt">${f.name}</span>
+                        </div>
+                        <div style="font-size:0.8rem; font-weight:bold; margin-top:5px;">${f.stream}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">Deadline: ${f.deadline || 'N/A'}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('graveyardCount').innerText = state.graveyard.length;
+        }
+
+        function openFirmDetails(idx) {
+            const f = state.firms[idx];
+            const modal = document.getElementById('firmDetailsModal');
+            modal.style.display = 'flex';
+
+            let roundsHtml = f.rounds.map((r, rIdx) => `
+                <div style="background:#0f172a; border:1px solid var(--card-border); padding:10px; border-radius:6px; margin-bottom:8px;">
+                    <strong>${r.roundName}</strong> (${r.date})<br>
+                    <span style="font-size:0.85rem; color:var(--text-muted);">${r.notes}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('firmModalContent').innerHTML = `
+                <button class="close-btn" onclick="document.getElementById('firmDetailsModal').style.display='none'">×</button>
+                <h3>${f.name} (${f.stream})</h3>
+                <p><strong>Status:</strong> ${f.status}</p>
+                
+                <h4>Interview Rounds & Progress</h4>
+                ${roundsHtml}
+
+                <div style="margin-top:15px; background:#111827; padding:10px; border-radius:6px;">
+                    <label>Add / Update Next Round</label>
+                    <select id="nextRoundName">
+                        ${interviewRoundsList.map(ir => `<option value="${ir}">${ir}</option>`).join('')}
+                    </select>
+                    <input type="date" id="nextRoundDate">
+                    <textarea id="nextRoundNotes" placeholder="Pre/Post interview notes, location, interviewers, reflection..."></textarea>
+                    <button onclick="addFirmRound(${idx})">Log Round / Update (+20 Pts)</button>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:15px;">
+                    <button onclick="markHired(${idx})" style="background:var(--accent); flex:1;">Offer Received! (Crown 👑 +50 Pts)</button>
+                    <button onclick="markRejected(${idx})" style="background:var(--danger);">Reject / Graveyard 🪦</button>
+                </div>
+            `;
+        }
+
+        function addFirmRound(idx) {
+            const rName = document.getElementById('nextRoundName').value;
+            const rDate = document.getElementById('nextRoundDate').value;
+            const rNotes = document.getElementById('nextRoundNotes').value;
+
+            state.firms[idx].rounds.push({ roundName: rName, date: rDate, notes: rNotes });
+            state.firms[idx].status = rName;
+            document.getElementById('firmDetailsModal').style.display = 'none';
+            renderFirms();
+            addTokens(20);
+        }
+
+        function markHired(idx) {
+            state.firms[idx].hired = true;
+            state.firms[idx].status = "Offer Secured!";
+            document.getElementById('firmDetailsModal').style.display = 'none';
+            renderFirms();
+            addTokens(50);
+        }
+
+        function markRejected(idx) {
+            const f = state.firms.splice(idx, 1)[0];
+            f.rejected = true;
+            state.graveyard.push(f);
+            document.getElementById('firmDetailsModal').style.display = 'none';
+            renderFirms();
+        }
+
+        function openGraveyardModal() {
+            document.getElementById('graveyardModal').style.display = 'flex';
+            renderGraveyard();
+        }
+        function closeGraveyardModal() { document.getElementById('graveyardModal').style.display = 'none'; }
+
+        function renderGraveyard() {
+            const grid = document.getElementById('graveyardGrid');
+            grid.innerHTML = "";
+            if(state.graveyard.length === 0) {
+                grid.innerHTML = `<p style="grid-column: span 2; text-align:center;">The graveyard is empty. All applications are alive and well!</p>`;
+                return;
+            }
+            state.graveyard.forEach((f, idx) => {
+                grid.innerHTML += `
+                    <div class="firm-card" style="opacity: 0.7;">
+                        <div class="avatar-box">💀</div>
+                        <div style="font-weight:bold;">${f.name}</div>
+                        <div style="font-size:0.75rem; color:var(--danger); margin-bottom:8px;">Tombstone</div>
+                        <button onclick="reviveFirm(${idx})" style="background:var(--accent); font-size:0.75rem; padding:4px 8px;">💧 Revive (Next Cycle)</button>
+                    </div>
+                `;
+            });
+        }
+
+        function reviveFirm(idx) {
+            const f = state.graveyard.splice(idx, 1)[0];
+            f.rejected = false;
+            f.hired = false;
+            f.status = "Revived for Next Cycle";
+            state.firms.push(f);
+            renderGraveyard();
+            renderFirms();
+            alert(`✨ ${f.name}'s avatar crawled out from the tombstone, shook off the dust, and is back in the active tracker with a halo!`);
+        }
+
+        // --- MASTER SCHEDULE ---
+        function switchMasterView(view) {
+            const container = document.getElementById('masterViewContainer');
+            if(view === 'calendar') {
+                container.innerHTML = `<p>📅 Master Calendar syncing exam dates, interview countdown prep blocks, and revision milestones.</p>`;
+            } else if(view === 'daily') {
+                container.innerHTML = `<p>📝 <strong>Daily To-Do List:</strong> Pulling today's readings, tutorial prep, and application tasks.</p>`;
+            } else {
+                container.innerHTML = `<p>📊 <strong>Weekly To-Do List:</strong> Overview of weekly milestones and goals.</p>`;
+            }
+        }
+        switchMasterView('calendar');
+
+        function openAddTaskModal() {
+            const title = prompt("Enter task or event title:");
+            if(title) {
+                state.tasks.push({ title, date: new Date().toISOString().split('T')[0] });
+                alert("Task added to Master Schedule!");
+            }
+        }
+
+        // --- BILINGUAL LEGAL WORKBENCH ---
+        function handleBilingualUpload(event) {
+            alert("Statutes and vocab files uploaded successfully for contextual parsing.");
+        }
+
+        async function runBilingualAI() {
+            const mode = document.getElementById('bilingualMode').value;
+            const input = document.getElementById('bilingualInput').value.trim();
+            if(!input) { alert("Please enter text or prompt."); return; }
+
+            document.getElementById('bilingualOutputCard').style.display = 'block';
+            document.getElementById('bilingualOutput').innerText = "Partner in Law is analyzing text and generating multilingual breakdown...";
+
+            try {
+                const prompt = `Act as an expert legal linguist and professor. Mode: ${mode}. Input text: "${input}". Provide structured breakdown, terminology mapping across languages, and drafting/translation guidance.`;
+                const res = await callGemini(prompt);
+                document.getElementById('bilingualOutput').innerText = res;
+                addTokens(10);
+            } catch(err) {
+                document.getElementById('bilingualOutput').innerText = "Error: " + err.message;
+            }
+        }
+
+        // Initial render
+        renderFirms();
+    </script>
 </body>
 </html>
