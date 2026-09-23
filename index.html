@@ -16,7 +16,6 @@
             --accent: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --app-color: #8b5cf6; /* Distinct color for application-related tasks */
         }
 
         body {
@@ -47,13 +46,14 @@
             border-bottom: 1px solid var(--card-border);
             padding: 10px 24px;
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             align-items: center;
-            gap: 16px;
             font-size: 0.9rem;
             color: var(--text-muted);
+            position: relative;
         }
-        .token-display {
+        .right-bar-actions { display: flex; align-items: center; gap: 15px; }
+        .token-pill {
             background: #fef3c7;
             border: 1px solid #fde68a;
             color: #d97706;
@@ -61,40 +61,28 @@
             border-radius: 20px;
             font-weight: 600;
             font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
-        .token-guide-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        .token-guide-btn {
+        .cafe-btn {
             background: #f1f5f9;
             border: 1px solid var(--card-border);
             color: var(--text-main);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
             cursor: pointer;
-            font-weight: 500;
         }
-        .token-guide-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 32px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-            width: 280px;
-            padding: 12px;
-            z-index: 500;
-            font-size: 0.8rem;
-            line-height: 1.4;
+        .cafe-btn:hover { background: #e2e8f0; }
+
+        /* Hoverable Token Earning Guide */
+        .guide-container { position: relative; display: inline-block; }
+        .guide-trigger { font-weight: 600; cursor: pointer; color: var(--text-muted); font-size: 0.85rem; display: flex; align-items: center; gap: 4px; }
+        .guide-dropdown {
+            display: none; position: absolute; right: 0; top: 100%; margin-top: 6px; background: #ffffff;
+            border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; width: 280px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); z-index: 100; font-size: 0.8rem; line-height: 1.4; color: var(--text-main);
         }
-        .token-guide-dropdown:hover .token-guide-content { display: block; }
+        .guide-container:hover .guide-dropdown { display: block; }
 
         /* Navigation Tabs */
         .nav-tabs {
@@ -191,9 +179,9 @@
         .close-btn { position: absolute; top: 18px; right: 18px; background: #f1f5f9; border: none; color: var(--text-main); width: 30px; height: 30px; border-radius: 50%; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .close-btn:hover { background: #e2e8f0; }
 
-        /* Cafe Menu & Serving Animation */
-        .cafe-menu { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .menu-item { background: #f8fafc; border: 1px solid var(--card-border); padding: 12px; border-radius: 10px; text-align: center; }
+        /* Cafe Serving Animation */
+        .cafe-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .menu-item { background: #f8fafc; border: 1px solid var(--card-border); padding: 14px; border-radius: 10px; text-align: center; }
         
         #servingTray {
             margin-top: 20px; background: #f8fafc; border: 1px dashed var(--card-border); border-radius: 10px;
@@ -206,16 +194,17 @@
         }
         .served-item { font-size: 3rem; animation: pourServe 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-        /* Calendar View Grid (Weekly or Monthly) */
+        /* Calendar View Grid */
+        .calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
         .cal-header { font-weight: 600; font-size: 0.8rem; color: var(--text-muted); padding: 6px; }
-        .cal-day { background: #f8fafc; border: 1px solid var(--card-border); border-radius: 6px; min-height: 85px; padding: 6px; font-size: 0.85rem; text-align: left; position: relative; }
+        .cal-day { background: #f8fafc; border: 1px solid var(--card-border); border-radius: 6px; min-height: 85px; padding: 6px; font-size: 0.85rem; text-align: left; cursor: pointer; position: relative; }
+        .cal-day:hover { border-color: var(--text-main); }
+        .cal-day.today { border-color: var(--primary); background: #ffffff; font-weight: bold; }
         .cal-event-pill { font-size: 0.7rem; padding: 2px 4px; border-radius: 3px; color: #fff; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 
-        /* To-Do List & Countdowns Layout */
-        .todo-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-        @media(max-width: 768px) { .todo-container { grid-template-columns: 1fr; } }
-        .todo-item { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid var(--card-border); padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; }
+        /* To-Do List */
+        .todo-item { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid var(--card-border); padding: 12px 14px; border-radius: 8px; margin-bottom: 8px; }
         .todo-left { display: flex; align-items: center; gap: 10px; flex: 1; }
         .todo-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); margin: 0; }
         .todo-item.completed span { text-decoration: line-through; color: var(--text-muted); }
@@ -248,28 +237,28 @@
 
     <!-- Currency & Cafe Bar -->
     <div class="currency-bar">
-        <div class="token-display">
-            ☕ <span id="tokenCount">0</span> Tokens
-        </div>
-        <div class="token-guide-dropdown">
-            <button class="token-guide-btn">Token Earning Guide ▾</button>
-            <div class="token-guide-content">
-                <strong>How to Earn Tokens:</strong><br>
-                • +1 Token: Daily Log On<br>
-                • +5 Tokens: Reading task completed<br>
-                • +10 Tokens: Tutorial completed<br>
-                • +20 Tokens: Studying / Revision session<br>
-                • +50 Tokens: Application / Interview round completed<br>
-                • +100 Tokens: Successfully landing a VS/TC offer!
+        <div>Partner in Law Workspace</div>
+        <div class="right-bar-actions">
+            <div class="guide-container">
+                <div class="guide-trigger">ℹ️ Token Guide</div>
+                <div class="guide-dropdown">
+                    <strong>Token Earning Guide:</strong><br>
+                    • +1 token for logging on<br>
+                    • +10 tokens for Law School item<br>
+                    • +30 tokens for VS/TC item<br>
+                    • +5 tokens for miscellaneous item<br>
+                    • +100 tokens for getting a VS/TC offer!
+                </div>
             </div>
+            <div class="token-pill">☕ <span id="tokenCount">0</span> Tokens</div>
+            <button class="cafe-btn" onclick="openCafeModal()">Open Café</button>
         </div>
-        <button class="secondary" onclick="openCafeModal()" style="font-size:0.85rem; padding:4px 12px;">Open Cafe</button>
     </div>
 
     <!-- Navigation Tabs -->
     <div class="nav-tabs">
         <button class="nav-tab active" onclick="switchTab('master')">🗓️ Master Schedule</button>
-        <button class="nav-tab" onclick="switchTab('tracker')">💼 Application Tracker</button>
+        <button class="nav-tab" onclick="switchTab('tracker')">💼 Vac Scheme & TC Tracker</button>
         <button class="nav-tab" onclick="switchTab('lawschool')">📚 Law School</button>
     </div>
 
@@ -279,40 +268,30 @@
         <!-- TAB 1: MASTER SCHEDULE -->
         <div id="tab-master" class="tab-content active">
             <div class="card">
-                <h2>Semester Classes Configuration</h2>
-                <div id="classesConfigContainer"></div>
-                <button class="secondary" onclick="addClassConfigRow()" style="margin-top:8px;">+ Add Class</button>
-            </div>
-
-            <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
-                    <h2>Master Schedule & Weekly Calendar</h2>
+                    <h2>Master Schedule & To-Do List</h2>
                     <button onclick="openAddTaskModal(null)">+ Add Task / Event</button>
                 </div>
                 
-                <!-- Weekly Calendar View -->
-                <div id="weeklyCalendarContainer" style="margin-bottom:25px;"></div>
-
-                <h2>To-Do List & Deadlines</h2>
-                <div class="todo-container">
-                    <div id="todoListContainer"></div>
-                    <div>
-                        <h3>⏳ Live Countdowns</h3>
-                        <div id="masterCountdownsContainer"></div>
-                    </div>
+                <div style="display:flex; gap:10px; margin-bottom:20px;">
+                    <button class="secondary" id="calViewBtn" onclick="switchMasterSubView('calendar')">Calendar View</button>
+                    <button class="secondary" id="todoViewBtn" onclick="switchMasterSubView('todo')">To-Do List</button>
                 </div>
+
+                <div id="masterSubContainer"></div>
             </div>
         </div>
 
-        <!-- TAB 2: APPLICATION TRACKER -->
+        <!-- TAB 2: VAC SCHEME & TC TRACKER -->
         <div id="tab-tracker" class="tab-content">
             <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <div>
-                    <h2>Vacation Scheme & Training Contract Tracker</h2>
+                    <h2>Vacation Scheme & TC Tracker</h2>
+                    <p>Track applications across pending and active stages with history logs.</p>
                 </div>
                 <div style="display:flex; gap:10px;">
                     <button onclick="openAddFirmModal()">+ Add Firm Application</button>
-                    <button class="secondary" onclick="openHistoryModal()">📋 Firm History</button>
+                    <button class="secondary" onclick="openGraveyardModal()">🪦 Graveyard (<span id="graveyardCount">0</span>)</button>
                 </div>
             </div>
 
@@ -322,37 +301,27 @@
                     <div id="pendingFirmGrid" class="firm-grid"></div>
                 </div>
                 <div class="card">
-                    <h3>🚀 Active Applications (In Progress / Interviewing)</h3>
+                    <h3>🚀 Active Applications (Applied)</h3>
                     <div id="activeFirmGrid" class="firm-grid"></div>
                 </div>
-            </div>
-
-            <!-- Graveyard under Application Tracker -->
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h3>🪦 The Graveyard</h3>
-                    <button class="secondary" onclick="openReviveModal()">💧 Watering Can (Revive)</button>
-                </div>
-                <p>Unsuccessful applications rest here. Click the watering can to select and revive firms for free!</p>
-                <div id="graveyardGrid" class="firm-grid"></div>
             </div>
         </div>
 
         <!-- TAB 3: LAW SCHOOL -->
-        <div id="tab-school" class="tab-content">
+        <div id="tab-lawschool" class="tab-content">
             <div class="card">
-                <h2>Law School: Exams & Class Hub</h2>
-                <p>Configure your exams with countdowns and view your class tasks organized by subject.</p>
-                
-                <h3>Exams Configuration</h3>
-                <div id="examsListContainer"></div>
-                <button class="secondary" onclick="addExamInputRow()" style="margin-top:5px; margin-bottom:15px;">+ Add Exam</button>
-                <button onclick="saveExamsList()" style="width:100%;">Save Exams & Update Master Schedule</button>
+                <h2>Semester Classes Configuration</h2>
+                <p>Define your classes and assign custom color tags for your schedule and tasks.</p>
+                <div id="classesConfigContainer"></div>
+                <button class="secondary" onclick="addClassConfigRow()" style="margin-top:8px;">+ Add Class</button>
             </div>
 
             <div class="card">
-                <h2>Task Breakdown by Class</h2>
-                <div id="classTaskTablesContainer"></div>
+                <h2>Law School Exam Revision Planner</h2>
+                <p>Configure your upcoming exams to track final countdowns and sync them to your schedule.</p>
+                <div id="examsListContainer"></div>
+                <button class="secondary" onclick="addExamInputRow()" style="margin-top:5px; margin-bottom:15px;">+ Add Exam</button>
+                <button onclick="saveExamsList()" style="width:100%;">Sync Exams to Master Schedule</button>
             </div>
         </div>
 
@@ -372,33 +341,58 @@
         <div class="modal">
             <button class="close-btn" onclick="closeCafeModal()">✕</button>
             <h3>☕ Student Café</h3>
+            <p>Spend your vault tokens on drinks and food rewards.</p>
             <div style="font-weight:600; margin-bottom:10px; font-size:0.9rem;">Your Tokens: <span id="modalTokenCount">0</span></div>
             <div class="cafe-menu" id="cafeMenuGrid"></div>
+            
             <div id="servingTray">
-                <span style="color:var(--text-muted); font-size:0.85rem;">Your ordered item will be prepared and served here!</span>
+                <span style="color:var(--text-muted); font-size:0.85rem;">Your ordered item will be freshly prepared and served here!</span>
             </div>
         </div>
     </div>
 
-    <!-- Add/Edit Task Modal -->
+    <!-- Unified Add/Edit Task Modal -->
     <div class="modal-overlay" id="taskModal">
         <div class="modal">
             <button class="close-btn" onclick="closeTaskModal()">✕</button>
             <h3 id="taskModalTitle">Add Task or Event</h3>
-            <label>Title</label>
-            <input type="text" id="taskTitleInput">
-            <label>Date</label>
-            <input type="date" id="taskDateInput">
-            <label>Class / Category</label>
-            <select id="taskClassSelect"></select>
-            <label>Type</label>
-            <select id="taskTypeSelect">
-                <option value="reading">Reading</option>
-                <option value="tutorial">Tutorial</option>
-                <option value="revision">Revision</option>
-                <option value="exam">Exam</option>
-                <option value="application">Application Deadline / Event</option>
+            
+            <label>Task Category</label>
+            <select id="taskCategorySelect" onchange="onTaskCategoryChange()">
+                <option value="lawschool">Law School</option>
+                <option value="tracker">Vac Scheme / TC Tracker</option>
+                <option value="miscellaneous">Miscellaneous</option>
             </select>
+
+            <div id="taskSubLawSchool">
+                <label>Class</label>
+                <select id="taskClassSelect"></select>
+                <label>Task Type</label>
+                <select id="taskTypeSelect">
+                    <option value="reading">Reading</option>
+                    <option value="tutorial">Tutorial</option>
+                    <option value="review">Review</option>
+                    <option value="exam">Exam</option>
+                </select>
+            </div>
+
+            <div id="taskSubTracker" style="display:none;">
+                <label>Firm</label>
+                <select id="taskFirmSelect"></select>
+                <label>Task Type</label>
+                <select id="taskFirmTypeSelect">
+                    <option value="Application Form">Application Form</option>
+                    <option value="Online Test">Online Test</option>
+                    <option value="Interview Prep">Interview Prep</option>
+                    <option value="Assessment Centre">Assessment Centre</option>
+                </select>
+            </div>
+
+            <label>Title</label>
+            <input type="text" id="taskTitleInput" placeholder="e.g., Contract Law reading">
+            <label>Deadline / Date</label>
+            <input type="date" id="taskDateInput">
+
             <div style="display:flex; gap:10px; margin-top:10px;">
                 <button onclick="saveTaskModal()" style="flex:1;">Save Task</button>
                 <button id="taskDeleteBtn" class="secondary" onclick="deleteCurrentTask()" style="background:#fee2e2; color:#991b1b; display:none;">Delete</button>
@@ -412,15 +406,11 @@
             <button class="close-btn" onclick="closeAddFirmModal()">✕</button>
             <h3>Add Firm Application</h3>
             <label>Firm Name</label>
-            <input type="text" id="newFirmName">
+            <input type="text" id="newFirmName" placeholder="e.g., Magic Circle LLP">
             <label>Stage</label>
             <select id="newFirmStage">
-                <option value="Looking to apply">Looking to apply</option>
-                <option value="Application">Application</option>
-                <option value="Assessment">Assessment</option>
-                <option value="Video interview">Video interview</option>
-                <option value="In-person interview">In-person interview</option>
-                <option value="Manual Add">Manual Add</option>
+                <option value="pending">Looking to Apply</option>
+                <option value="active">Applied</option>
             </select>
             <label>Deadline Date</label>
             <input type="date" id="newFirmDeadline">
@@ -433,27 +423,18 @@
         <div class="modal" id="firmDetailsContent"></div>
     </div>
 
-    <!-- Firm History Modal -->
-    <div class="modal-overlay" id="historyModal">
+    <!-- Graveyard Modal -->
+    <div class="modal-overlay" id="graveyardModal">
         <div class="modal">
-            <button class="close-btn" onclick="closeHistoryModal()">✕</button>
-            <h3>📋 Firm History Archive</h3>
-            <div id="firmHistoryContainer"></div>
-        </div>
-    </div>
-
-    <!-- Revive Modal (Watering Can) -->
-    <div class="modal-overlay" id="reviveModal">
-        <div class="modal">
-            <button class="close-btn" onclick="closeReviveModal()">✕</button>
-            <h3>💧 Watering Can - Revive Firms</h3>
-            <p>Select one or more firms to revive from the graveyard for free:</p>
-            <div id="reviveCheckboxContainer" style="margin: 15px 0;"></div>
-            <button onclick="confirmReviveSelectedFirms()" style="width:100%;">Revive Selected Firms</button>
+            <button class="close-btn" onclick="closeGraveyardModal()">✕</button>
+            <h3>🪦 The Graveyard</h3>
+            <p>Unsuccessful applications lie here. Use the watering can 💧 to revive them with a halo angel badge!</p>
+            <div id="graveyardGrid" class="firm-grid"></div>
         </div>
     </div>
 
     <script>
+        // Global App State
         let state = {
             tokens: 0,
             classes: [
@@ -462,12 +443,16 @@
                 { name: "Land Law", color: "#f59e0b" }
             ],
             tasks: [
-                { id: 1, title: "Offer and Acceptance reading", date: "2026-06-01", className: "Contract Law", type: "reading", completed: false },
-                { id: 2, title: "Contract Law Final Exam", date: "2026-06-20", className: "Contract Law", type: "exam", completed: false }
+                { id: 1, category: "lawschool", title: "Offer and Acceptance reading", date: "2026-06-01", className: "Contract Law", type: "reading", completed: false },
+                { id: 2, category: "lawschool", title: "Contract Law Final Exam", date: "2026-06-20", className: "Contract Law", type: "exam", completed: false }
             ],
             firms: [
-                { id: 1, name: "Clifford Chance", stage: "Looking to apply", deadline: "2026-06-15", history: [{ round: "Looking to apply", date: "2026-05-01", notes: "Initial interest logged." }], revived: false },
-                { id: 2, name: "Linklaters", stage: "Assessment", deadline: "2026-06-10", history: [{ round: "Application", date: "2026-05-05", notes: "Submitted online form." }, { round: "Assessment", date: "2026-05-20", notes: "Completed Watson Glaser." }], revived: false }
+                { 
+                    id: 1, name: "Clifford Chance", stage: "pending", deadline: "2026-06-15", currentStage: "Written Application", inviteDate: "", assessmentDate: "", prepNotes: "", postNotes: "", history: [{ timestamp: "2026-06-01", text: "Added application (Looking to Apply)" }], revived: false 
+                },
+                { 
+                    id: 2, name: "Linklaters", stage: "active", deadline: "2026-06-10", currentStage: "Assessment Centre", inviteDate: "2026-05-01", assessmentDate: "2026-06-08", prepNotes: "Reviewed commercial awareness cases.", postNotes: "Went well, good group interaction.", history: [{ timestamp: "2026-05-01", text: "Moved to Applied. Current Stage: Assessment Centre" }], revived: false 
+                }
             ],
             graveyard: [],
             exams: [
@@ -475,43 +460,22 @@
             ]
         };
 
-        // Daily log-on token award simulation on load
+        // Logon Token Reward (+1)
         window.addEventListener('DOMContentLoaded', () => {
             addTokens(1);
             renderClassesConfig();
-            renderWeeklyCalendar();
-            renderTodoList();
+            switchMasterSubView('calendar');
             renderFirmsTracker();
-            renderGraveyard();
             renderExamsPlanner();
-            renderClassTaskTables();
         });
 
-        function addTokens(amt) {
-            state.tokens += amt;
-            document.getElementById('tokenCount').innerText = state.tokens;
-            document.getElementById('modalTokenCount').innerText = state.tokens;
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            
-            document.querySelectorAll('.nav-tab').forEach(btn => {
-                if(btn.getAttribute('onclick').includes(tabId)) btn.classList.add('active');
-            });
-            if(tabId === 'lawschool') { renderExamsPlanner(); renderClassTaskTables(); }
-        }
-
-        function highlightMobileNav(btn) {
-            document.querySelectorAll('.mobile-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
+        let currentCalendarYear = 2026;
+        let currentCalendarMonth = 5; // June (0-indexed)
 
         // --- CLASSES CONFIG ---
         function renderClassesConfig() {
             const container = document.getElementById('classesConfigContainer');
+            if(!container) return;
             container.innerHTML = '';
             state.classes.forEach((c, idx) => {
                 container.innerHTML += `
@@ -522,39 +486,66 @@
                     </div>
                 `;
             });
-            updateTaskClassDropdown();
+            updateTaskDropdowns();
         }
 
         function addClassConfigRow() {
-            state.classes.push({ name: "", color: "#6366f1" });
+            state.classes.push({ name: "New Class", color: "#6366f1" });
             renderClassesConfig();
         }
 
-        function updateClassName(idx, val) { state.classes[idx].name = val; updateTaskClassDropdown(); }
-        function updateClassColor(idx, val) { state.classes[idx].color = val; renderWeeklyCalendar(); renderTodoList(); }
+        function updateClassName(idx, val) { state.classes[idx].name = val; updateTaskDropdowns(); }
+        function updateClassColor(idx, val) { state.classes[idx].color = val; if(currentSubView === 'calendar') renderCalendar(); }
         function removeClassConfig(idx) { state.classes.splice(idx, 1); renderClassesConfig(); }
 
-        function updateTaskClassDropdown() {
-            const select = document.getElementById('taskClassSelect');
-            if(!select) return;
-            select.innerHTML = '';
-            state.classes.forEach(c => {
-                select.innerHTML += `<option value="${c.name}">${c.name}</option>`;
-            });
-            select.innerHTML += `<option value="Application">Application (General)</option>`;
+        function updateTaskDropdowns() {
+            const classSelect = document.getElementById('taskClassSelect');
+            if(classSelect) {
+                classSelect.innerHTML = '';
+                state.classes.forEach(c => {
+                    classSelect.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+                });
+            }
+            const firmSelect = document.getElementById('taskFirmSelect');
+            if(firmSelect) {
+                firmSelect.innerHTML = '';
+                state.firms.forEach(f => {
+                    firmSelect.innerHTML += `<option value="${f.name}">${f.name}</option>`;
+                });
+            }
         }
 
-        // --- CAFE SYSTEM ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                if(btn.getAttribute('onclick').includes(tabId)) btn.classList.add('active');
+            });
+            if(tabId === 'lawschool') renderExamsPlanner();
+        }
+
+        function highlightMobileNav(btn) {
+            document.querySelectorAll('.mobile-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function addTokens(amt) {
+            state.tokens += amt;
+            document.getElementById('tokenCount').innerText = state.tokens;
+            const modalTokenCount = document.getElementById('modalTokenCount');
+            if(modalTokenCount) modalTokenCount.innerText = state.tokens;
+        }
+
+        // --- CAFE SYSTEM & ANIMATION ---
         const cafeItems = [
             { name: "Tap Water 💧", price: 5, icon: "💧" },
             { name: "Espresso ☕", price: 20, icon: "☕" },
             { name: "Matcha Latte 🍵", price: 30, icon: "🍵" },
             { name: "Avocado Toast 🥑", price: 40, icon: "🥑" },
             { name: "Croissant 🥐", price: 45, icon: "🥐" },
-            { name: "Salmon Bento 🍱", price: 90, icon: "🍱" },
-            { name: "Pancakes 🥞", price: 60, icon: "🥞" },
-            { name: "Smoothie 🍓", price: 50, icon: "🍓" },
-            { name: "Bagel 🥯", price: 35, icon: "🥯" }
+            { name: "Salmon Bento 🍱", price: 90, icon: "🍱" }
         ];
 
         function openCafeModal() {
@@ -581,7 +572,7 @@
         function buyCafeItem(idx) {
             const item = cafeItems[idx];
             if(state.tokens < item.price) {
-                alert("Not enough tokens!");
+                alert("Not enough tokens! Complete study tasks or applications to earn more.");
                 return;
             }
             state.tokens -= item.price;
@@ -589,85 +580,140 @@
             
             const tray = document.getElementById('servingTray');
             tray.innerHTML = `
-                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">Prepared & served:</div>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">Freshly prepared & served:</div>
                 <div class="served-item">${item.icon}</div>
                 <div style="font-weight:600; font-size:0.85rem; margin-top:4px;">Enjoy your ${item.name}!</div>
             `;
         }
 
-        // --- WEEKLY CALENDAR & MASTER SCHEDULE ---
-        function renderWeeklyCalendar() {
-            const container = document.getElementById('weeklyCalendarContainer');
-            const today = new Date();
-            const currentDayOfWeek = today.getDay();
-            const mondayOffset = currentDayOfWeek === 0 ? -6 : 1 - currentDayOfWeek;
-            
-            let monday = new Date(today);
-            monday.setDate(today.getDate() + mondayOffset);
+        // --- MASTER SCHEDULE: CALENDAR & TODO ---
+        let currentSubView = 'calendar';
+        let editingTaskId = null;
 
-            let weekDays = [];
-            for(let i = 0; i < 7; i++) {
-                let d = new Date(monday);
-                d.setDate(monday.getDate() + i);
-                weekDays.push(d);
+        function switchMasterSubView(view) {
+            currentSubView = view;
+            if(view === 'calendar') {
+                document.getElementById('calViewBtn').style.background = 'var(--primary)';
+                document.getElementById('calViewBtn').style.color = '#fff';
+                document.getElementById('todoViewBtn').style.background = '#f1f5f9';
+                document.getElementById('todoViewBtn').style.color = 'var(--text-main)';
+                renderCalendar();
+            } else {
+                document.getElementById('todoViewBtn').style.background = 'var(--primary)';
+                document.getElementById('todoViewBtn').style.color = '#fff';
+                document.getElementById('calViewBtn').style.background = '#f1f5f9';
+                document.getElementById('calViewBtn').style.color = 'var(--text-main)';
+                renderTodoList();
             }
+        }
 
-            let html = `<div class="calendar-grid">`;
+        function renderCalendar() {
+            const container = document.getElementById('masterSubContainer');
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            let html = `
+                <div class="calendar-nav">
+                    <button class="secondary" onclick="changeMonth(-1)">‹ Prev</button>
+                    <h3 style="margin:0;">${monthNames[currentCalendarMonth]} ${currentCalendarYear}</h3>
+                    <button class="secondary" onclick="changeMonth(1)">Next ›</button>
+                </div>
+                <div class="calendar-grid">
+            `;
+
             const headers = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             headers.forEach(h => html += `<div class="cal-header">${h}</div>`);
 
-            weekDays.forEach(d => {
-                let dateKey = d.toISOString().split('T')[0];
+            const firstDayIndex = new Date(currentCalendarYear, currentCalendarMonth, 1).getDay();
+            const adjustedFirstDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+            const totalDays = new Date(currentCalendarYear, currentCalendarMonth + 1, 0).getDate();
+
+            for(let i = 0; i < adjustedFirstDay; i++) {
+                html += `<div class="cal-day" style="opacity:0.3; background:none; cursor:default;"></div>`;
+            }
+
+            for(let i = 1; i <= totalDays; i++) {
+                let monthStr = String(currentCalendarMonth + 1).padStart(2, '0');
+                let dayStr = String(i).padStart(2, '0');
+                let dateKey = `${currentCalendarYear}-${monthStr}-${dayStr}`;
+
                 let dayTasks = state.tasks.filter(t => t.date === dateKey);
                 let eventsHtml = '';
                 dayTasks.forEach(dt => {
-                    let color = varColorForTask(dt.className, dt.type);
+                    let color = '#0f172a';
+                    if(dt.category === 'lawschool') {
+                        let classObj = state.classes.find(c => c.name === dt.className);
+                        if(classObj) color = classObj.color;
+                    } else if(dt.category === 'tracker') {
+                        color = '#8b5cf6';
+                    }
                     eventsHtml += `<span class="cal-event-pill" style="background:${color};" onclick="event.stopPropagation(); openEditTaskModal(${dt.id})">${dt.title}</span>`;
                 });
 
                 html += `
-                    <div class="cal-day" onclick="openAddTaskModal('${dateKey}')">
-                        <div style="font-weight:600; margin-bottom:4px;">${d.getDate()}</div>
+                    <div class="cal-day" onclick="openAddTaskModalForDate('${dateKey}')">
+                        <div style="font-weight:600; margin-bottom:4px;">${i}</div>
                         ${eventsHtml}
                     </div>
                 `;
-            });
+            }
 
             html += `</div>`;
             container.innerHTML = html;
         }
 
-        function varColorForTask(className, type) {
-            if(type === 'application' || className === 'Application') return 'var(--app-color)';
-            let c = state.classes.find(cls => cls.name === className);
-            return c ? c.color : 'var(--primary)';
+        function changeMonth(direction) {
+            currentCalendarMonth += direction;
+            if(currentCalendarMonth > 11) { currentCalendarMonth = 0; currentCalendarYear++; }
+            else if(currentCalendarMonth < 0) { currentCalendarMonth = 11; currentCalendarYear--; }
+            renderCalendar();
         }
 
         function renderTodoList() {
-            const container = document.getElementById('todoListContainer');
-            const countdownContainer = document.getElementById('masterCountdownsContainer');
-            
-            // Sort tasks by deadline date
-            let sortedTasks = [...state.tasks].sort((a, b) => new Date(a.date) - new Date(b.date));
-            
+            const container = document.getElementById('masterSubContainer');
             let html = '';
-            if(sortedTasks.length === 0) {
-                container.innerHTML = `<p>No tasks scheduled.</p>`;
-                countdownContainer.innerHTML = `<p>No deadlines.</p>`;
+            if(state.tasks.length === 0) {
+                container.innerHTML = `<p style="text-align:center;">No tasks scheduled yet.</p>`;
                 return;
             }
 
+            // Sort tasks by deadline/date urgency
+            let sortedTasks = [...state.tasks].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const todayStr = new Date().toISOString().split('T')[0];
+
             sortedTasks.forEach((t) => {
-                let color = varColorForTask(t.className, t.type);
+                let color = '#0f172a';
+                if(t.category === 'lawschool') {
+                    let classObj = state.classes.find(c => c.name === t.className);
+                    if(classObj) color = classObj.color;
+                } else if(t.category === 'tracker') {
+                    color = '#8b5cf6';
+                }
+
+                // Compute deadline countdown
+                const tDate = new Date(t.date);
+                const nowDate = new Date(todayStr);
+                const diffTime = tDate - nowDate;
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                
+                let countdownText = '';
+                if(diffDays === 0) {
+                    countdownText = `<span style="color:var(--danger); font-weight:700;">DUE TODAY</span>`;
+                } else if(diffDays > 0) {
+                    countdownText = `<span style="color:var(--warning); font-weight:600;">${diffDays}d left</span>`;
+                } else {
+                    countdownText = `<span style="color:var(--text-muted);">Overdue</span>`;
+                }
+
                 html += `
                     <div class="todo-item ${t.completed ? 'completed' : ''}">
                         <div class="todo-left">
                             <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})">
                             <div>
                                 <span style="font-size:0.9rem; font-weight:500;">${t.title}</span>
-                                <div style="font-size:0.75rem; color:var(--text-muted);">
-                                    <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${color}; margin-right:4px;"></span>
-                                    ${t.className} • ${t.type} • ${t.date}
+                                <div style="font-size:0.75rem; color:var(--text-muted); display:flex; align-items:center; gap:6px; margin-top:2px;">
+                                    <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${color};"></span>
+                                    <span>${t.category === 'lawschool' ? t.className + ' • ' + t.type : (t.category === 'tracker' ? 'Tracker • ' + t.firmName : 'Miscellaneous')}</span>
+                                    <span>• ${countdownText}</span>
                                 </div>
                             </div>
                         </div>
@@ -679,21 +725,6 @@
                 `;
             });
             container.innerHTML = html;
-
-            // Render live countdowns on side
-            let cHtml = '';
-            const today = new Date();
-            sortedTasks.forEach(t => {
-                let tDate = new Date(t.date);
-                let diffDays = Math.ceil((tDate - today) / (1000 * 60 * 60 * 24));
-                cHtml += `
-                    <div style="background:#f8fafc; border:1px solid var(--card-border); padding:10px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.85rem; font-weight:500;">${t.title}</span>
-                        <span style="font-size:0.8rem; font-weight:bold; color:${diffDays<=3?'var(--danger)':'var(--primary)'}">${diffDays>=0?diffDays+'d left':'Passed'}</span>
-                    </div>
-                `;
-            });
-            countdownContainer.innerHTML = cHtml;
         }
 
         function toggleTask(id) {
@@ -701,101 +732,129 @@
             if(t) {
                 t.completed = !t.completed;
                 if(t.completed) {
-                    if(t.type === 'reading') addTokens(5);
-                    else if(t.type === 'tutorial') addTokens(10);
-                    else if(t.type === 'revision') addTokens(20);
+                    if(t.category === 'lawschool') addTokens(10);
+                    else if(t.category === 'tracker') addTokens(30);
                     else addTokens(5);
                 }
-                renderTodoList();
-                renderWeeklyCalendar();
+                if(currentSubView === 'todo') renderTodoList();
             }
         }
 
-        let editingTaskId = null;
         function openAddTaskModal(dateStr) {
             editingTaskId = null;
             document.getElementById('taskModalTitle').innerText = "Add Task or Event";
             document.getElementById('taskTitleInput').value = "";
             document.getElementById('taskDateInput').value = dateStr || new Date().toISOString().split('T')[0];
+            document.getElementById('taskCategorySelect').value = "lawschool";
             document.getElementById('taskDeleteBtn').style.display = 'none';
-            updateTaskClassDropdown();
+            onTaskCategoryChange();
+            updateTaskDropdowns();
             document.getElementById('taskModal').style.display = 'flex';
         }
+
+        function openAddTaskModalForDate(dateStr) { openAddTaskModal(dateStr); }
 
         function openEditTaskModal(id) {
             editingTaskId = id;
             const t = state.tasks.find(task => task.id === id);
             if(!t) return;
             document.getElementById('taskModalTitle').innerText = "Edit Task or Event";
+            document.getElementById('taskCategorySelect').value = t.category || 'lawschool';
+            onTaskCategoryChange();
+            updateTaskDropdowns();
+
             document.getElementById('taskTitleInput').value = t.title;
             document.getElementById('taskDateInput').value = t.date;
-            updateTaskClassDropdown();
-            document.getElementById('taskClassSelect').value = t.className;
-            document.getElementById('taskTypeSelect').value = t.type;
+            if(t.category === 'lawschool') {
+                document.getElementById('taskClassSelect').value = t.className;
+                document.getElementById('taskTypeSelect').value = t.type;
+            } else if(t.category === 'tracker') {
+                document.getElementById('taskFirmSelect').value = t.firmName;
+                document.getElementById('taskFirmTypeSelect').value = t.type;
+            }
+
             document.getElementById('taskDeleteBtn').style.display = 'block';
             document.getElementById('taskModal').style.display = 'flex';
         }
 
         function closeTaskModal() { document.getElementById('taskModal').style.display = 'none'; }
 
+        function onTaskCategoryChange() {
+            const cat = document.getElementById('taskCategorySelect').value;
+            document.getElementById('taskSubLawSchool').style.display = (cat === 'lawschool') ? 'block' : 'none';
+            document.getElementById('taskSubTracker').style.display = (cat === 'tracker') ? 'block' : 'none';
+        }
+
         function saveTaskModal() {
+            const category = document.getElementById('taskCategorySelect').value;
             const title = document.getElementById('taskTitleInput').value.trim();
             const date = document.getElementById('taskDateInput').value;
-            const className = document.getElementById('taskClassSelect').value;
-            const type = document.getElementById('taskTypeSelect').value;
             if(!title) { alert("Please enter a title."); return; }
+
+            let className = "", type = "", firmName = "";
+            if(category === 'lawschool') {
+                className = document.getElementById('taskClassSelect').value;
+                type = document.getElementById('taskTypeSelect').value;
+            } else if(category === 'tracker') {
+                firmName = document.getElementById('taskFirmSelect').value;
+                type = document.getElementById('taskFirmTypeSelect').value;
+            }
 
             if(editingTaskId) {
                 const t = state.tasks.find(task => task.id === editingTaskId);
-                if(t) { t.title = title; t.date = date; t.className = className; t.type = type; }
+                if(t) {
+                    t.category = category; t.title = title; t.date = date;
+                    t.className = className; t.type = type; t.firmName = firmName;
+                }
             } else {
-                state.tasks.push({ id: Date.now(), title, date: date || '2026-06-01', className, type, completed: false });
+                state.tasks.push({
+                    id: Date.now(), category, title, date: date || '2026-06-01',
+                    className, type, firmName, completed: false
+                });
+                if(category === 'lawschool') addTokens(10);
+                else if(category === 'tracker') addTokens(30);
+                else addTokens(5);
             }
             closeTaskModal();
-            renderWeeklyCalendar();
-            renderTodoList();
-            renderClassTaskTables();
+            if(currentSubView === 'calendar') renderCalendar();
+            else renderTodoList();
         }
 
         function deleteTask(id) {
             state.tasks = state.tasks.filter(t => t.id !== id);
-            renderWeeklyCalendar();
-            renderTodoList();
-            renderClassTaskTables();
+            if(currentSubView === 'calendar') renderCalendar();
+            else renderTodoList();
         }
 
         function deleteCurrentTask() {
-            if(editingTaskId) { deleteTask(editingTaskId); closeTaskModal(); }
+            if(editingTaskId) {
+                deleteTask(editingTaskId);
+                closeTaskModal();
+            }
         }
 
-        // --- APPLICATION TRACKER & HISTORY ---
-        function openAddFirmModal() {
-            document.getElementById('newFirmName').value = "";
-            document.getElementById('newFirmDeadline').value = "";
-            document.getElementById('addFirmModal').style.display = 'flex';
-        }
+        // --- VACATION SCHEME & TC TRACKER ---
+        function openAddFirmModal() { document.getElementById('addFirmModal').style.display = 'flex'; }
         function closeAddFirmModal() { document.getElementById('addFirmModal').style.display = 'none'; }
 
         function saveNewFirm() {
             const name = document.getElementById('newFirmName').value.trim();
             const stage = document.getElementById('newFirmStage').value;
             const deadline = document.getElementById('newFirmDeadline').value;
-            if(!name) { alert("Please enter firm name."); return; }
+            if(!name) return;
 
-            // Duplicate detection popup
-            let duplicate = state.firms.find(f => f.name.toLowerCase() === name.toLowerCase());
-            if(duplicate) {
-                if(!confirm(`Warning: A firm named "${duplicate.name}" already exists. Click OK to add duplicate or Cancel to go back.`)) {
-                    return;
-                }
-            }
-
+            const todayStr = new Date().toISOString().split('T')[0];
             state.firms.push({
                 id: Date.now(),
                 name,
                 stage,
                 deadline: deadline || '2026-06-15',
-                history: [{ round: stage, date: new Date().toISOString().split('T')[0], notes: "Initial stage logged." }],
+                currentStage: "Written Application",
+                inviteDate: "",
+                assessmentDate: "",
+                prepNotes: "",
+                postNotes: "",
+                history: [{ timestamp: todayStr, text: `Added application (${stage === 'pending' ? 'Looking to Apply' : 'Applied'})` }],
                 revived: false
             });
             closeAddFirmModal();
@@ -805,22 +864,40 @@
         function renderFirmsTracker() {
             const pendingGrid = document.getElementById('pendingFirmGrid');
             const activeGrid = document.getElementById('activeFirmGrid');
+            if(!pendingGrid || !activeGrid) return;
+
             pendingGrid.innerHTML = '';
             activeGrid.innerHTML = '';
 
-            state.firms.forEach(f => {
+            // Sort pending applications by deadline
+            let pendingFirms = state.firms.filter(f => f.stage === 'pending').sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+            let activeFirms = state.firms.filter(f => f.stage === 'active');
+
+            pendingFirms.forEach(f => {
                 let halo = f.revived ? '<div class="halo">😇</div>' : '';
-                let html = `
+                pendingGrid.innerHTML += `
                     <div class="firm-card" onclick="openFirmDetails(${f.id})">
                         ${halo}
                         <div style="font-weight:600; font-size:0.95rem; margin-bottom:4px;">${f.name}</div>
-                        <div style="font-size:0.8rem; color:var(--text-muted);">Stage: ${f.stage}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">Looking to Apply</div>
                         <div style="font-size:0.75rem; color:var(--warning); margin-top:6px;">Deadline: ${f.deadline}</div>
                     </div>
                 `;
-                if(f.stage === 'Looking to apply') pendingGrid.innerHTML += html;
-                else activeGrid.innerHTML += html;
             });
+
+            activeFirms.forEach(f => {
+                let halo = f.revived ? '<div class="halo">😇</div>' : '';
+                activeGrid.innerHTML += `
+                    <div class="firm-card" onclick="openFirmDetails(${f.id})">
+                        ${halo}
+                        <div style="font-weight:600; font-size:0.95rem; margin-bottom:4px;">${f.name}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">Stage: ${f.currentStage}</div>
+                        <div style="font-size:0.75rem; color:var(--warning); margin-top:6px;">Deadline: ${f.deadline}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('graveyardCount').innerText = state.graveyard.length;
         }
 
         function openFirmDetails(id) {
@@ -829,102 +906,116 @@
             const modal = document.getElementById('firmDetailsModal');
             modal.style.display = 'flex';
 
+            let historyHtml = '';
+            f.history.forEach(h => {
+                historyHtml += `<li style="margin-bottom:4px; font-size:0.8rem;">[${h.timestamp}] ${h.text}</li>`;
+            });
+
             document.getElementById('firmDetailsContent').innerHTML = `
                 <button class="close-btn" onclick="document.getElementById('firmDetailsModal').style.display='none'">✕</button>
-                <h3>Edit Firm: ${f.name}</h3>
+                <h3>${f.name} Application</h3>
                 
-                <label>Firm Name</label>
-                <input type="text" id="editFirmNameVal" value="${f.name}">
-
                 <label>Stage</label>
-                <select id="editFirmStageVal">
-                    <option value="Looking to apply" ${f.stage==='Looking to apply'?'selected':''}>Looking to apply</option>
-                    <option value="Application" ${f.stage==='Application'?'selected':''}>Application</option>
-                    <option value="Assessment" ${f.stage==='Assessment'?'selected':''}>Assessment</option>
-                    <option value="Video interview" ${f.stage==='Video interview'?'selected':''}>Video interview</option>
-                    <option value="In-person interview" ${f.stage==='In-person interview'?'selected':''}>In-person interview</option>
-                    <option value="Manual Add" ${f.stage==='Manual Add'?'selected':''}>Manual Add</option>
+                <select id="editFirmStage" onchange="toggleActiveFields()">
+                    <option value="pending" ${f.stage==='pending'?'selected':''}>Looking to Apply</option>
+                    <option value="active" ${f.stage==='active'?'selected':''}>Applied</option>
                 </select>
 
+                <div id="activeSpecificFields" style="display:${f.stage==='active'?'block':'none'};">
+                    <label>Current Round / Stage</label>
+                    <select id="editFirmRound">
+                        <option value="Written Application" ${f.currentStage==='Written Application'?'selected':''}>Written Application</option>
+                        <option value="Online Test" ${f.currentStage==='Online Test'?'selected':''}>Online Test</option>
+                        <option value="Video Interview" ${f.currentStage==='Video Interview'?'selected':''}>Video Interview</option>
+                        <option value="Assessment Centre" ${f.currentStage==='Assessment Centre'?'selected':''}>Assessment Centre</option>
+                        <option value="Partner Interview" ${f.currentStage==='Partner Interview'?'selected':''}>Partner Interview</option>
+                        <option value="VS/TC Offer Received" ${f.currentStage==='VS/TC Offer Received'?'selected':''}>VS/TC Offer Received 🌟</option>
+                    </select>
+
+                    <label>Invitation Date</label>
+                    <input type="date" id="editFirmInviteDate" value="${f.inviteDate}">
+
+                    <label>Interview / Assessment Date</label>
+                    <input type="date" id="editFirmAssessmentDate" value="${f.assessmentDate}">
+
+                    <label>Preparatory Notes (Research, Key Cases, Firm Values)</label>
+                    <textarea id="editFirmPrepNotes">${f.prepNotes}</textarea>
+
+                    <label>Post-Interview Reflection (How it went, what to improve)</label>
+                    <textarea id="editFirmPostNotes">${f.postNotes}</textarea>
+                </div>
+
                 <label>Deadline Date</label>
-                <input type="date" id="editFirmDeadlineVal" value="${f.deadline}">
+                <input type="date" id="editFirmDeadline" value="${f.deadline}">
 
-                <label>Round / Stage Notes</label>
-                <textarea id="editFirmNotesVal" placeholder="Add notes for this round..."></textarea>
+                <div style="margin-top:15px; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--card-border);">
+                    <div style="font-weight:600; font-size:0.85rem; margin-bottom:6px;">Application History Log</div>
+                    <ul style="padding-left:15px; margin:0; color:var(--text-muted);">${historyHtml}</ul>
+                </div>
 
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <button onclick="saveFirmUpdates(${f.id})" style="flex:1;">Save Updates</button>
-                    <button onclick="rejectFirmToGraveyard(${f.id})" class="secondary" style="background:#fee2e2; color:#991b1b;">Reject / Graveyard 🪦</button>
+                <div style="display:flex; gap:10px; margin-top:15px;">
+                    <button onclick="saveFirmDetails(${f.id})" style="flex:1;">Save Updates</button>
+                    <button onclick="rejectFirm(${f.id})" class="secondary" style="background:#fee2e2; color:#991b1b;">Reject / Graveyard 🪦</button>
                 </div>
             `;
         }
 
-        function saveFirmUpdates(id) {
+        function toggleActiveFields() {
+            const stage = document.getElementById('editFirmStage').value;
+            document.getElementById('activeSpecificFields').style.display = (stage === 'active') ? 'block' : 'none';
+        }
+
+        function saveFirmDetails(id) {
             const f = state.firms.find(firm => firm.id === id);
             if(!f) return;
+            const newStage = document.getElementById('editFirmStage').value;
+            const newDeadline = document.getElementById('editFirmDeadline').value;
+            const todayStr = new Date().toISOString().split('T')[0];
 
-            const newName = document.getElementById('editFirmNameVal').value.trim();
-            const newStage = document.getElementById('editFirmStageVal').value;
-            const newDeadline = document.getElementById('editFirmDeadlineVal').value;
-            const newNotes = document.getElementById('editFirmNotesVal').value.trim();
+            if(newStage !== f.stage) {
+                f.stage = newStage;
+                f.history.push({ timestamp: todayStr, text: `Moved stage to ${newStage === 'active' ? 'Applied' : 'Looking to Apply'}` });
+            }
 
-            if(newName !== f.name) {
-                if(!confirm(`Warning: Changing firm name from "${f.name}" to "${newName}" will permanently clear or reset its legacy history data. Proceed?`)) {
-                    return;
+            if(newStage === 'active') {
+                const newRound = document.getElementById('editFirmRound').value;
+                if(newRound !== f.currentStage) {
+                    f.currentStage = newRound;
+                    f.history.push({ timestamp: todayStr, text: `Advanced round to: ${newRound}` });
+                    if(newRound === 'VS/TC Offer Received') {
+                        addTokens(100);
+                        alert("🌟 Congratulations! You received +100 tokens for securing a VS/TC offer!");
+                    }
                 }
-                f.name = newName;
-                f.history = []; // Reset history on major name change as requested
+                f.inviteDate = document.getElementById('editFirmInviteDate').value;
+                f.assessmentDate = document.getElementById('editFirmAssessmentDate').value;
+                f.prepNotes = document.getElementById('editFirmPrepNotes').value;
+                f.postNotes = document.getElementById('editFirmPostNotes').value;
             }
 
-            f.stage = newStage;
             f.deadline = newDeadline;
-            if(newNotes) {
-                f.history.push({ round: newStage, date: new Date().toISOString().split('T')[0], notes: newNotes });
-            }
-
             document.getElementById('firmDetailsModal').style.display = 'none';
             renderFirmsTracker();
         }
 
-        function rejectFirmToGraveyard(id) {
+        function rejectFirm(id) {
             const idx = state.firms.findIndex(firm => firm.id === id);
             if(idx > -1) {
                 const f = state.firms.splice(idx, 1)[0];
+                const todayStr = new Date().toISOString().split('T')[0];
+                f.history.push({ timestamp: todayStr, text: "Application rejected / sent to Graveyard" });
                 state.graveyard.push(f);
                 document.getElementById('firmDetailsModal').style.display = 'none';
                 renderFirmsTracker();
-                renderGraveyard();
             }
         }
 
-        function openHistoryModal() {
-            document.getElementById('historyModal').style.display = 'flex';
-            const container = document.getElementById('firmHistoryContainer');
-            let html = '';
-            let allFirms = [...state.firms, ...state.graveyard];
-            if(allFirms.length === 0) {
-                container.innerHTML = `<p>No firm history available.</p>`;
-                return;
-            }
-            allFirms.forEach(f => {
-                html += `<div style="background:#f8fafc; border:1px solid var(--card-border); padding:14px; border-radius:8px; margin-bottom:10px;">
-                    <div style="font-weight:600; font-size:1rem;">${f.name} <span style="font-weight:normal; font-size:0.8rem; color:var(--text-muted);">(${f.stage})</span></div>`;
-                if(f.history && f.history.length > 0) {
-                    f.history.forEach(h => {
-                        html += `<div style="font-size:0.8rem; margin-top:4px; border-left:2px solid var(--primary); padding-left:8px;">
-                            <strong>${h.round}</strong> (${h.date}): ${h.notes}
-                        </div>`;
-                    });
-                } else {
-                    html += `<div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">No history logs yet.</div>`;
-                }
-                html += `</div>`;
-            });
-            container.innerHTML = html;
+        function openGraveyardModal() {
+            document.getElementById('graveyardModal').style.display = 'flex';
+            renderGraveyard();
         }
-        function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
+        function closeGraveyardModal() { document.getElementById('graveyardModal').style.display = 'none'; }
 
-        // --- GRAVEYARD & WATERING CAN REVIVE ---
         function renderGraveyard() {
             const grid = document.getElementById('graveyardGrid');
             grid.innerHTML = "";
@@ -932,56 +1023,37 @@
                 grid.innerHTML = `<p style="grid-column: span 2; text-align:center;">The graveyard is empty.</p>`;
                 return;
             }
-            state.graveyard.forEach((f) => {
+            state.graveyard.forEach((f, idx) => {
+                let historyHtml = '';
+                f.history.forEach(h => { historyHtml += `<div style="font-size:0.7rem; color:var(--text-muted);">[${h.timestamp}] ${h.text}</div>`; });
+
                 grid.innerHTML += `
-                    <div class="firm-card" style="opacity:0.7;">
+                    <div class="firm-card" style="opacity:0.8;">
                         <div style="font-weight:600;">${f.name}</div>
-                        <div style="font-size:0.75rem; color:var(--danger); margin-bottom:8px;">Unsuccessful</div>
+                        <div style="font-size:0.75rem; color:var(--danger); margin-bottom:6px;">Tombstone</div>
+                        <div style="margin-bottom:8px; max-height:60px; overflow-y:auto; background:#ffffff; padding:4px; border-radius:4px;">${historyHtml}</div>
+                        <button onclick="reviveFirm(${idx})" style="background:var(--accent); font-size:0.75rem; padding:4px 8px; width:100%;">💧 Revive</button>
                     </div>
                 `;
             });
         }
 
-        function openReviveModal() {
-            if(state.graveyard.length === 0) {
-                alert("The graveyard is empty! No firms to revive.");
-                return;
-            }
-            const container = document.getElementById('reviveCheckboxContainer');
-            container.innerHTML = '';
-            state.graveyard.forEach((f, idx) => {
-                container.innerHTML += `
-                    <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:normal; font-size:0.9rem; cursor:pointer;">
-                        <input type="checkbox" value="${idx}" class="revive-checkbox" style="width:16px; height:16px; accent-color:var(--accent);">
-                        ${f.name}
-                    </label>
-                `;
-            });
-            document.getElementById('reviveModal').style.display = 'flex';
-        }
-        function closeReviveModal() { document.getElementById('reviveModal').style.display = 'none'; }
-
-        function confirmReviveSelectedFirms() {
-            const checkboxes = document.querySelectorAll('.revive-checkbox:checked');
-            if(checkboxes.length === 0) { alert("Please select at least one firm to revive."); return; }
-
-            let indicesToRevive = Array.from(checkboxes).map(cb => parseInt(cb.value)).sort((a,b) => b-a);
-            indicesToRevive.forEach(idx => {
-                let f = state.graveyard.splice(idx, 1)[0];
-                f.revived = true;
-                f.stage = "Looking to apply";
-                state.firms.push(f);
-            });
-
-            closeReviveModal();
-            renderFirmsTracker();
+        function reviveFirm(idx) {
+            const f = state.graveyard.splice(idx, 1)[0];
+            f.revived = true;
+            f.stage = "pending";
+            const todayStr = new Date().toISOString().split('T')[0];
+            f.history.push({ timestamp: todayStr, text: "🌱 Revived from Graveyard (Revival Cycle)" });
+            state.firms.push(f);
             renderGraveyard();
-            alert("✨ Selected firms successfully revived with halo badges for free!");
+            renderFirmsTracker();
+            alert(`✨ ${f.name} revived with a halo angel badge! History preserved.`);
         }
 
-        // --- LAW SCHOOL TAB ---
+        // --- LAW SCHOOL EXAM REVISION PLANNER ---
         function renderExamsPlanner() {
             const container = document.getElementById('examsListContainer');
+            if(!container) return;
             container.innerHTML = '';
             state.exams.forEach((ex, idx) => {
                 container.innerHTML += `
@@ -995,7 +1067,7 @@
         }
 
         function addExamInputRow() {
-            state.exams.push({ title: "", date: "2026-06-25" });
+            state.exams.push({ title: "New Exam", date: "2026-06-25" });
             renderExamsPlanner();
         }
 
@@ -1007,50 +1079,16 @@
             state.exams.forEach(ex => {
                 let exists = state.tasks.find(t => t.title === ex.title && t.type === 'exam');
                 if(!exists) {
-                    state.tasks.push({ id: Date.now() + Math.random(), title: ex.title, date: ex.date, className: state.classes[0]?.name || 'General', type: 'exam', completed: false });
+                    state.tasks.push({
+                        id: Date.now() + Math.random(), category: 'lawschool',
+                        title: ex.title, date: ex.date, className: state.classes[0]?.name || 'General',
+                        type: 'exam', completed: false
+                    });
                 } else {
                     exists.date = ex.date;
                 }
             });
-            renderWeeklyCalendar();
-            renderTodoList();
-            renderClassTaskTables();
-            alert("Exams saved and marked on Master Schedule with stars ★!");
-        }
-
-        function renderClassTaskTables() {
-            const container = document.getElementById('classTaskTablesContainer');
-            container.innerHTML = '';
-
-            state.classes.forEach(c => {
-                let classTasks = state.tasks.filter(t => t.className === c.name);
-                let examMatches = state.exams.filter(e => e.title.toLowerCase().includes(c.name.toLowerCase()));
-                
-                let examsHtml = '';
-                examMatches.forEach(em => {
-                    examsHtml += `<div style="font-weight:600; color:var(--danger); font-size:0.85rem; margin-bottom:6px;">★ Final Exam: ${em.title} (${em.date})</div>`;
-                });
-
-                let tasksHtml = '';
-                if(classTasks.length === 0) {
-                    tasksHtml = `<p style="font-size:0.85rem; color:var(--text-muted);">No tasks for this class.</p>`;
-                } else {
-                    classTasks.forEach(t => {
-                        tasksHtml += `<div style="font-size:0.85rem; padding:6px 0; border-bottom:1px solid var(--card-border); display:flex; justify-content:space-between;">
-                            <span>${t.title} (${t.type})</span>
-                            <span style="color:var(--text-muted);">${t.date}</span>
-                        </div>`;
-                    });
-                }
-
-                container.innerHTML += `
-                    <div style="background:#f8fafc; border:1px solid var(--card-border); padding:16px; border-radius:8px; margin-bottom:15px;">
-                        <h3 style="color:${c.color}; margin-bottom:8px;">${c.name}</h3>
-                        ${examsHtml}
-                        <div style="margin-top:10px;">${tasksHtml}</div>
-                    </div>
-                `;
-            });
+            alert("Exams successfully synced to your Master Schedule and To-Do List!");
         }
     </script>
 </body>
