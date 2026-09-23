@@ -1,2 +1,1 @@
-# contractlaw
-Contract law exam prep
+To help you get through law school
