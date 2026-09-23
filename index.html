@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partner in Law - Ultimate Law Student Super-App</title>
+    <title>Partner in Law</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --card-border: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #0f172a;
+            --primary-hover: #1e293b;
             --accent: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
@@ -33,51 +33,54 @@
         .top-bar {
             background: var(--card-bg);
             border-bottom: 1px solid var(--card-border);
-            padding: 12px 20px;
+            padding: 14px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .app-title { font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .app-title { font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 8px; letter-spacing: -0.025em; }
         .config-box { display: flex; gap: 8px; align-items: center; }
         .config-box input {
-            background: #0f172a;
+            background: #f1f5f9;
             border: 1px solid var(--card-border);
-            color: #fff;
-            padding: 6px 10px;
+            color: var(--text-main);
+            padding: 6px 12px;
             border-radius: 6px;
             font-size: 0.85rem;
         }
 
-        /* Token & Cafe Bar */
+        /* Currency & Cafe Bar */
         .currency-bar {
-            background: #111827;
+            background: #ffffff;
             border-bottom: 1px solid var(--card-border);
-            padding: 8px 20px;
+            padding: 10px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 0.9rem;
+            color: var(--text-muted);
         }
         .token-pill {
-            background: #f59e0b22;
-            border: 1px solid var(--warning);
-            color: var(--warning);
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            color: #d97706;
             padding: 4px 12px;
             border-radius: 20px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
+            font-size: 0.85rem;
         }
 
-        /* Navigation Tabs */
+        /* Navigation Tabs (Master Schedule Default) */
         .nav-tabs {
             display: flex;
             background: var(--card-bg);
             border-bottom: 1px solid var(--card-border);
             overflow-x: auto;
+            padding: 0 20px;
         }
         .nav-tab {
-            padding: 12px 20px;
+            padding: 14px 20px;
             cursor: pointer;
             border: none;
             background: none;
@@ -85,18 +88,17 @@
             font-weight: 600;
             font-size: 0.9rem;
             white-space: nowrap;
-            border-bottom: 3px solid transparent;
+            border-bottom: 2px solid transparent;
         }
         .nav-tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background: rgba(59, 130, 246, 0.05);
+            color: var(--text-main);
+            border-bottom-color: var(--text-main);
         }
 
         /* Main Container */
         .main-container {
             flex: 1;
-            padding: 20px;
+            padding: 24px;
             max-width: 1200px;
             width: 100%;
             margin: 0 auto;
@@ -112,12 +114,13 @@
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 12px;
-            padding: 20px;
+            padding: 24px;
             margin-bottom: 20px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
         }
-        h2 { margin-top: 0; font-size: 1.5rem; color: #fff; }
-        h3 { margin-top: 0; font-size: 1.2rem; color: #f1f5f9; }
-        p { color: var(--text-muted); line-height: 1.5; }
+        h2 { margin-top: 0; font-size: 1.35rem; color: var(--text-main); font-weight: 700; letter-spacing: -0.025em; }
+        h3 { margin-top: 0; font-size: 1.1rem; color: var(--text-main); font-weight: 600; }
+        p { color: var(--text-muted); line-height: 1.5; font-size: 0.95rem; }
 
         button {
             background: var(--primary);
@@ -127,62 +130,84 @@
             border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         button:hover { background: var(--primary-hover); }
-        button.secondary { background: #334155; color: #fff; }
-        button.secondary:hover { background: #475569; }
+        button.secondary { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--card-border); }
+        button.secondary:hover { background: #e2e8f0; }
 
         input[type="text"], input[type="date"], input[type="number"], select, textarea {
             width: 100%;
-            background: #0f172a;
+            background: #ffffff;
             border: 1px solid var(--card-border);
-            color: #fff;
+            color: var(--text-main);
             padding: 10px;
             border-radius: 6px;
             box-sizing: border-box;
             margin-bottom: 12px;
             font-family: inherit;
+            font-size: 0.9rem;
         }
-        textarea { height: 120px; resize: vertical; }
+        textarea { height: 100px; resize: vertical; }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media(max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
 
-        /* Cafe Modal */
+        /* Modals with Exit Button */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000;
+            background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000;
         }
         .modal {
-            background: var(--card-bg); border: 1px solid var(--card-border); width: 90%; max-width: 600px;
-            border-radius: 12px; padding: 25px; box-sizing: border-box; max-height: 85vh; overflow-y: auto; position: relative;
+            background: var(--card-bg); border: 1px solid var(--card-border); width: 90%; max-width: 550px;
+            border-radius: 16px; padding: 24px; box-sizing: border-box; max-height: 85vh; overflow-y: auto; position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
         }
-        .close-btn { position: absolute; top: 15px; right: 15px; background: none; color: #fff; font-size: 1.2rem; cursor: pointer; }
-        
-        .cafe-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        .menu-item { background: #0f172a; border: 1px solid var(--card-border); padding: 12px; border-radius: 8px; text-align: center; }
-        .menu-item img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 8px; }
+        .close-btn { position: absolute; top: 18px; right: 18px; background: #f1f5f9; border: none; color: var(--text-main); width: 30px; height: 30px; border-radius: 50%; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .close-btn:hover { background: #e2e8f0; }
 
-        /* Tracker Avatars & Graveyard */
-        .firm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 15px; }
-        .firm-card {
-            background: #0f172a; border: 1px solid var(--card-border); border-radius: 8px; padding: 15px;
-            text-align: center; cursor: pointer; position: relative; transition: transform 0.2s;
+        /* Cafe Menu & Serving Animation */
+        .cafe-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .menu-item { background: #f8fafc; border: 1px solid var(--card-border); padding: 14px; border-radius: 10px; text-align: center; }
+        
+        #servingTray {
+            margin-top: 20px; background: #f8fafc; border: 1px dashed var(--card-border); border-radius: 10px;
+            padding: 20px; text-align: center; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .firm-card:hover { transform: translateY(-3px); border-color: var(--primary); }
-        .avatar-box { font-size: 2.5rem; margin-bottom: 5px; position: relative; display: inline-block; }
-        .avatar-shirt { font-size: 0.7rem; background: var(--primary); color: #fff; padding: 2px 6px; border-radius: 4px; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
-        .halo { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 1.2rem; }
-        .crown { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 1.2rem; }
+        @keyframes pourServe {
+            0% { transform: translateY(-30px) scale(0.5); opacity: 0; }
+            50% { transform: translateY(5px) scale(1.1); opacity: 1; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .served-item { font-size: 3rem; animation: pourServe 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        /* Timeline Tracker */
+        .timeline-container { position: relative; margin-top: 20px; padding-left: 20px; border-left: 2px solid var(--card-border); }
+        .timeline-item { position: relative; margin-bottom: 20px; background: #f8fafc; border: 1px solid var(--card-border); border-radius: 8px; padding: 14px 16px; }
+        .timeline-item::before { content: ''; position: absolute; left: -26px; top: 18px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); border: 2px solid #fff; }
+        .urgency-tag { font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px; }
+        .urgent-high { background: #fee2e2; color: #991b1b; }
+        .urgent-med { background: #fef3c7; color: #92400e; }
+        .urgent-low { background: #ecfdf5; color: #065f46; }
+
+        /* Calendar View Grid */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 15px; text-align: center; }
+        .cal-header { font-weight: 600; font-size: 0.8rem; color: var(--text-muted); padding: 6px; }
+        .cal-day { background: #f8fafc; border: 1px solid var(--card-border); border-radius: 6px; min-height: 75px; padding: 6px; font-size: 0.85rem; text-align: left; }
+        .cal-day.today { border-color: var(--primary); background: #ffffff; font-weight: bold; }
+
+        /* To-Do List Checkboxes */
+        .todo-item { display: flex; align-items: center; gap: 10px; background: #f8fafc; border: 1px solid var(--card-border); padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; }
+        .todo-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); margin: 0; }
+        .todo-item.completed span { text-decoration: line-through; color: var(--text-muted); }
 
         /* Mobile Bottom Nav */
         .mobile-nav {
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg);
             border-top: 1px solid var(--card-border); justify-content: space-around; padding: 10px 0; z-index: 900;
         }
-        .mobile-btn { background: none; border: none; color: var(--text-muted); font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
-        .mobile-btn.active { color: var(--primary); }
+        .mobile-btn { background: none; border: none; color: var(--text-muted); font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; font-weight: 500; }
+        .mobile-btn.active { color: var(--text-main); font-weight: 600; }
         @media(max-width: 768px) { .nav-tabs { display: none; } .mobile-nav { display: flex; } }
     </style>
 </head>
@@ -192,173 +217,93 @@
     <div class="top-bar">
         <div class="app-title">⚖️ Partner in Law</div>
         <div class="config-box">
-            <input type="password" id="apiKeyInput" placeholder="Gemini API Key" />
+            <input type="password" id="apiKeyInput" placeholder="Gemini API Key (Optional)" />
             <button onclick="saveApiKey()">Save</button>
         </div>
     </div>
 
     <!-- Currency & Cafe Bar -->
     <div class="currency-bar">
-        <div>Study Streak & Vault Points</div>
-        <div class="token-pill" onclick="openCafeModal()">☕ <span id="tokenCount">150</span> Tokens (Open Cafe)</div>
+        <div>Vault & Study Rewards</div>
+        <div class="token-pill" onclick="openCafeModal()">☕ <span id="tokenCount">0</span> Tokens (Open Cafe)</div>
     </div>
 
-    <!-- Desktop Navigation Tabs -->
+    <!-- Navigation Tabs (Master Schedule is Default) -->
     <div class="nav-tabs">
-        <button class="nav-tab active" onclick="switchTab('review')">📚 Exam Review</button>
-        <button class="nav-tab" onclick="switchTab('revision')">📅 Revision Planner</button>
+        <button class="nav-tab active" onclick="switchTab('master')">🗓️ Master Schedule</button>
         <button class="nav-tab" onclick="switchTab('tracker')">💼 Vac Scheme & TC Tracker</button>
-        <button class="nav-tab" onclick="switchTab('master')">🗓️ Master Schedule</button>
-        <button class="nav-tab" onclick="switchTab('bilingual')">🌐 Multilingual Workbench</button>
+        <button class="nav-tab" onclick="switchTab('planner')">📅 Exam Revision Planner</button>
     </div>
 
     <!-- Main Container -->
     <div class="main-container">
 
-        <!-- TAB 1: EXAM REVIEW -->
-        <div id="tab-review" class="tab-content active">
+        <!-- TAB 1: MASTER SCHEDULE (DEFAULT) -->
+        <div id="tab-master" class="tab-content active">
             <div class="card">
-                <h2>Exam Review & Syllabus Hub</h2>
-                <p>Upload your notes, tutorial answers, slides, and past papers so Partner in Law understands your syllabus, then practice with custom IRAC or Essay exam prompts.</p>
-                
-                <div class="grid-2">
-                    <div>
-                        <label><strong>1. Upload Syllabus Documents / Notes</strong></label>
-                        <input type="file" id="syllabusFiles" multiple onchange="handleFileUpload(event)">
-                        <div id="uploadedFilesList" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">No files uploaded yet.</div>
-                        
-                        <label><strong>2. Manual Topics & Subheadings</strong></label>
-                        <textarea id="topicsInput" placeholder="Enter topics/subheadings (one per line)..."></textarea>
-                    </div>
-                    <div>
-                        <label><strong>3. Exam Format</strong></label>
-                        <select id="examFormatSelect">
-                            <option value="irac">IRAC (Issue, Rule, Application, Conclusion)</option>
-                            <option value="essay">Law Essay (Critical evaluation, thesis, case/statute integration)</option>
-                        </select>
-
-                        <label><strong>4. Difficulty Level (1-5)</strong></label>
-                        <input type="number" id="reviewDifficulty" min="1" max="5" value="3">
-
-                        <button onclick="generateExamPrompt()" style="width:100%; margin-top:10px;">Generate Custom Exam Prompt</button>
-                    </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                    <h2>Master Schedule & To-Do List</h2>
+                    <button onclick="openAddTaskModal()">+ Add Task / Event</button>
                 </div>
-            </div>
-
-            <div id="examPromptSection" class="card" style="display:none;">
-                <h3>Practice Prompt</h3>
-                <div id="promptText" style="background:#0f172a; padding:15px; border-radius:6px; margin-bottom:15px; white-space: pre-wrap;"></div>
                 
-                <label><strong>Your Answer:</strong></label>
-                <textarea id="studentExamAnswer" placeholder="Draft your response here..."></textarea>
-                <button onclick="submitExamAnswer()">Submit for Detailed Critique (+15 Tokens)</button>
-            </div>
+                <div style="display:flex; gap:10px; margin-bottom:20px;">
+                    <button class="secondary" id="calViewBtn" onclick="switchMasterSubView('calendar')">Calendar View</button>
+                    <button class="secondary" id="todoViewBtn" onclick="switchMasterSubView('todo')">To-Do List</button>
+                </div>
 
-            <div id="examFeedbackSection" class="card" style="display:none;">
-                <h3>AI Professor Evaluation</h3>
-                <div id="feedbackContent"></div>
+                <div id="masterSubContainer"></div>
             </div>
         </div>
 
-        <!-- TAB 2: REVISION PLANNER -->
-        <div id="tab-revision" class="tab-content">
+        <!-- TAB 2: VAC SCHEME & TC TRACKER -->
+        <div id="tab-tracker" class="tab-content">
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <h2>Vacation Scheme & TC Tracker</h2>
+                    <p>Timeline sorted by urgency of upcoming deadlines.</p>
+                </div>
+                <button onclick="openAddFirmModal()">+ Add Firm Application</button>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>⏳ Pending Applications</h3>
+                    <p style="font-size:0.85rem; margin-top:-5px; margin-bottom:15px;">Not yet applied or awaiting submission.</p>
+                    <div id="pendingTimeline" class="timeline-container"></div>
+                </div>
+                <div class="card">
+                    <h3>🚀 Active Applications</h3>
+                    <p style="font-size:0.85rem; margin-top:-5px; margin-bottom:15px;">In progress, interviewing, or assessment rounds.</p>
+                    <div id="activeTimeline" class="timeline-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: EXAM REVISION PLANNER -->
+        <div id="tab-planner" class="tab-content">
             <div class="card">
                 <h2>Exam Revision Planner</h2>
-                <p>Configure your exams, class difficulty, and revision preferences to auto-generate a smart daily schedule.</p>
+                <p>Input multiple exams below to auto-generate your comprehensive revision calendar.</p>
 
-                <div class="grid-2">
-                    <div>
-                        <label>Exam Title & Date</label>
-                        <input type="text" id="revExamTitle" placeholder="e.g., Contract Law II">
-                        <input type="date" id="revExamDate">
-
-                        <label>Class Difficulty (Snooze Fest 0 to Pack It Up 10): <span id="diffSliderVal">5</span></label>
-                        <input type="range" id="revClassDiff" min="0" max="10" value="5" oninput="document.getElementById('diffSliderVal').innerText=this.value" style="width:100%; margin-bottom:12px;">
+                <div id="examsListContainer">
+                    <div class="exam-input-row" style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+                        <input type="text" placeholder="Exam Title (e.g., Contract Law)" class="multiExamTitle" style="margin-bottom:0;">
+                        <input type="date" class="multiExamDate" style="margin-bottom:0;">
+                        <button class="secondary" onclick="this.parentElement.remove()" style="padding:10px;">✕</button>
                     </div>
-                    <div>
-                        <label>Topics & Most Difficult Areas</label>
-                        <textarea id="revDifficultTopics" placeholder="List difficult modules or topics..."></textarea>
+                </div>
+                <button class="secondary" onclick="addExamInputField()" style="margin-top:5px; margin-bottom:15px;">+ Add Another Exam</button>
 
-                        <label>Start Revision From Date</label>
-                        <input type="date" id="revStartDate">
-
-                        <button onclick="generateRevisionPlan()" style="width:100%; margin-top:10px;">Generate Smart Revision Calendar (+10 Tokens)</button>
-                    </div>
+                <div style="margin-top:15px;">
+                    <label>Overall Class Difficulty (0 = Snooze Fest to 10 = Pack It Up): <span id="diffSliderVal">5</span></label>
+                    <input type="range" id="revClassDiff" min="0" max="10" value="5" oninput="document.getElementById('diffSliderVal').innerText=this.value" style="width:100%; margin-bottom:15px;">
+                    <button onclick="generateMultiExamPlan()" style="width:100%;">Generate Smart Revision Calendar</button>
                 </div>
             </div>
 
             <div id="revisionPlanOutput" class="card" style="display:none;">
-                <h3>Generated Revision Calendar</h3>
+                <h3>Generated Multi-Exam Schedule</h3>
                 <div id="revisionCalendarList"></div>
-            </div>
-        </div>
-
-        <!-- TAB 3: VACATION SCHEME / TC TRACKER -->
-        <div id="tab-tracker" class="tab-content">
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                <div>
-                    <h2>Vacation Scheme & Training Contract Tracker</h2>
-                    <p>Track applications, interview rounds, and earn rewards!</p>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <button onclick="openAddFirmModal()">+ Add Firm Application</button>
-                    <button class="secondary" onclick="openGraveyardModal()">🪦 Graveyard (<span id="graveyardCount">0</span>)</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>Active Applications</h3>
-                <div class="firm-grid" id="activeFirmGrid"></div>
-            </div>
-        </div>
-
-        <!-- TAB 4: MASTER SCHEDULE -->
-        <div id="tab-master" class="tab-content">
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
-                    <h2>Master Schedule & To-Do Lists</h2>
-                    <button onclick="openAddTaskModal()">+ Add Task / Event</button>
-                </div>
-                
-                <div style="display:flex; gap:10px; margin-bottom:15px;">
-                    <button class="secondary" onclick="switchMasterView('calendar')">Calendar View</button>
-                    <button class="secondary" onclick="switchMasterView('daily')">Daily To-Do</button>
-                    <button class="secondary" onclick="switchMasterView('weekly')">Weekly To-Do</button>
-                </div>
-
-                <div id="masterViewContainer"></div>
-            </div>
-        </div>
-
-        <!-- TAB 5: BILINGUAL LEGAL WORKBENCH -->
-        <div id="tab-bilingual" class="tab-content">
-            <div class="card">
-                <h2>Multilingual Legal Workbench</h2>
-                <p>Upload vocab banks, statutes, or contracts (supports English, Chinese, German, trilingual, etc.) for contextual learning and drafting exercises.</p>
-
-                <div class="grid-2">
-                    <div>
-                        <label>Upload Reference Documents (Statutes / Vocab / Cases)</label>
-                        <input type="file" id="bilingualFiles" multiple onchange="handleBilingualUpload(event)">
-                        
-                        <label>Mode</label>
-                        <select id="bilingualMode">
-                            <option value="teach">Teaching Mode (Breakdown sentences & legal concepts)</option>
-                            <option value="translate">Translation Practice (EN <-> Target Language)</option>
-                            <option value="draft">Drafting Practice (Memo, Brief, Clause drafting)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Your Input / Exercise Prompt</label>
-                        <textarea id="bilingualInput" placeholder="Enter text to translate, draft, or analyze..."></textarea>
-                        <button onclick="runBilingualAI()" style="width:100%;">Run AI Workbench (+10 Tokens)</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="bilingualOutputCard" class="card" style="display:none;">
-                <h3>Workbench Output</h3>
-                <div id="bilingualOutput" style="white-space: pre-wrap;"></div>
             </div>
         </div>
 
@@ -366,68 +311,79 @@
 
     <!-- MOBILE BOTTOM NAVIGATION -->
     <div class="mobile-nav">
-        <button class="mobile-btn active" onclick="switchTab('review'); highlightMobileNav(this)">📚<span>Review</span></button>
-        <button class="mobile-btn" onclick="switchTab('revision'); highlightMobileNav(this)">📅<span>Planner</span></button>
+        <button class="mobile-btn active" onclick="switchTab('master'); highlightMobileNav(this)">🗓️<span>Schedule</span></button>
         <button class="mobile-btn" onclick="switchTab('tracker'); highlightMobileNav(this)">💼<span>Tracker</span></button>
-        <button class="mobile-btn" onclick="switchTab('master'); highlightMobileNav(this)">🗓️<span>Schedule</span></button>
-        <button class="mobile-btn" onclick="switchTab('bilingual'); highlightMobileNav(this)">🌐<span>Workbench</span></button>
+        <button class="mobile-btn" onclick="switchTab('planner'); highlightMobileNav(this)">📅<span>Planner</span></button>
     </div>
 
-    <!-- MODALS -->
+    <!-- MODALS WITH EXIT BUTTONS -->
 
     <!-- Cafe Modal -->
     <div class="modal-overlay" id="cafeModal">
         <div class="modal">
-            <button class="close-btn" onclick="closeCafeModal()">×</button>
+            <button class="close-btn" onclick="closeCafeModal()">✕</button>
             <h3>☕ Student Café</h3>
-            <p>Spend your vault tokens on drinks and food! Each item grants points and gets freshly prepared.</p>
-            <div style="font-weight:bold; margin-bottom:10px;">Your Tokens: <span id="modalTokenCount">150</span></div>
+            <p>Spend your vault tokens on drinks and food rewards.</p>
+            <div style="font-weight:600; margin-bottom:10px; font-size:0.9rem;">Your Tokens: <span id="modalTokenCount">0</span></div>
             <div class="cafe-menu" id="cafeMenuGrid"></div>
+            
+            <div id="servingTray">
+                <span style="color:var(--text-muted); font-size:0.85rem;">Your ordered item will be freshly prepared and served here!</span>
+            </div>
         </div>
     </div>
 
-    <!-- Graveyard Modal -->
-    <div class="modal-overlay" id="graveyardModal">
+    <!-- Add Task Modal -->
+    <div class="modal-overlay" id="addTaskModal">
         <div class="modal">
-            <button class="close-btn" onclick="closeGraveyardModal()">×</button>
-            <h3>🪦 The Graveyard</h3>
-            <p>Here lie unsuccessful applications. Click a tombstone to inspect history or use the watering can 💧 to revive them for next cycle with a halo!</p>
-            <div id="graveyardGrid" class="firm-grid"></div>
+            <button class="close-btn" onclick="closeAddTaskModal()">✕</button>
+            <h3>Add Task or Event</h3>
+            <label>Task / Event Title</label>
+            <input type="text" id="newTaskTitle" placeholder="e.g., Moot Court preparation">
+            <label>Date</label>
+            <input type="date" id="newTaskDate">
+            <button onclick="saveNewTask()" style="width:100%; margin-top:10px;">Add to Schedule (+10 Tokens)</button>
         </div>
     </div>
 
     <!-- Add Firm Modal -->
     <div class="modal-overlay" id="addFirmModal">
         <div class="modal">
-            <button class="close-btn" onclick="closeAddFirmModal()">×</button>
+            <button class="close-btn" onclick="closeAddFirmModal()">✕</button>
             <h3>Add Firm Application</h3>
             <label>Firm Name</label>
             <input type="text" id="newFirmName" placeholder="e.g., Magic Circle LLP">
-            <label>Stream</label>
-            <select id="newFirmStream">
-                <option value="Vacation Scheme">Vacation Scheme</option>
-                <option value="Training Contract">Training Contract</option>
+            <label>Stage / What it's for</label>
+            <select id="newFirmStage">
+                <option value="Application">Application</option>
+                <option value="Online Test">Online Test</option>
+                <option value="Video Interview">Video Interview</option>
+                <option value="Assessment Centre">Assessment Centre</option>
+                <option value="Partner Interview">Partner Interview</option>
             </select>
-            <label>Deadline</label>
+            <label>Category</label>
+            <select id="newFirmCategory">
+                <option value="pending">Pending Application</option>
+                <option value="active">Active Application</option>
+            </select>
+            <label>Deadline Date</label>
             <input type="date" id="newFirmDeadline">
-            <button onclick="saveNewFirm()" style="width:100%; margin-top:10px;">Add Application (+10 Tokens)</button>
+            <button onclick="saveNewFirm()" style="width:100%; margin-top:10px;">Save Application</button>
         </div>
-    </div>
-
-    <!-- Firm Details Modal -->
-    <div class="modal-overlay" id="firmDetailsModal">
-        <div class="modal" id="firmModalContent"></div>
     </div>
 
     <script>
         // Global App State
         let state = {
-            tokens: 150,
-            syllabusTexts: [],
-            firms: [],
-            graveyard: [],
-            tasks: [],
-            revisionPlans: []
+            tokens: 0,
+            firms: [
+                { id: 1, name: "Clifford Chance", stage: "Application", category: "pending", deadline: "2026-04-15" },
+                { id: 2, name: "Linklaters", stage: "Assessment Centre", category: "active", deadline: "2026-04-10" }
+            ],
+            tasks: [
+                { id: 1, title: "Tort Law reading: Negligence breach", date: "2026-04-01", completed: false },
+                { id: 2, title: "Submit application to Allen & Overy", date: "2026-04-05", completed: true }
+            ]
         };
 
         function saveApiKey() {
@@ -444,7 +400,6 @@
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
             
-            // Sync desktop tab active state
             document.querySelectorAll('.nav-tab').forEach(btn => {
                 if(btn.getAttribute('onclick').includes(tabId)) btn.classList.add('active');
             });
@@ -461,16 +416,14 @@
             document.getElementById('modalTokenCount').innerText = state.tokens;
         }
 
-        // --- CAFE SYSTEM ---
+        // --- CAFE SYSTEM & ANIMATION ---
         const cafeItems = [
-            { name: "Tap Water 💧", price: 5, type: "drink", desc: "Pure refreshment." },
-            { name: "Espresso ☕", price: 30, type: "drink", desc: "Instant focus." },
-            { name: "Matcha Latte 🍵", price: 45, type: "drink", desc: "Calm alertness." },
-            { name: "Craft Iced Tea 🧋", price: 60, type: "drink", desc: "Sweet relief." },
-            { name: "Avocado Toast 🥑", price: 50, type: "food", desc: "Law student fuel." },
-            { name: "Croissant & Jam 🥐", price: 75, type: "food", desc: "Parisian study session." },
-            { name: "Salmon Bento 🍱", price: 150, type: "food", desc: "Full cognitive restoration." },
-            { name: "Wagyu Burger 🍔", price: 200, type: "food", desc: "Ultimate celebratory feast." }
+            { name: "Tap Water 💧", price: 5, icon: "💧" },
+            { name: "Espresso ☕", price: 20, icon: "☕" },
+            { name: "Matcha Latte 🍵", price: 30, icon: "🍵" },
+            { name: "Avocado Toast 🥑", price: 40, icon: "🥑" },
+            { name: "Croissant 🥐", price: 45, icon: "🥐" },
+            { name: "Salmon Bento 🍱", price: 90, icon: "🍱" }
         ];
 
         function openCafeModal() {
@@ -485,11 +438,10 @@
             cafeItems.forEach((item, idx) => {
                 grid.innerHTML += `
                     <div class="menu-item">
-                        <div style="font-size: 2rem;">${item.name.split(" ")[1]}</div>
-                        <div style="font-weight:bold; font-size:0.9rem;">${item.name}</div>
-                        <div style="font-size:0.75rem; color:var(--text-muted);">${item.desc}</div>
-                        <div style="color:var(--warning); font-weight:bold; margin:6px 0;">${item.price} Tokens</div>
-                        <button onclick="buyCafeItem(${idx})" style="padding:4px 10px; font-size:0.8rem;">Buy & Enjoy</button>
+                        <div style="font-size: 1.5rem;">${item.icon}</div>
+                        <div style="font-weight:600; font-size:0.85rem; margin:4px 0;">${item.name}</div>
+                        <div style="color:var(--warning); font-weight:600; font-size:0.8rem; margin-bottom:8px;">${item.price} Tokens</div>
+                        <button onclick="buyCafeItem(${idx})" style="padding:4px 10px; font-size:0.75rem; width:100%;">Order</button>
                     </div>
                 `;
             });
@@ -498,295 +450,168 @@
         function buyCafeItem(idx) {
             const item = cafeItems[idx];
             if(state.tokens < item.price) {
-                alert("Not enough tokens! Complete reading notes, tutorials, or job applications to earn more.");
+                alert("Not enough tokens! Complete study tasks or add milestones to earn tokens.");
                 return;
             }
             state.tokens -= item.price;
             addTokens(0);
-            alert(`🎉 Your ${item.name} has been freshly prepared and poured! Enjoy while you conquer your studies.`);
-        }
-
-        // --- EXAM REVIEW & UPLOADS ---
-        function handleFileUpload(event) {
-            const files = event.target.files;
-            let listStr = "";
-            for(let f of files) {
-                listStr += `• ${f.name}<br>`;
-                let reader = new FileReader();
-                reader.onload = function(e) { state.syllabusTexts.push(e.target.result); };
-                reader.readAsText(f);
-            }
-            document.getElementById('uploadedFilesList').innerHTML = listStr;
-        }
-
-        async function callGemini(prompt) {
-            const apiKey = getApiKey();
-            if(!apiKey) throw new Error("Please enter your Gemini API Key in the top right.");
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-            });
-            const data = await res.json();
-            return data.candidates[0].content.parts[0].text;
-        }
-
-        async function generateExamPrompt() {
-            const format = document.getElementById('examFormatSelect').value;
-            const diff = document.getElementById('reviewDifficulty').value;
-            const topics = document.getElementById('topicsInput').value;
-
-            document.getElementById('examPromptSection').style.display = 'block';
-            document.getElementById('promptText').innerText = "Partner in Law is generating a custom law exam prompt based on uploaded notes...";
-
-            try {
-                const prompt = `You are a rigorous university law professor. 
-                Syllabus excerpts: ${state.syllabusTexts.join("\n").substring(0, 1500)}
-                Topics/Subheadings: ${topics}
-                Format: ${format === 'irac' ? 'IRAC Problem Question' : 'Law Essay (Critical evaluation, requiring case/statute integration)'}
-                Difficulty: Level ${diff} out of 5.
-                Create an original, highly rigorous exam prompt.`;
-
-                const res = await callGemini(prompt);
-                document.getElementById('promptText').innerText = res;
-            } catch(err) {
-                document.getElementById('promptText').innerText = "Error: " + err.message;
-            }
-        }
-
-        async function submitExamAnswer() {
-            const answer = document.getElementById('studentExamAnswer').value.trim();
-            if(!answer) { alert("Please write your answer first."); return; }
             
-            document.getElementById('examFeedbackSection').style.display = 'block';
-            document.getElementById('feedbackContent').innerHTML = "Evaluating your legal analysis against course notes and precedents...";
+            const tray = document.getElementById('servingTray');
+            tray.innerHTML = `
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">Freshly prepared & served:</div>
+                <div class="served-item">${item.icon}</div>
+                <div style="font-weight:600; font-size:0.85rem; margin-top:4px;">Enjoy your ${item.name}!</div>
+            `;
+        }
 
-            try {
-                const prompt = `Evaluate this student's law exam answer:
-                """${answer}"""
-                Provide thorough professor feedback, scoring, missing case/statute authorities, and structural critiques.`;
-                const res = await callGemini(prompt);
-                document.getElementById('feedbackContent').innerHTML = res.replace(/\n/g, '<br>');
-                addTokens(15); // +15 for studying
-            } catch(err) {
-                document.getElementById('feedbackContent').innerHTML = "Error: " + err.message;
+        // --- MASTER SCHEDULE: CALENDAR & TODO ---
+        let currentSubView = 'calendar';
+        function switchMasterSubView(view) {
+            currentSubView = view;
+            const container = document.getElementById('masterSubContainer');
+            
+            if(view === 'calendar') {
+                document.getElementById('calViewBtn').style.background = 'var(--primary)';
+                document.getElementById('calViewBtn').style.color = '#fff';
+                document.getElementById('todoViewBtn').style.background = '#f1f5f9';
+                document.getElementById('todoViewBtn').style.color = 'var(--text-main)';
+
+                let daysHtml = '';
+                const headers = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                headers.forEach(h => daysHtml += `<div class="cal-header">${h}</div>`);
+                
+                for(let i = 1; i <= 31; i++) {
+                    let isToday = i === 15 ? 'today' : '';
+                    daysHtml += `<div class="cal-day ${isToday}"><div style="font-weight:600; margin-bottom:4px;">${i}</div><span style="font-size:0.75rem; color:var(--text-muted);">${i === 15 ? 'Exam Prep' : ''}</span></div>`;
+                }
+                container.innerHTML = `<div class="calendar-grid">${daysHtml}</div>`;
+            } else {
+                document.getElementById('todoViewBtn').style.background = 'var(--primary)';
+                document.getElementById('todoViewBtn').style.color = '#fff';
+                document.getElementById('calViewBtn').style.background = '#f1f5f9';
+                document.getElementById('calViewBtn').style.color = 'var(--text-main)';
+
+                let html = '';
+                state.tasks.forEach((t, idx) => {
+                    html += `
+                        <div class="todo-item ${t.completed ? 'completed' : ''}">
+                            <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${idx})">
+                            <div style="flex:1;">
+                                <span style="font-size:0.9rem; font-weight:500;">${t.title}</span>
+                                <div style="font-size:0.75rem; color:var(--text-muted);">${t.date}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
             }
         }
 
-        // --- REVISION PLANNER ---
-        function generateRevisionPlan() {
-            const title = document.getElementById('revExamTitle').value || "Exam";
-            const date = document.getElementById('revExamDate').value;
-            const diff = document.getElementById('revClassDiff').value;
-            const startDate = document.getElementById('revStartDate').value;
+        function toggleTask(idx) {
+            state.tasks[idx].completed = !state.tasks[idx].completed;
+            if(state.tasks[idx].completed) addTokens(5);
+            switchMasterSubView('todo');
+        }
 
-            if(!date || !startDate) { alert("Please select start and exam dates."); return; }
+        function openAddTaskModal() { document.getElementById('addTaskModal').style.display = 'flex'; }
+        function closeAddTaskModal() { document.getElementById('addTaskModal').style.display = 'none'; }
+        
+        function saveNewTask() {
+            const title = document.getElementById('newTaskTitle').value.trim();
+            const date = document.getElementById('newTaskDate').value;
+            if(!title) return;
 
-            document.getElementById('revisionPlanOutput').style.display = 'block';
-            let html = `<p><strong>Exam:</strong> ${title} | <strong>Class Pack-It-Up Difficulty:</strong> ${diff}/10</p>`;
-            html += `<ul>`;
-            html += `<li>📅 <strong>Phase 1:</strong> Core readings & notes consolidation</li>`;
-            html += `<li>📅 <strong>Phase 2:</strong> Active recall & flashcards on difficult topics</li>`;
-            html += `<li>📅 <strong>Phase 3:</strong> Timed past paper mock practice</li>`;
-            html += `</ul>`;
-            document.getElementById('revisionCalendarList').innerHTML = html;
+            state.tasks.push({ id: Date.now(), title, date: date || '2026-04-01', completed: false });
+            closeAddTaskModal();
             addTokens(10);
+            if(currentSubView === 'todo') switchMasterSubView('todo');
+            alert("Task added successfully (+10 Tokens)!");
         }
 
         // --- VACATION SCHEME & TC TRACKER ---
         function openAddFirmModal() { document.getElementById('addFirmModal').style.display = 'flex'; }
         function closeAddFirmModal() { document.getElementById('addFirmModal').style.display = 'none'; }
-        
+
         function saveNewFirm() {
             const name = document.getElementById('newFirmName').value.trim();
-            const stream = document.getElementById('newFirmStream').value;
+            const stage = document.getElementById('newFirmStage').value;
+            const category = document.getElementById('newFirmCategory').value;
             const deadline = document.getElementById('newFirmDeadline').value;
             if(!name) return;
 
-            state.firms.push({
-                id: Date.now(),
-                name, stream, deadline,
-                status: "Applied",
-                rounds: [{ roundName: "Written Application", notes: "Submitted successfully.", date: new Date().toISOString().split('T')[0] }],
-                rejected: false,
-                hired: false
-            });
+            // Notice: Assumes haven't applied yet (no points added on creation)
+            state.firms.push({ id: Date.now(), name, stage, category, deadline: deadline || '2026-05-01' });
             closeAddFirmModal();
-            renderFirms();
-            addTokens(10); // +10 for applying
+            renderFirmsTimeline();
+            alert("Firm added to timeline.");
         }
 
-        const interviewRoundsList = ["Written Application", "Online Test", "Video Interview", "Assessment Centre", "Partner Interview"];
+        function renderFirmsTimeline() {
+            // Sort by deadline urgency
+            state.firms.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
 
-        function renderFirms() {
-            const grid = document.getElementById('activeFirmGrid');
-            grid.innerHTML = "";
-            state.firms.forEach((f, idx) => {
-                if(f.rejected) return;
-                let badge = f.hired ? '<div class="crown">👑</div>' : '';
-                let halo = (f.status && f.status.includes("Revived")) ? '<div class="halo">😇</div>' : '';
-                grid.innerHTML += `
-                    <div class="firm-card" onclick="openFirmDetails(${idx})">
-                        ${badge}${halo}
-                        <div class="avatar-box">👔
-                            <span class="avatar-shirt">${f.name}</span>
-                        </div>
-                        <div style="font-size:0.8rem; font-weight:bold; margin-top:5px;">${f.stream}</div>
-                        <div style="font-size:0.75rem; color:var(--text-muted);">Deadline: ${f.deadline || 'N/A'}</div>
+            const pendingContainer = document.getElementById('pendingTimeline');
+            const activeContainer = document.getElementById('activeTimeline');
+            pendingContainer.innerHTML = '';
+            activeContainer.innerHTML = '';
+
+            state.firms.forEach(f => {
+                let html = `
+                    <div class="timeline-item">
+                        <span class="urgency-tag urgent-med">Deadline: ${f.deadline}</span>
+                        <div style="font-weight:600; font-size:0.95rem; margin-top:2px;">${f.name}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">Stage: ${f.stage}</div>
                     </div>
                 `;
+                if(f.category === 'pending') {
+                    pendingContainer.innerHTML += html;
+                } else {
+                    activeContainer.innerHTML += html;
+                }
             });
-            document.getElementById('graveyardCount').innerText = state.graveyard.length;
         }
 
-        function openFirmDetails(idx) {
-            const f = state.firms[idx];
-            const modal = document.getElementById('firmDetailsModal');
-            modal.style.display = 'flex';
-
-            let roundsHtml = f.rounds.map((r, rIdx) => `
-                <div style="background:#0f172a; border:1px solid var(--card-border); padding:10px; border-radius:6px; margin-bottom:8px;">
-                    <strong>${r.roundName}</strong> (${r.date})<br>
-                    <span style="font-size:0.85rem; color:var(--text-muted);">${r.notes}</span>
-                </div>
-            `).join('');
-
-            document.getElementById('firmModalContent').innerHTML = `
-                <button class="close-btn" onclick="document.getElementById('firmDetailsModal').style.display='none'">×</button>
-                <h3>${f.name} (${f.stream})</h3>
-                <p><strong>Status:</strong> ${f.status}</p>
-                
-                <h4>Interview Rounds & Progress</h4>
-                ${roundsHtml}
-
-                <div style="margin-top:15px; background:#111827; padding:10px; border-radius:6px;">
-                    <label>Add / Update Next Round</label>
-                    <select id="nextRoundName">
-                        ${interviewRoundsList.map(ir => `<option value="${ir}">${ir}</option>`).join('')}
-                    </select>
-                    <input type="date" id="nextRoundDate">
-                    <textarea id="nextRoundNotes" placeholder="Pre/Post interview notes, location, interviewers, reflection..."></textarea>
-                    <button onclick="addFirmRound(${idx})">Log Round / Update (+20 Pts)</button>
-                </div>
-
-                <div style="display:flex; gap:10px; margin-top:15px;">
-                    <button onclick="markHired(${idx})" style="background:var(--accent); flex:1;">Offer Received! (Crown 👑 +50 Pts)</button>
-                    <button onclick="markRejected(${idx})" style="background:var(--danger);">Reject / Graveyard 🪦</button>
-                </div>
+        // --- EXAM REVISION PLANNER ---
+        function addExamInputField() {
+            const container = document.getElementById('examsListContainer');
+            const row = document.createElement('div');
+            row.className = 'exam-input-row';
+            row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px; align-items:center;';
+            row.innerHTML = `
+                <input type="text" placeholder="Exam Title" class="multiExamTitle" style="margin-bottom:0;">
+                <input type="date" class="multiExamDate" style="margin-bottom:0;">
+                <button class="secondary" onclick="this.parentElement.remove()" style="padding:10px;">✕</button>
             `;
+            container.appendChild(row);
         }
 
-        function addFirmRound(idx) {
-            const rName = document.getElementById('nextRoundName').value;
-            const rDate = document.getElementById('nextRoundDate').value;
-            const rNotes = document.getElementById('nextRoundNotes').value;
+        function generateMultiExamPlan() {
+            const titles = document.querySelectorAll('.multiExamTitle');
+            const dates = document.querySelectorAll('.multiExamDate');
+            const diff = document.getElementById('revClassDiff').value;
 
-            state.firms[idx].rounds.push({ roundName: rName, date: rDate, notes: rNotes });
-            state.firms[idx].status = rName;
-            document.getElementById('firmDetailsModal').style.display = 'none';
-            renderFirms();
-            addTokens(20);
-        }
-
-        function markHired(idx) {
-            state.firms[idx].hired = true;
-            state.firms[idx].status = "Offer Secured!";
-            document.getElementById('firmDetailsModal').style.display = 'none';
-            renderFirms();
-            addTokens(50);
-        }
-
-        function markRejected(idx) {
-            const f = state.firms.splice(idx, 1)[0];
-            f.rejected = true;
-            state.graveyard.push(f);
-            document.getElementById('firmDetailsModal').style.display = 'none';
-            renderFirms();
-        }
-
-        function openGraveyardModal() {
-            document.getElementById('graveyardModal').style.display = 'flex';
-            renderGraveyard();
-        }
-        function closeGraveyardModal() { document.getElementById('graveyardModal').style.display = 'none'; }
-
-        function renderGraveyard() {
-            const grid = document.getElementById('graveyardGrid');
-            grid.innerHTML = "";
-            if(state.graveyard.length === 0) {
-                grid.innerHTML = `<p style="grid-column: span 2; text-align:center;">The graveyard is empty. All applications are alive and well!</p>`;
-                return;
+            let exams = [];
+            for(let i = 0; i < titles.length; i++) {
+                if(titles[i].value.trim()) {
+                    exams.push({ title: titles[i].value.trim(), date: dates[i].value || '2026-05-15' });
+                }
             }
-            state.graveyard.forEach((f, idx) => {
-                grid.innerHTML += `
-                    <div class="firm-card" style="opacity: 0.7;">
-                        <div class="avatar-box">💀</div>
-                        <div style="font-weight:bold;">${f.name}</div>
-                        <div style="font-size:0.75rem; color:var(--danger); margin-bottom:8px;">Tombstone</div>
-                        <button onclick="reviveFirm(${idx})" style="background:var(--accent); font-size:0.75rem; padding:4px 8px;">💧 Revive (Next Cycle)</button>
-                    </div>
-                `;
+
+            if(exams.length === 0) { alert("Please input at least one exam."); return; }
+
+            document.getElementById('revisionPlanOutput').style.display = 'block';
+            let html = `<p><strong>Pack-It-Up Difficulty Rating:</strong> ${diff}/10</p><ul>`;
+            exams.forEach(ex => {
+                html += `<li>📚 <strong>${ex.title}</strong> (Exam Date: ${ex.date}) — 3-week sprint scheduled with active recall & practice papers.</li>`;
             });
+            html += `</ul>`;
+            document.getElementById('revisionCalendarList').innerHTML = html;
+            addTokens(15);
         }
 
-        function reviveFirm(idx) {
-            const f = state.graveyard.splice(idx, 1)[0];
-            f.rejected = false;
-            f.hired = false;
-            f.status = "Revived for Next Cycle";
-            state.firms.push(f);
-            renderGraveyard();
-            renderFirms();
-            alert(`✨ ${f.name}'s avatar crawled out from the tombstone, shook off the dust, and is back in the active tracker with a halo!`);
-        }
-
-        // --- MASTER SCHEDULE ---
-        function switchMasterView(view) {
-            const container = document.getElementById('masterViewContainer');
-            if(view === 'calendar') {
-                container.innerHTML = `<p>📅 Master Calendar syncing exam dates, interview countdown prep blocks, and revision milestones.</p>`;
-            } else if(view === 'daily') {
-                container.innerHTML = `<p>📝 <strong>Daily To-Do List:</strong> Pulling today's readings, tutorial prep, and application tasks.</p>`;
-            } else {
-                container.innerHTML = `<p>📊 <strong>Weekly To-Do List:</strong> Overview of weekly milestones and goals.</p>`;
-            }
-        }
-        switchMasterView('calendar');
-
-        function openAddTaskModal() {
-            const title = prompt("Enter task or event title:");
-            if(title) {
-                state.tasks.push({ title, date: new Date().toISOString().split('T')[0] });
-                alert("Task added to Master Schedule!");
-            }
-        }
-
-        // --- BILINGUAL LEGAL WORKBENCH ---
-        function handleBilingualUpload(event) {
-            alert("Statutes and vocab files uploaded successfully for contextual parsing.");
-        }
-
-        async function runBilingualAI() {
-            const mode = document.getElementById('bilingualMode').value;
-            const input = document.getElementById('bilingualInput').value.trim();
-            if(!input) { alert("Please enter text or prompt."); return; }
-
-            document.getElementById('bilingualOutputCard').style.display = 'block';
-            document.getElementById('bilingualOutput').innerText = "Partner in Law is analyzing text and generating multilingual breakdown...";
-
-            try {
-                const prompt = `Act as an expert legal linguist and professor. Mode: ${mode}. Input text: "${input}". Provide structured breakdown, terminology mapping across languages, and drafting/translation guidance.`;
-                const res = await callGemini(prompt);
-                document.getElementById('bilingualOutput').innerText = res;
-                addTokens(10);
-            } catch(err) {
-                document.getElementById('bilingualOutput').innerText = "Error: " + err.message;
-            }
-        }
-
-        // Initial render
-        renderFirms();
+        // Initial renders
+        switchMasterSubView('calendar');
+        renderFirmsTimeline();
     </script>
 </body>
 </html>
