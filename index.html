@@ -16,6 +16,7 @@
             --accent: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
+            --app-color: #8b5cf6; /* Distinct color for application-related tasks */
         }
 
         body {
@@ -46,21 +47,54 @@
             border-bottom: 1px solid var(--card-border);
             padding: 10px 24px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
+            gap: 16px;
             font-size: 0.9rem;
             color: var(--text-muted);
         }
-        .token-pill {
+        .token-display {
             background: #fef3c7;
             border: 1px solid #fde68a;
             color: #d97706;
             padding: 4px 12px;
             border-radius: 20px;
             font-weight: 600;
-            cursor: pointer;
             font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
+        .token-guide-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .token-guide-btn {
+            background: #f1f5f9;
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .token-guide-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 32px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            width: 280px;
+            padding: 12px;
+            z-index: 500;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        .token-guide-dropdown:hover .token-guide-content { display: block; }
 
         /* Navigation Tabs */
         .nav-tabs {
@@ -158,8 +192,8 @@
         .close-btn:hover { background: #e2e8f0; }
 
         /* Cafe Menu & Serving Animation */
-        .cafe-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        .menu-item { background: #f8fafc; border: 1px solid var(--card-border); padding: 14px; border-radius: 10px; text-align: center; }
+        .cafe-menu { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .menu-item { background: #f8fafc; border: 1px solid var(--card-border); padding: 12px; border-radius: 10px; text-align: center; }
         
         #servingTray {
             margin-top: 20px; background: #f8fafc; border: 1px dashed var(--card-border); border-radius: 10px;
@@ -172,16 +206,15 @@
         }
         .served-item { font-size: 3rem; animation: pourServe 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-        /* Calendar View Grid */
-        .calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        /* Calendar View Grid (Weekly or Monthly) */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
         .cal-header { font-weight: 600; font-size: 0.8rem; color: var(--text-muted); padding: 6px; }
-        .cal-day { background: #f8fafc; border: 1px solid var(--card-border); border-radius: 6px; min-height: 85px; padding: 6px; font-size: 0.85rem; text-align: left; cursor: pointer; position: relative; }
-        .cal-day:hover { border-color: var(--text-main); }
-        .cal-day.today { border-color: var(--primary); background: #ffffff; font-weight: bold; }
+        .cal-day { background: #f8fafc; border: 1px solid var(--card-border); border-radius: 6px; min-height: 85px; padding: 6px; font-size: 0.85rem; text-align: left; position: relative; }
         .cal-event-pill { font-size: 0.7rem; padding: 2px 4px; border-radius: 3px; color: #fff; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 
-        /* To-Do List */
+        /* To-Do List & Countdowns Layout */
+        .todo-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        @media(max-width: 768px) { .todo-container { grid-template-columns: 1fr; } }
         .todo-item { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid var(--card-border); padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; }
         .todo-left { display: flex; align-items: center; gap: 10px; flex: 1; }
         .todo-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); margin: 0; }
@@ -215,60 +248,77 @@
 
     <!-- Currency & Cafe Bar -->
     <div class="currency-bar">
-        <div>Partner in Law Workspace</div>
-        <div class="token-pill" onclick="openCafeModal()">☕ <span id="tokenCount">0</span> Tokens (Open Cafe)</div>
+        <div class="token-display">
+            ☕ <span id="tokenCount">0</span> Tokens
+        </div>
+        <div class="token-guide-dropdown">
+            <button class="token-guide-btn">Token Earning Guide ▾</button>
+            <div class="token-guide-content">
+                <strong>How to Earn Tokens:</strong><br>
+                • +1 Token: Daily Log On<br>
+                • +5 Tokens: Reading task completed<br>
+                • +10 Tokens: Tutorial completed<br>
+                • +20 Tokens: Studying / Revision session<br>
+                • +50 Tokens: Application / Interview round completed<br>
+                • +100 Tokens: Successfully landing a VS/TC offer!
+            </div>
+        </div>
+        <button class="secondary" onclick="openCafeModal()" style="font-size:0.85rem; padding:4px 12px;">Open Cafe</button>
     </div>
 
     <!-- Navigation Tabs -->
     <div class="nav-tabs">
         <button class="nav-tab active" onclick="switchTab('master')">🗓️ Master Schedule</button>
-        <button class="nav-tab" onclick="switchTab('tracker')">💼 Vac Scheme & TC Tracker</button>
-        <button class="nav-tab" onclick="switchTab('planner')">📅 Exam Revision Planner</button>
+        <button class="nav-tab" onclick="switchTab('tracker')">💼 Application Tracker</button>
+        <button class="nav-tab" onclick="switchTab('lawschool')">📚 Law School</button>
     </div>
 
     <!-- Main Container -->
     <div class="main-container">
 
-        <!-- TAB 1: MASTER SCHEDULE (DEFAULT) -->
+        <!-- TAB 1: MASTER SCHEDULE -->
         <div id="tab-master" class="tab-content active">
             <div class="card">
                 <h2>Semester Classes Configuration</h2>
-                <p>Define your classes and assign colors for schedule tagging.</p>
                 <div id="classesConfigContainer"></div>
                 <button class="secondary" onclick="addClassConfigRow()" style="margin-top:8px;">+ Add Class</button>
             </div>
 
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
-                    <h2>Master Schedule & To-Do List</h2>
+                    <h2>Master Schedule & Weekly Calendar</h2>
                     <button onclick="openAddTaskModal(null)">+ Add Task / Event</button>
                 </div>
                 
-                <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <button class="secondary" id="calViewBtn" onclick="switchMasterSubView('calendar')">Calendar View</button>
-                    <button class="secondary" id="todoViewBtn" onclick="switchMasterSubView('todo')">To-Do List</button>
-                </div>
+                <!-- Weekly Calendar View -->
+                <div id="weeklyCalendarContainer" style="margin-bottom:25px;"></div>
 
-                <div id="masterSubContainer"></div>
+                <h2>To-Do List & Deadlines</h2>
+                <div class="todo-container">
+                    <div id="todoListContainer"></div>
+                    <div>
+                        <h3>⏳ Live Countdowns</h3>
+                        <div id="masterCountdownsContainer"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- TAB 2: VAC SCHEME & TC TRACKER -->
+        <!-- TAB 2: APPLICATION TRACKER -->
         <div id="tab-tracker" class="tab-content">
             <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <div>
-                    <h2>Vacation Scheme & TC Tracker</h2>
-                    <p>Track applications across pending and active stages.</p>
+                    <h2>Vacation Scheme & Training Contract Tracker</h2>
                 </div>
                 <div style="display:flex; gap:10px;">
                     <button onclick="openAddFirmModal()">+ Add Firm Application</button>
-                    <button class="secondary" onclick="openGraveyardModal()">🪦 Graveyard (<span id="graveyardCount">0</span>)</button>
+                    <button class="secondary" onclick="openHistoryModal()">📋 Firm History</button>
                 </div>
             </div>
 
             <div class="grid-2">
                 <div class="card">
-                    <h3>⏳ Pending Applications (Want to Apply)</h3>
+                    <h3>⏳ Pending Applications (Looking to Apply)</h3>
                     <div id="pendingFirmGrid" class="firm-grid"></div>
                 </div>
                 <div class="card">
@@ -276,22 +326,33 @@
                     <div id="activeFirmGrid" class="firm-grid"></div>
                 </div>
             </div>
+
+            <!-- Graveyard under Application Tracker -->
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3>🪦 The Graveyard</h3>
+                    <button class="secondary" onclick="openReviveModal()">💧 Watering Can (Revive)</button>
+                </div>
+                <p>Unsuccessful applications rest here. Click the watering can to select and revive firms for free!</p>
+                <div id="graveyardGrid" class="firm-grid"></div>
+            </div>
         </div>
 
-        <!-- TAB 3: EXAM REVISION PLANNER -->
-        <div id="tab-planner" class="tab-content">
+        <!-- TAB 3: LAW SCHOOL -->
+        <div id="tab-school" class="tab-content">
             <div class="card">
-                <h2>Exam Revision Planner & Final Countdown</h2>
-                <p>Input your exams to automatically mark them on your Master Schedule and view countdowns.</p>
-
+                <h2>Law School: Exams & Class Hub</h2>
+                <p>Configure your exams with countdowns and view your class tasks organized by subject.</p>
+                
+                <h3>Exams Configuration</h3>
                 <div id="examsListContainer"></div>
                 <button class="secondary" onclick="addExamInputRow()" style="margin-top:5px; margin-bottom:15px;">+ Add Exam</button>
-                <button onclick="saveExamsList()" style="width:100%;">Save Exams to Master Schedule</button>
+                <button onclick="saveExamsList()" style="width:100%;">Save Exams & Update Master Schedule</button>
             </div>
 
             <div class="card">
-                <h3>⏳ Exam Countdowns</h3>
-                <div id="examCountdownsContainer"></div>
+                <h2>Task Breakdown by Class</h2>
+                <div id="classTaskTablesContainer"></div>
             </div>
         </div>
 
@@ -301,22 +362,20 @@
     <div class="mobile-nav">
         <button class="mobile-btn active" onclick="switchTab('master'); highlightMobileNav(this)">🗓️<span>Schedule</span></button>
         <button class="mobile-btn" onclick="switchTab('tracker'); highlightMobileNav(this)">💼<span>Tracker</span></button>
-        <button class="mobile-btn" onclick="switchTab('planner'); highlightMobileNav(this)">📅<span>Planner</span></button>
+        <button class="mobile-btn" onclick="switchTab('lawschool'); highlightMobileNav(this)">📚<span>Law School</span></button>
     </div>
 
-    <!-- MODALS WITH EXIT BUTTONS -->
+    <!-- MODALS -->
 
     <!-- Cafe Modal -->
     <div class="modal-overlay" id="cafeModal">
         <div class="modal">
             <button class="close-btn" onclick="closeCafeModal()">✕</button>
             <h3>☕ Student Café</h3>
-            <p>Spend your vault tokens on drinks and food rewards.</p>
             <div style="font-weight:600; margin-bottom:10px; font-size:0.9rem;">Your Tokens: <span id="modalTokenCount">0</span></div>
             <div class="cafe-menu" id="cafeMenuGrid"></div>
-            
             <div id="servingTray">
-                <span style="color:var(--text-muted); font-size:0.85rem;">Your ordered item will be freshly prepared and served here!</span>
+                <span style="color:var(--text-muted); font-size:0.85rem;">Your ordered item will be prepared and served here!</span>
             </div>
         </div>
     </div>
@@ -327,10 +386,10 @@
             <button class="close-btn" onclick="closeTaskModal()">✕</button>
             <h3 id="taskModalTitle">Add Task or Event</h3>
             <label>Title</label>
-            <input type="text" id="taskTitleInput" placeholder="e.g., Contract Law reading">
+            <input type="text" id="taskTitleInput">
             <label>Date</label>
             <input type="date" id="taskDateInput">
-            <label>Class</label>
+            <label>Class / Category</label>
             <select id="taskClassSelect"></select>
             <label>Type</label>
             <select id="taskTypeSelect">
@@ -338,6 +397,7 @@
                 <option value="tutorial">Tutorial</option>
                 <option value="revision">Revision</option>
                 <option value="exam">Exam</option>
+                <option value="application">Application Deadline / Event</option>
             </select>
             <div style="display:flex; gap:10px; margin-top:10px;">
                 <button onclick="saveTaskModal()" style="flex:1;">Save Task</button>
@@ -352,11 +412,15 @@
             <button class="close-btn" onclick="closeAddFirmModal()">✕</button>
             <h3>Add Firm Application</h3>
             <label>Firm Name</label>
-            <input type="text" id="newFirmName" placeholder="e.g., Magic Circle LLP">
-            <label>Initial Stage</label>
-            <select id="newFirmCategory">
-                <option value="pending">Want to Apply (Pending)</option>
-                <option value="active">Active Application</option>
+            <input type="text" id="newFirmName">
+            <label>Stage</label>
+            <select id="newFirmStage">
+                <option value="Looking to apply">Looking to apply</option>
+                <option value="Application">Application</option>
+                <option value="Assessment">Assessment</option>
+                <option value="Video interview">Video interview</option>
+                <option value="In-person interview">In-person interview</option>
+                <option value="Manual Add">Manual Add</option>
             </select>
             <label>Deadline Date</label>
             <input type="date" id="newFirmDeadline">
@@ -369,18 +433,27 @@
         <div class="modal" id="firmDetailsContent"></div>
     </div>
 
-    <!-- Graveyard Modal -->
-    <div class="modal-overlay" id="graveyardModal">
+    <!-- Firm History Modal -->
+    <div class="modal-overlay" id="historyModal">
         <div class="modal">
-            <button class="close-btn" onclick="closeGraveyardModal()">✕</button>
-            <h3>🪦 The Graveyard</h3>
-            <p>Unsuccessful applications lie here. Use the watering can 💧 to revive them with an angel halo for the next cycle!</p>
-            <div id="graveyardGrid" class="firm-grid"></div>
+            <button class="close-btn" onclick="closeHistoryModal()">✕</button>
+            <h3>📋 Firm History Archive</h3>
+            <div id="firmHistoryContainer"></div>
+        </div>
+    </div>
+
+    <!-- Revive Modal (Watering Can) -->
+    <div class="modal-overlay" id="reviveModal">
+        <div class="modal">
+            <button class="close-btn" onclick="closeReviveModal()">✕</button>
+            <h3>💧 Watering Can - Revive Firms</h3>
+            <p>Select one or more firms to revive from the graveyard for free:</p>
+            <div id="reviveCheckboxContainer" style="margin: 15px 0;"></div>
+            <button onclick="confirmReviveSelectedFirms()" style="width:100%;">Revive Selected Firms</button>
         </div>
     </div>
 
     <script>
-        // Global App State
         let state = {
             tokens: 0,
             classes: [
@@ -393,8 +466,8 @@
                 { id: 2, title: "Contract Law Final Exam", date: "2026-06-20", className: "Contract Law", type: "exam", completed: false }
             ],
             firms: [
-                { id: 1, name: "Clifford Chance", category: "pending", deadline: "2026-06-15", round: "Written Application", inviteDate: "", assessmentDate: "", prepNotes: "", postNotes: "", revived: false },
-                { id: 2, name: "Linklaters", category: "active", deadline: "2026-06-10", round: "Assessment Centre", inviteDate: "2026-05-01", assessmentDate: "2026-06-08", prepNotes: "Reviewed commercial awareness cases.", postNotes: "Went well, good group interaction.", revived: false }
+                { id: 1, name: "Clifford Chance", stage: "Looking to apply", deadline: "2026-06-15", history: [{ round: "Looking to apply", date: "2026-05-01", notes: "Initial interest logged." }], revived: false },
+                { id: 2, name: "Linklaters", stage: "Assessment", deadline: "2026-06-10", history: [{ round: "Application", date: "2026-05-05", notes: "Submitted online form." }, { round: "Assessment", date: "2026-05-20", notes: "Completed Watson Glaser." }], revived: false }
             ],
             graveyard: [],
             exams: [
@@ -402,8 +475,39 @@
             ]
         };
 
-        let currentCalendarYear = 2026;
-        let currentCalendarMonth = 5; // June (0-indexed)
+        // Daily log-on token award simulation on load
+        window.addEventListener('DOMContentLoaded', () => {
+            addTokens(1);
+            renderClassesConfig();
+            renderWeeklyCalendar();
+            renderTodoList();
+            renderFirmsTracker();
+            renderGraveyard();
+            renderExamsPlanner();
+            renderClassTaskTables();
+        });
+
+        function addTokens(amt) {
+            state.tokens += amt;
+            document.getElementById('tokenCount').innerText = state.tokens;
+            document.getElementById('modalTokenCount').innerText = state.tokens;
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                if(btn.getAttribute('onclick').includes(tabId)) btn.classList.add('active');
+            });
+            if(tabId === 'lawschool') { renderExamsPlanner(); renderClassTaskTables(); }
+        }
+
+        function highlightMobileNav(btn) {
+            document.querySelectorAll('.mobile-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
 
         // --- CLASSES CONFIG ---
         function renderClassesConfig() {
@@ -422,12 +526,12 @@
         }
 
         function addClassConfigRow() {
-            state.classes.push({ name: "New Class", color: "#6366f1" });
+            state.classes.push({ name: "", color: "#6366f1" });
             renderClassesConfig();
         }
 
         function updateClassName(idx, val) { state.classes[idx].name = val; updateTaskClassDropdown(); }
-        function updateClassColor(idx, val) { state.classes[idx].color = val; if(currentSubView === 'calendar') renderCalendar(); }
+        function updateClassColor(idx, val) { state.classes[idx].color = val; renderWeeklyCalendar(); renderTodoList(); }
         function removeClassConfig(idx) { state.classes.splice(idx, 1); renderClassesConfig(); }
 
         function updateTaskClassDropdown() {
@@ -437,38 +541,20 @@
             state.classes.forEach(c => {
                 select.innerHTML += `<option value="${c.name}">${c.name}</option>`;
             });
+            select.innerHTML += `<option value="Application">Application (General)</option>`;
         }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            
-            document.querySelectorAll('.nav-tab').forEach(btn => {
-                if(btn.getAttribute('onclick').includes(tabId)) btn.classList.add('active');
-            });
-            if(tabId === 'planner') renderExamsPlanner();
-        }
-
-        function highlightMobileNav(btn) {
-            document.querySelectorAll('.mobile-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-
-        function addTokens(amt) {
-            state.tokens += amt;
-            document.getElementById('tokenCount').innerText = state.tokens;
-            document.getElementById('modalTokenCount').innerText = state.tokens;
-        }
-
-        // --- CAFE SYSTEM & ANIMATION ---
+        // --- CAFE SYSTEM ---
         const cafeItems = [
             { name: "Tap Water 💧", price: 5, icon: "💧" },
             { name: "Espresso ☕", price: 20, icon: "☕" },
             { name: "Matcha Latte 🍵", price: 30, icon: "🍵" },
             { name: "Avocado Toast 🥑", price: 40, icon: "🥑" },
             { name: "Croissant 🥐", price: 45, icon: "🥐" },
-            { name: "Salmon Bento 🍱", price: 90, icon: "🍱" }
+            { name: "Salmon Bento 🍱", price: 90, icon: "🍱" },
+            { name: "Pancakes 🥞", price: 60, icon: "🥞" },
+            { name: "Smoothie 🍓", price: 50, icon: "🍓" },
+            { name: "Bagel 🥯", price: 35, icon: "🥯" }
         ];
 
         function openCafeModal() {
@@ -495,7 +581,7 @@
         function buyCafeItem(idx) {
             const item = cafeItems[idx];
             if(state.tokens < item.price) {
-                alert("Not enough tokens! Complete study tasks to earn more.");
+                alert("Not enough tokens!");
                 return;
             }
             state.tokens -= item.price;
@@ -503,102 +589,76 @@
             
             const tray = document.getElementById('servingTray');
             tray.innerHTML = `
-                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">Freshly prepared & served:</div>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">Prepared & served:</div>
                 <div class="served-item">${item.icon}</div>
                 <div style="font-weight:600; font-size:0.85rem; margin-top:4px;">Enjoy your ${item.name}!</div>
             `;
         }
 
-        // --- MASTER SCHEDULE: CALENDAR & TODO ---
-        let currentSubView = 'calendar';
-        let editingTaskId = null;
-
-        function switchMasterSubView(view) {
-            currentSubView = view;
-            const container = document.getElementById('masterSubContainer');
+        // --- WEEKLY CALENDAR & MASTER SCHEDULE ---
+        function renderWeeklyCalendar() {
+            const container = document.getElementById('weeklyCalendarContainer');
+            const today = new Date();
+            const currentDayOfWeek = today.getDay();
+            const mondayOffset = currentDayOfWeek === 0 ? -6 : 1 - currentDayOfWeek;
             
-            if(view === 'calendar') {
-                document.getElementById('calViewBtn').style.background = 'var(--primary)';
-                document.getElementById('calViewBtn').style.color = '#fff';
-                document.getElementById('todoViewBtn').style.background = '#f1f5f9';
-                document.getElementById('todoViewBtn').style.color = 'var(--text-main)';
-                renderCalendar();
-            } else {
-                document.getElementById('todoViewBtn').style.background = 'var(--primary)';
-                document.getElementById('todoViewBtn').style.color = '#fff';
-                document.getElementById('calViewBtn').style.background = '#f1f5f9';
-                document.getElementById('calViewBtn').style.color = 'var(--text-main)';
-                renderTodoList();
+            let monday = new Date(today);
+            monday.setDate(today.getDate() + mondayOffset);
+
+            let weekDays = [];
+            for(let i = 0; i < 7; i++) {
+                let d = new Date(monday);
+                d.setDate(monday.getDate() + i);
+                weekDays.push(d);
             }
-        }
 
-        function renderCalendar() {
-            const container = document.getElementById('masterSubContainer');
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            
-            let html = `
-                <div class="calendar-nav">
-                    <button class="secondary" onclick="changeMonth(-1)">‹ Prev</button>
-                    <h3 style="margin:0;">${monthNames[currentCalendarMonth]} ${currentCalendarYear}</h3>
-                    <button class="secondary" onclick="changeMonth(1)">Next ›</button>
-                </div>
-                <div class="calendar-grid">
-            `;
-
+            let html = `<div class="calendar-grid">`;
             const headers = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             headers.forEach(h => html += `<div class="cal-header">${h}</div>`);
 
-            const firstDayIndex = new Date(currentCalendarYear, currentCalendarMonth, 1).getDay();
-            const adjustedFirstDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
-            const totalDays = new Date(currentCalendarYear, currentCalendarMonth + 1, 0).getDate();
-
-            // Blank padding for previous month days
-            for(let i = 0; i < adjustedFirstDay; i++) {
-                html += `<div class="cal-day" style="opacity:0.3; background:none; cursor:default;"></div>`;
-            }
-
-            for(let i = 1; i <= totalDays; i++) {
-                let monthStr = String(currentCalendarMonth + 1).padStart(2, '0');
-                let dayStr = String(i).padStart(2, '0');
-                let dateKey = `${currentCalendarYear}-${monthStr}-${dayStr}`;
-
+            weekDays.forEach(d => {
+                let dateKey = d.toISOString().split('T')[0];
                 let dayTasks = state.tasks.filter(t => t.date === dateKey);
                 let eventsHtml = '';
                 dayTasks.forEach(dt => {
-                    let classObj = state.classes.find(c => c.name === dt.className);
-                    let color = classObj ? classObj.color : '#0f172a';
-                    eventsHtml += `<span class="cal-event-pill" style="background:${color};" onclick="event.stopPropagation(); openEditTaskModal(${dt.id})">${dt.title} (${dt.type})</span>`;
+                    let color = varColorForTask(dt.className, dt.type);
+                    eventsHtml += `<span class="cal-event-pill" style="background:${color};" onclick="event.stopPropagation(); openEditTaskModal(${dt.id})">${dt.title}</span>`;
                 });
 
                 html += `
-                    <div class="cal-day" onclick="openAddTaskModalForDate('${dateKey}')">
-                        <div style="font-weight:600; margin-bottom:4px;">${i}</div>
+                    <div class="cal-day" onclick="openAddTaskModal('${dateKey}')">
+                        <div style="font-weight:600; margin-bottom:4px;">${d.getDate()}</div>
                         ${eventsHtml}
                     </div>
                 `;
-            }
+            });
 
             html += `</div>`;
             container.innerHTML = html;
         }
 
-        function changeMonth(direction) {
-            currentCalendarMonth += direction;
-            if(currentCalendarMonth > 11) { currentCalendarMonth = 0; currentCalendarYear++; }
-            else if(currentCalendarMonth < 0) { currentCalendarMonth = 11; currentCalendarYear--; }
-            renderCalendar();
+        function varColorForTask(className, type) {
+            if(type === 'application' || className === 'Application') return 'var(--app-color)';
+            let c = state.classes.find(cls => cls.name === className);
+            return c ? c.color : 'var(--primary)';
         }
 
         function renderTodoList() {
-            const container = document.getElementById('masterSubContainer');
+            const container = document.getElementById('todoListContainer');
+            const countdownContainer = document.getElementById('masterCountdownsContainer');
+            
+            // Sort tasks by deadline date
+            let sortedTasks = [...state.tasks].sort((a, b) => new Date(a.date) - new Date(b.date));
+            
             let html = '';
-            if(state.tasks.length === 0) {
-                container.innerHTML = `<p style="text-align:center;">No tasks scheduled yet.</p>`;
+            if(sortedTasks.length === 0) {
+                container.innerHTML = `<p>No tasks scheduled.</p>`;
+                countdownContainer.innerHTML = `<p>No deadlines.</p>`;
                 return;
             }
-            state.tasks.forEach((t, idx) => {
-                let classObj = state.classes.find(c => c.name === t.className);
-                let color = classObj ? classObj.color : '#0f172a';
+
+            sortedTasks.forEach((t) => {
+                let color = varColorForTask(t.className, t.type);
                 html += `
                     <div class="todo-item ${t.completed ? 'completed' : ''}">
                         <div class="todo-left">
@@ -619,17 +679,39 @@
                 `;
             });
             container.innerHTML = html;
+
+            // Render live countdowns on side
+            let cHtml = '';
+            const today = new Date();
+            sortedTasks.forEach(t => {
+                let tDate = new Date(t.date);
+                let diffDays = Math.ceil((tDate - today) / (1000 * 60 * 60 * 24));
+                cHtml += `
+                    <div style="background:#f8fafc; border:1px solid var(--card-border); padding:10px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.85rem; font-weight:500;">${t.title}</span>
+                        <span style="font-size:0.8rem; font-weight:bold; color:${diffDays<=3?'var(--danger)':'var(--primary)'}">${diffDays>=0?diffDays+'d left':'Passed'}</span>
+                    </div>
+                `;
+            });
+            countdownContainer.innerHTML = cHtml;
         }
 
         function toggleTask(id) {
             const t = state.tasks.find(task => task.id === id);
             if(t) {
                 t.completed = !t.completed;
-                if(t.completed) addTokens(5);
-                if(currentSubView === 'todo') renderTodoList();
+                if(t.completed) {
+                    if(t.type === 'reading') addTokens(5);
+                    else if(t.type === 'tutorial') addTokens(10);
+                    else if(t.type === 'revision') addTokens(20);
+                    else addTokens(5);
+                }
+                renderTodoList();
+                renderWeeklyCalendar();
             }
         }
 
+        let editingTaskId = null;
         function openAddTaskModal(dateStr) {
             editingTaskId = null;
             document.getElementById('taskModalTitle').innerText = "Add Task or Event";
@@ -639,8 +721,6 @@
             updateTaskClassDropdown();
             document.getElementById('taskModal').style.display = 'flex';
         }
-
-        function openAddTaskModalForDate(dateStr) { openAddTaskModal(dateStr); }
 
         function openEditTaskModal(id) {
             editingTaskId = id;
@@ -670,45 +750,52 @@
                 if(t) { t.title = title; t.date = date; t.className = className; t.type = type; }
             } else {
                 state.tasks.push({ id: Date.now(), title, date: date || '2026-06-01', className, type, completed: false });
-                addTokens(10);
             }
             closeTaskModal();
-            if(currentSubView === 'calendar') renderCalendar();
-            else renderTodoList();
+            renderWeeklyCalendar();
+            renderTodoList();
+            renderClassTaskTables();
         }
 
         function deleteTask(id) {
             state.tasks = state.tasks.filter(t => t.id !== id);
-            if(currentSubView === 'calendar') renderCalendar();
-            else renderTodoList();
+            renderWeeklyCalendar();
+            renderTodoList();
+            renderClassTaskTables();
         }
 
         function deleteCurrentTask() {
-            if(editingTaskId) {
-                deleteTask(editingTaskId);
-                closeTaskModal();
-            }
+            if(editingTaskId) { deleteTask(editingTaskId); closeTaskModal(); }
         }
 
-        // --- VACATION SCHEME & TC TRACKER ---
-        function openAddFirmModal() { document.getElementById('addFirmModal').style.display = 'flex'; }
+        // --- APPLICATION TRACKER & HISTORY ---
+        function openAddFirmModal() {
+            document.getElementById('newFirmName').value = "";
+            document.getElementById('newFirmDeadline').value = "";
+            document.getElementById('addFirmModal').style.display = 'flex';
+        }
         function closeAddFirmModal() { document.getElementById('addFirmModal').style.display = 'none'; }
 
         function saveNewFirm() {
             const name = document.getElementById('newFirmName').value.trim();
-            const category = document.getElementById('newFirmCategory').value;
+            const stage = document.getElementById('newFirmStage').value;
             const deadline = document.getElementById('newFirmDeadline').value;
-            if(!name) return;
+            if(!name) { alert("Please enter firm name."); return; }
+
+            // Duplicate detection popup
+            let duplicate = state.firms.find(f => f.name.toLowerCase() === name.toLowerCase());
+            if(duplicate) {
+                if(!confirm(`Warning: A firm named "${duplicate.name}" already exists. Click OK to add duplicate or Cancel to go back.`)) {
+                    return;
+                }
+            }
 
             state.firms.push({
                 id: Date.now(),
-                name, category,
+                name,
+                stage,
                 deadline: deadline || '2026-06-15',
-                round: "Written Application",
-                inviteDate: "",
-                assessmentDate: "",
-                prepNotes: "",
-                postNotes: "",
+                history: [{ round: stage, date: new Date().toISOString().split('T')[0], notes: "Initial stage logged." }],
                 revived: false
             });
             closeAddFirmModal();
@@ -727,14 +814,13 @@
                     <div class="firm-card" onclick="openFirmDetails(${f.id})">
                         ${halo}
                         <div style="font-weight:600; font-size:0.95rem; margin-bottom:4px;">${f.name}</div>
-                        <div style="font-size:0.8rem; color:var(--text-muted);">Stage: ${f.round}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">Stage: ${f.stage}</div>
                         <div style="font-size:0.75rem; color:var(--warning); margin-top:6px;">Deadline: ${f.deadline}</div>
                     </div>
                 `;
-                if(f.category === 'pending') pendingGrid.innerHTML += html;
+                if(f.stage === 'Looking to apply') pendingGrid.innerHTML += html;
                 else activeGrid.innerHTML += html;
             });
-            document.getElementById('graveyardCount').innerText = state.graveyard.length;
         }
 
         function openFirmDetails(id) {
@@ -745,76 +831,100 @@
 
             document.getElementById('firmDetailsContent').innerHTML = `
                 <button class="close-btn" onclick="document.getElementById('firmDetailsModal').style.display='none'">✕</button>
-                <h3>${f.name} Application</h3>
+                <h3>Edit Firm: ${f.name}</h3>
                 
-                <label>Category / Status</label>
-                <select id="editFirmCategory">
-                    <option value="pending" ${f.category==='pending'?'selected':''}>Pending (Want to Apply)</option>
-                    <option value="active" ${f.category==='active'?'selected':''}>Active Application</option>
-                </select>
+                <label>Firm Name</label>
+                <input type="text" id="editFirmNameVal" value="${f.name}">
 
-                <label>Current Round / Stage</label>
-                <select id="editFirmRound">
-                    <option value="Written Application" ${f.round==='Written Application'?'selected':''}>Written Application</option>
-                    <option value="Online Test" ${f.round==='Online Test'?'selected':''}>Online Test</option>
-                    <option value="Video Interview" ${f.round==='Video Interview'?'selected':''}>Video Interview</option>
-                    <option value="Assessment Centre" ${f.round==='Assessment Centre'?'selected':''}>Assessment Centre</option>
-                    <option value="Partner Interview" ${f.round==='Partner Interview'?'selected':''}>Partner Interview</option>
+                <label>Stage</label>
+                <select id="editFirmStageVal">
+                    <option value="Looking to apply" ${f.stage==='Looking to apply'?'selected':''}>Looking to apply</option>
+                    <option value="Application" ${f.stage==='Application'?'selected':''}>Application</option>
+                    <option value="Assessment" ${f.stage==='Assessment'?'selected':''}>Assessment</option>
+                    <option value="Video interview" ${f.stage==='Video interview'?'selected':''}>Video interview</option>
+                    <option value="In-person interview" ${f.stage==='In-person interview'?'selected':''}>In-person interview</option>
+                    <option value="Manual Add" ${f.stage==='Manual Add'?'selected':''}>Manual Add</option>
                 </select>
 
                 <label>Deadline Date</label>
-                <input type="date" id="editFirmDeadline" value="${f.deadline}">
+                <input type="date" id="editFirmDeadlineVal" value="${f.deadline}">
 
-                <label>Invitation Date</label>
-                <input type="date" id="editFirmInviteDate" value="${f.inviteDate}">
-
-                <label>Interview / Assessment Date</label>
-                <input type="date" id="editFirmAssessmentDate" value="${f.assessmentDate}">
-
-                <label>Preparatory Notes (Research, Key Cases, Firm Values)</label>
-                <textarea id="editFirmPrepNotes">${f.prepNotes}</textarea>
-
-                <label>Post-Interview Reflection (How it went, what to improve)</label>
-                <textarea id="editFirmPostNotes">${f.postNotes}</textarea>
+                <label>Round / Stage Notes</label>
+                <textarea id="editFirmNotesVal" placeholder="Add notes for this round..."></textarea>
 
                 <div style="display:flex; gap:10px; margin-top:10px;">
-                    <button onclick="saveFirmDetails(${f.id})" style="flex:1;">Save Updates</button>
-                    <button onclick="rejectFirm(${f.id})" class="secondary" style="background:#fee2e2; color:#991b1b;">Reject / Graveyard 🪦</button>
+                    <button onclick="saveFirmUpdates(${f.id})" style="flex:1;">Save Updates</button>
+                    <button onclick="rejectFirmToGraveyard(${f.id})" class="secondary" style="background:#fee2e2; color:#991b1b;">Reject / Graveyard 🪦</button>
                 </div>
             `;
         }
 
-        function saveFirmDetails(id) {
+        function saveFirmUpdates(id) {
             const f = state.firms.find(firm => firm.id === id);
             if(!f) return;
-            f.category = document.getElementById('editFirmCategory').value;
-            f.round = document.getElementById('editFirmRound').value;
-            f.deadline = document.getElementById('editFirmDeadline').value;
-            f.inviteDate = document.getElementById('editFirmInviteDate').value;
-            f.assessmentDate = document.getElementById('editFirmAssessmentDate').value;
-            f.prepNotes = document.getElementById('editFirmPrepNotes').value;
-            f.postNotes = document.getElementById('editFirmPostNotes').value;
+
+            const newName = document.getElementById('editFirmNameVal').value.trim();
+            const newStage = document.getElementById('editFirmStageVal').value;
+            const newDeadline = document.getElementById('editFirmDeadlineVal').value;
+            const newNotes = document.getElementById('editFirmNotesVal').value.trim();
+
+            if(newName !== f.name) {
+                if(!confirm(`Warning: Changing firm name from "${f.name}" to "${newName}" will permanently clear or reset its legacy history data. Proceed?`)) {
+                    return;
+                }
+                f.name = newName;
+                f.history = []; // Reset history on major name change as requested
+            }
+
+            f.stage = newStage;
+            f.deadline = newDeadline;
+            if(newNotes) {
+                f.history.push({ round: newStage, date: new Date().toISOString().split('T')[0], notes: newNotes });
+            }
 
             document.getElementById('firmDetailsModal').style.display = 'none';
             renderFirmsTracker();
         }
 
-        function rejectFirm(id) {
+        function rejectFirmToGraveyard(id) {
             const idx = state.firms.findIndex(firm => firm.id === id);
             if(idx > -1) {
                 const f = state.firms.splice(idx, 1)[0];
                 state.graveyard.push(f);
                 document.getElementById('firmDetailsModal').style.display = 'none';
                 renderFirmsTracker();
+                renderGraveyard();
             }
         }
 
-        function openGraveyardModal() {
-            document.getElementById('graveyardModal').style.display = 'flex';
-            renderGraveyard();
+        function openHistoryModal() {
+            document.getElementById('historyModal').style.display = 'flex';
+            const container = document.getElementById('firmHistoryContainer');
+            let html = '';
+            let allFirms = [...state.firms, ...state.graveyard];
+            if(allFirms.length === 0) {
+                container.innerHTML = `<p>No firm history available.</p>`;
+                return;
+            }
+            allFirms.forEach(f => {
+                html += `<div style="background:#f8fafc; border:1px solid var(--card-border); padding:14px; border-radius:8px; margin-bottom:10px;">
+                    <div style="font-weight:600; font-size:1rem;">${f.name} <span style="font-weight:normal; font-size:0.8rem; color:var(--text-muted);">(${f.stage})</span></div>`;
+                if(f.history && f.history.length > 0) {
+                    f.history.forEach(h => {
+                        html += `<div style="font-size:0.8rem; margin-top:4px; border-left:2px solid var(--primary); padding-left:8px;">
+                            <strong>${h.round}</strong> (${h.date}): ${h.notes}
+                        </div>`;
+                    });
+                } else {
+                    html += `<div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">No history logs yet.</div>`;
+                }
+                html += `</div>`;
+            });
+            container.innerHTML = html;
         }
-        function closeGraveyardModal() { document.getElementById('graveyardModal').style.display = 'none'; }
+        function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
 
+        // --- GRAVEYARD & WATERING CAN REVIVE ---
         function renderGraveyard() {
             const grid = document.getElementById('graveyardGrid');
             grid.innerHTML = "";
@@ -822,28 +932,54 @@
                 grid.innerHTML = `<p style="grid-column: span 2; text-align:center;">The graveyard is empty.</p>`;
                 return;
             }
-            state.graveyard.forEach((f, idx) => {
+            state.graveyard.forEach((f) => {
                 grid.innerHTML += `
                     <div class="firm-card" style="opacity:0.7;">
                         <div style="font-weight:600;">${f.name}</div>
-                        <div style="font-size:0.75rem; color:var(--danger); margin-bottom:8px;">Tombstone</div>
-                        <button onclick="reviveFirm(${idx})" style="background:var(--accent); font-size:0.75rem; padding:4px 8px;">💧 Revive</button>
+                        <div style="font-size:0.75rem; color:var(--danger); margin-bottom:8px;">Unsuccessful</div>
                     </div>
                 `;
             });
         }
 
-        function reviveFirm(idx) {
-            const f = state.graveyard.splice(idx, 1)[0];
-            f.revived = true;
-            f.category = "pending";
-            state.firms.push(f);
-            renderGraveyard();
+        function openReviveModal() {
+            if(state.graveyard.length === 0) {
+                alert("The graveyard is empty! No firms to revive.");
+                return;
+            }
+            const container = document.getElementById('reviveCheckboxContainer');
+            container.innerHTML = '';
+            state.graveyard.forEach((f, idx) => {
+                container.innerHTML += `
+                    <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:normal; font-size:0.9rem; cursor:pointer;">
+                        <input type="checkbox" value="${idx}" class="revive-checkbox" style="width:16px; height:16px; accent-color:var(--accent);">
+                        ${f.name}
+                    </label>
+                `;
+            });
+            document.getElementById('reviveModal').style.display = 'flex';
+        }
+        function closeReviveModal() { document.getElementById('reviveModal').style.display = 'none'; }
+
+        function confirmReviveSelectedFirms() {
+            const checkboxes = document.querySelectorAll('.revive-checkbox:checked');
+            if(checkboxes.length === 0) { alert("Please select at least one firm to revive."); return; }
+
+            let indicesToRevive = Array.from(checkboxes).map(cb => parseInt(cb.value)).sort((a,b) => b-a);
+            indicesToRevive.forEach(idx => {
+                let f = state.graveyard.splice(idx, 1)[0];
+                f.revived = true;
+                f.stage = "Looking to apply";
+                state.firms.push(f);
+            });
+
+            closeReviveModal();
             renderFirmsTracker();
-            alert(`✨ ${f.name} revived with a halo angel badge!`);
+            renderGraveyard();
+            alert("✨ Selected firms successfully revived with halo badges for free!");
         }
 
-        // --- EXAM REVISION PLANNER ---
+        // --- LAW SCHOOL TAB ---
         function renderExamsPlanner() {
             const container = document.getElementById('examsListContainer');
             container.innerHTML = '';
@@ -856,11 +992,10 @@
                     </div>
                 `;
             });
-            renderExamsCountdowns();
         }
 
         function addExamInputRow() {
-            state.exams.push({ title: "New Exam", date: "2026-06-25" });
+            state.exams.push({ title: "", date: "2026-06-25" });
             renderExamsPlanner();
         }
 
@@ -869,7 +1004,6 @@
         function removeExam(idx) { state.exams.splice(idx, 1); renderExamsPlanner(); }
 
         function saveExamsList() {
-            // Also ensure corresponding exam tasks exist on Master Schedule
             state.exams.forEach(ex => {
                 let exists = state.tasks.find(t => t.title === ex.title && t.type === 'exam');
                 if(!exists) {
@@ -878,43 +1012,46 @@
                     exists.date = ex.date;
                 }
             });
-            renderExamsCountdowns();
-            alert("Exams marked on your Master Schedule!");
+            renderWeeklyCalendar();
+            renderTodoList();
+            renderClassTaskTables();
+            alert("Exams saved and marked on Master Schedule with stars ★!");
         }
 
-        function renderExamsCountdowns() {
-            const container = document.getElementById('examCountdownsContainer');
+        function renderClassTaskTables() {
+            const container = document.getElementById('classTaskTablesContainer');
             container.innerHTML = '';
-            if(state.exams.length === 0) {
-                container.innerHTML = `<p>No exams configured.</p>`;
-                return;
-            }
 
-            const today = new Date();
-            state.exams.forEach(ex => {
-                const examDate = new Date(ex.date);
-                const diffTime = examDate - today;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            state.classes.forEach(c => {
+                let classTasks = state.tasks.filter(t => t.className === c.name);
+                let examMatches = state.exams.filter(e => e.title.toLowerCase().includes(c.name.toLowerCase()));
                 
+                let examsHtml = '';
+                examMatches.forEach(em => {
+                    examsHtml += `<div style="font-weight:600; color:var(--danger); font-size:0.85rem; margin-bottom:6px;">★ Final Exam: ${em.title} (${em.date})</div>`;
+                });
+
+                let tasksHtml = '';
+                if(classTasks.length === 0) {
+                    tasksHtml = `<p style="font-size:0.85rem; color:var(--text-muted);">No tasks for this class.</p>`;
+                } else {
+                    classTasks.forEach(t => {
+                        tasksHtml += `<div style="font-size:0.85rem; padding:6px 0; border-bottom:1px solid var(--card-border); display:flex; justify-content:space-between;">
+                            <span>${t.title} (${t.type})</span>
+                            <span style="color:var(--text-muted);">${t.date}</span>
+                        </div>`;
+                    });
+                }
+
                 container.innerHTML += `
-                    <div style="background:#f8fafc; border:1px solid var(--card-border); padding:14px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <div style="font-weight:600; font-size:0.95rem;">${ex.title}</div>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">Date: ${ex.date}</div>
-                        </div>
-                        <div style="font-weight:bold; color:${diffDays <= 7 ? 'var(--danger)' : 'var(--primary)'}; font-size:1.1rem;">
-                            ${diffDays >= 0 ? `${diffDays} days left` : 'Passed'}
-                        </div>
+                    <div style="background:#f8fafc; border:1px solid var(--card-border); padding:16px; border-radius:8px; margin-bottom:15px;">
+                        <h3 style="color:${c.color}; margin-bottom:8px;">${c.name}</h3>
+                        ${examsHtml}
+                        <div style="margin-top:10px;">${tasksHtml}</div>
                     </div>
                 `;
             });
         }
-
-        // Initial Renders
-        renderClassesConfig();
-        switchMasterSubView('calendar');
-        renderFirmsTracker();
-        renderExamsPlanner();
     </script>
 </body>
 </html>
