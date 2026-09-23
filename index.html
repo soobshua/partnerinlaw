@@ -3,1284 +3,696 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partner in Law</title>
-    <style>
-        :root {
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --card-border: #e2e8f0;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --primary: #0f172a;
-            --primary-hover: #1e293b;
-            --accent: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* Top Bar */
-        .top-bar {
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--card-border);
-            padding: 16px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .app-title { font-size: 1.35rem; font-weight: 700; display: flex; align-items: center; gap: 10px; letter-spacing: -0.025em; }
-
-        .top-right-controls { display: flex; align-items: center; gap: 12px; position: relative; }
-        .token-badge {
-            background: #fef3c7; border: 1px solid #fde68a; color: #d97706; padding: 6px 14px;
-            border-radius: 20px; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;
-        }
-        
-        .guide-container { position: relative; display: inline-block; }
-        .guide-btn { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--card-border); padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
-        .guide-btn:hover { background: #e2e8f0; }
-        .guide-tooltip {
-            visibility: hidden; width: 300px; background-color: var(--card-bg); color: var(--text-main);
-            text-align: left; border-radius: 12px; padding: 16px; border: 1px solid var(--card-border);
-            position: absolute; z-index: 100; top: 125%; right: 0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            opacity: 0; transition: opacity 0.2s; font-size: 0.8rem; line-height: 1.5;
-        }
-        .guide-container:hover .guide-tooltip { visibility: visible; opacity: 1; }
-        .guide-tooltip ul { padding-left: 16px; margin: 6px 0; }
-        .guide-tooltip li { margin-bottom: 4px; }
-
-        /* App Layout */
-        .app-layout {
-            flex: 1;
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-            box-sizing: border-box;
-            padding: 32px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-            overflow-y: auto;
-        }
-
-        /* Navigation Tabs */
-        .nav-tabs {
-            display: flex;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 10px;
-            padding: 4px;
-            gap: 4px;
-            width: fit-content;
-        }
-        .nav-tab {
-            padding: 10px 18px;
-            cursor: pointer;
-            border: none;
-            background: none;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.9rem;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        .nav-tab.active { background: var(--primary); color: white; }
-
-        .tab-content { display: none; flex-direction: column; gap: 24px; }
-        .tab-content.active { display: flex; }
-
-        /* Cards */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 24px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
-        }
-        h2 { margin-top: 0; font-size: 1.25rem; color: var(--text-main); font-weight: 700; letter-spacing: -0.025em; }
-        h3 { margin-top: 0; font-size: 1.05rem; color: var(--text-main); font-weight: 600; }
-        p { color: var(--text-muted); line-height: 1.5; font-size: 0.9rem; margin-top: 4px; }
-
-        button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: background 0.2s;
-        }
-        button:hover { background: var(--primary-hover); }
-        button.secondary { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--card-border); }
-        button.secondary:hover { background: #e2e8f0; }
-
-        input[type="text"], input[type="date"], select, textarea {
-            width: 100%;
-            background: #ffffff;
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            padding: 10px 12px;
-            border-radius: 8px;
-            box-sizing: border-box;
-            margin-bottom: 12px;
-            font-family: inherit;
-            font-size: 0.9rem;
-        }
-        textarea { height: 80px; resize: vertical; }
-
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media(max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
-
-        /* Modals */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000;
-        }
-        .modal {
-            background: var(--card-bg); border: 1px solid var(--card-border); width: 90%; max-width: 650px;
-            border-radius: 16px; padding: 28px; box-sizing: border-box; max-height: 90vh; overflow-y: auto; position: relative;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
-        }
-        .close-btn { position: absolute; top: 18px; right: 18px; background: #f1f5f9; border: none; color: var(--text-main); width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .close-btn:hover { background: #e2e8f0; }
-
-        /* Café Reward Box */
-        .cafe-rewards { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        .reward-card { background: #f8fafc; border: 1px solid var(--card-border); padding: 16px; border-radius: 10px; text-align: center; }
-        .reward-output { margin-top: 15px; background: #f8fafc; border: 1px solid var(--card-border); border-radius: 10px; padding: 16px; min-height: 60px; font-style: italic; color: var(--text-main); text-align: center; }
-
-        /* Calendar Grid */
-        .calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; width: 100%; table-layout: fixed; }
-        .cal-header { font-weight: 600; font-size: 0.8rem; color: var(--text-muted); padding: 8px; text-align: center; }
-        .cal-day { background: #f8fafc; border: 1px solid var(--card-border); border-radius: 8px; height: 110px; padding: 8px; font-size: 0.85rem; text-align: left; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; }
-        .cal-day:hover { border-color: var(--text-main); }
-        .cal-events-list { margin-top: 4px; overflow-y: auto; max-height: 75px; display: flex; flex-direction: column; gap: 2px; }
-        .cal-event-pill { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-
-        /* To-Do List */
-        .todo-item { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid var(--card-border); padding: 12px 16px; border-radius: 10px; margin-bottom: 10px; }
-        .todo-left { display: flex; align-items: center; gap: 12px; flex: 1; }
-        .todo-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); margin: 0; }
-        .todo-item.completed span { text-decoration: line-through; color: var(--text-muted); }
-
-        /* Firm Container in Tracker */
-        .firm-card-item { border: 1px solid var(--card-border); border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .firm-card-item:hover { background: #f1f5f9; border-color: var(--text-main); }
-
-        .dynamic-item-card { background: #ffffff; border: 1px solid var(--card-border); padding: 12px; border-radius: 8px; margin-bottom: 10px; position: relative; }
-    </style>
+    <title>Law School & Career Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col">
 
-    <!-- Top Bar -->
-    <div class="top-bar">
-        <div class="app-title">⚖️ Partner in Law</div>
-        <div class="top-right-controls">
-            <div class="token-badge" onclick="openCafeModal()" style="cursor:pointer;" title="Click to open Café">
-                🪙 <span id="tokenCount">20</span> Tokens
-            </div>
-            <div class="guide-container">
-                <button class="guide-btn">Guide ?</button>
-                <div class="guide-tooltip">
-                    <strong>Token Earning Guide:</strong>
-                    <ul>
-                        <li>Daily login/visit: +1 Token</li>
-                        <li>General Task: +5 Tokens</li>
-                        <li>Law School Task: +15 Tokens</li>
-                        <li>Vac Scheme / TC Task: +30 Tokens</li>
-                        <li>Advance to Next Round: +50 Tokens</li>
-                        <li>TC / Vac Scheme Offer: +100 Tokens</li>
-                    </ul>
+    <!-- Header -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-600 p-2.5 rounded-lg text-white shadow-lg shadow-amber-900/30">
+                    <i class="fa-solid fa-scale-balanced text-xl"></i>
                 </div>
-            </div>
-            <button class="secondary" onclick="openCafeModal()">☕ Café</button>
-        </div>
-    </div>
-
-    <!-- App Layout -->
-    <div class="app-layout">
-
-        <!-- Navigation Tabs -->
-        <div class="nav-tabs">
-            <button class="nav-tab active" onclick="switchTab('master')">🗓️ Master Schedule</button>
-            <button class="nav-tab" onclick="switchTab('lawschool')">📚 Law School Hub</button>
-            <button class="nav-tab" onclick="switchTab('tracker')">💼 Vac Scheme & TC Tracker</button>
-        </div>
-
-        <!-- TAB 1: MASTER SCHEDULE -->
-        <div id="tab-master" class="tab-content active">
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
-                    <div>
-                        <h2>Master Schedule & To-Do List</h2>
-                        <p>All deadlines, classes, tutorials, exams, and firm deadlines synced automatically.</p>
-                    </div>
-                    <button onclick="openAddTaskModal()">+ Add Task or Event</button>
-                </div>
-
-                <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <button class="secondary" id="calViewBtn" onclick="switchMasterSubView('calendar')">Calendar View</button>
-                    <button class="secondary" id="todoViewBtn" onclick="switchMasterSubView('todo')">To-Do List & Countdown</button>
-                </div>
-
-                <div id="masterSubContainer"></div>
-            </div>
-        </div>
-
-        <!-- TAB 2: LAW SCHOOL -->
-        <div id="tab-lawschool" class="tab-content">
-            <div class="card">
-                <h2>Law School Hub</h2>
-                <p>Add all your classes with start/end dates, days of the week, optional tutorials (syncing start date), and standalone exam dates.</p>
-                
-                <div id="lawClassesContainer" style="margin-top:15px;"></div>
-                <button class="secondary" onclick="addLawClassInputRow()" style="margin-top:10px;">+ Add Class</button>
-                <button onclick="saveLawSchoolData()" style="width:100%; margin-top:15px;">Save & Sync to Master Schedule</button>
-            </div>
-        </div>
-
-        <!-- TAB 3: VAC SCHEME & TC TRACKER -->
-        <div id="tab-tracker" class="tab-content">
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <div>
-                    <h2>Vacation Scheme & Training Contract Tracker</h2>
-                    <p>Manage pending and active applications, add networking events, log reflections, and access the Graveyard.</p>
+                    <h1 class="text-xl font-bold tracking-tight text-white">JurisHub <span class="text-amber-500 font-light">Pro</span></h1>
+                    <p class="text-xs text-slate-400">Law School & Career Tracking Command Center</p>
                 </div>
-                <div style="display:flex; gap:10px;">
-                    <button class="secondary" onclick="openGraveyardModal()">💀 Graveyard (<span id="graveyardCount">0</span>)</button>
-                    <button onclick="openAddFirmModal()">+ Add Firm Application</button>
+            </div>
+            <!-- Navigation Tabs -->
+            <nav class="flex flex-wrap justify-center gap-2 bg-slate-950/80 p-1.5 rounded-xl border border-slate-800">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all bg-amber-600 text-white shadow">Dashboard</button>
+                <button onclick="switchTab('tracker')" id="nav-tracker" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-white">App Tracker</button>
+                <button onclick="switchTab('countdown')" id="nav-countdown" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-white">Exam Countdown</button>
+                <button onclick="switchTab('history')" id="nav-history" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-white">History Log</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
+
+        <!-- DASHBOARD TAB -->
+        <div id="tab-dashboard" class="space-y-6 tab-content">
+            <!-- Motivation & Compliment Box -->
+            <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-amber-950/30 border border-slate-800/80 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 text-amber-500/10 pointer-events-none">
+                    <i class="fa-solid fa-quote-right text-8xl"></i>
+                </div>
+                <div class="relative z-10 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span id="compliment-badge" class="px-3 py-1 bg-amber-500/20 text-amber-400 text-xs font-semibold rounded-full border border-amber-500/30">✨ Daily Brilliance</span>
+                        <button onclick="refreshMotivation()" class="text-slate-400 hover:text-white text-sm flex items-center gap-1.5 transition-colors">
+                            <i class="fa-solid fa-rotate"></i> Inspire Me
+                        </button>
+                    </div>
+                    <blockquote id="quote-text" class="text-xl md:text-2xl font-serif italic text-slate-100 max-w-3xl">
+                        "The life of the law has not been logic: it has been experience."
+                    </blockquote>
+                    <p id="quote-author" class="text-sm font-medium text-amber-400/90">— Justice Oliver Wendell Holmes Jr.</p>
                 </div>
             </div>
 
-            <div class="grid-2">
-                <div class="card">
-                    <h3>⏳ Pending Applications</h3>
-                    <p style="font-size:0.8rem;">Sorted by deadline urgency. Add events or submit to move to Active.</p>
-                    <div id="pendingFirmsContainer" style="margin-top:15px;"></div>
+            <!-- Quick Metrics Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-wider text-slate-400 font-medium">Pending Apps</p>
+                        <h3 id="stat-pending" class="text-2xl font-bold mt-1 text-white">0</h3>
+                    </div>
+                    <div class="p-3 bg-blue-500/10 text-blue-400 rounded-xl"><i class="fa-solid fa-hourglass-start text-lg"></i></div>
                 </div>
-                <div class="card">
-                    <h3>🚀 Active Applications</h3>
-                    <p style="font-size:0.8rem;">Sorted by priority. Advance rounds or secure offers!</p>
-                    <div id="activeFirmsContainer" style="margin-top:15px;"></div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-wider text-slate-400 font-medium">Active (In Rounds)</p>
+                        <h3 id="stat-active" class="text-2xl font-bold mt-1 text-white">0</h3>
+                    </div>
+                    <div class="p-3 bg-amber-500/10 text-amber-400 rounded-xl"><i class="fa-solid fa-briefcase text-lg"></i></div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-wider text-slate-400 font-medium">Offers Received</p>
+                        <h3 id="stat-offers" class="text-2xl font-bold mt-1 text-white">0</h3>
+                    </div>
+                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl"><i class="fa-solid fa-award text-lg"></i></div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-wider text-slate-400 font-medium">Upcoming Exams</p>
+                        <h3 id="stat-exams" class="text-2xl font-bold mt-1 text-white">0</h3>
+                    </div>
+                    <div class="p-3 bg-purple-500/10 text-purple-400 rounded-xl"><i class="fa-solid fa-calendar-days text-lg"></i></div>
                 </div>
             </div>
 
-            <!-- Unified History Log -->
-            <div class="card" style="margin-top:20px;">
-                <h3>📜 Unified History Log</h3>
-                <p style="font-size:0.8rem;">Click any firm name below to review every event, person, note, and stage ever entered.</p>
-                <div id="unifiedHistoryContainer" style="margin-top:15px; display:flex; flex-wrap:wrap; gap:10px;"></div>
+            <!-- Dashboard Split Section: To-Do & Upcoming Exams Preview -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Editable To-Do List -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col h-[400px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-amber-500"></i> Law Student To-Do List
+                        </h2>
+                        <span id="todo-count" class="text-xs bg-slate-800 text-slate-400 px-2.5 py-1 rounded-full">0 pending</span>
+                    </div>
+                    <form onsubmit="addTodo(event)" class="flex gap-2 mb-4">
+                        <input type="text" id="todo-input" placeholder="Add a new task (e.g., Read torts cases)..." class="flex-grow bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500" required>
+                        <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors">Add</button>
+                    </form>
+                    <div id="todo-list" class="flex-grow overflow-y-auto space-y-2 pr-1">
+                        <!-- Dynamic Todos -->
+                    </div>
+                </div>
+
+                <!-- Exam Countdown Quick Preview -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col h-[400px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-stopwatch text-amber-500"></i> Next Exam Countdowns
+                        </h2>
+                        <button onclick="switchTab('countdown')" class="text-xs text-amber-400 hover:underline">View All Exams</button>
+                    </div>
+                    <div id="dashboard-exam-list" class="flex-grow overflow-y-auto space-y-3 pr-1">
+                        <!-- Dynamic Exam Countdown Preview -->
+                    </div>
+                </div>
             </div>
         </div>
 
-    </div>
-
-    <!-- MODALS -->
-
-    <!-- Café / Motivation Modal -->
-    <div class="modal-overlay" id="cafeModal">
-        <div class="modal">
-            <button class="close-btn" onclick="closeCafeModal()">✕</button>
-            <h3>☕ Student Café & Boosts</h3>
-            <p>Spend your tokens on motivational boosts and words of affirmation!</p>
-            <div style="font-weight:600; margin:10px 0; font-size:0.9rem;">Available Tokens: <span id="modalTokenCount">20</span></div>
-            
-            <div class="cafe-rewards">
-                <div class="reward-card">
-                    <div style="font-size:1.8rem;">📜</div>
-                    <div style="font-weight:600; font-size:0.9rem; margin:6px 0;">Motivational Quote</div>
-                    <div style="color:var(--warning); font-weight:600; font-size:0.8rem; margin-bottom:8px;">10 Tokens</div>
-                    <button onclick="buyCafeReward('quote')" style="width:100%;">Get Quote</button>
+        <!-- APP TRACKER TAB -->
+        <div id="tab-tracker" class="space-y-6 tab-content hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                <div>
+                    <h2 class="text-xl font-bold text-white">Application Pipeline</h2>
+                    <p class="text-xs text-slate-400 mt-1">Manage firm applications, pending status, active rounds, and notes.</p>
                 </div>
-                <div class="reward-card">
-                    <div style="font-size:1.8rem;">✨</div>
-                    <div style="font-weight:600; font-size:0.9rem; margin:6px 0;">Compliment / Affirmation</div>
-                    <div style="color:var(--warning); font-weight:600; font-size:0.8rem; margin-bottom:8px;">20 Tokens</div>
-                    <button onclick="buyCafeReward('compliment')" style="width:100%;">Get Affirmation</button>
+                <button onclick="openAppModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-amber-900/20">
+                    <i class="fa-solid fa-plus"></i> Add Application
+                </button>
+            </div>
+
+            <!-- Applications Table -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-950/60 border-b border-slate-800 text-slate-400 text-xs uppercase tracking-wider">
+                                <th class="p-4 font-semibold">Firm / Organization</th>
+                                <th class="p-4 font-semibold">Status / Round</th>
+                                <th class="p-4 font-semibold">Submitted Date</th>
+                                <th class="p-4 font-semibold">Notes</th>
+                                <th class="p-4 font-semibold text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applications-table-body" class="divide-y divide-slate-800/60 text-sm">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-            <div class="reward-output" id="cafeRewardOutput">
-                Select a boost above to receive your reward!
-            </div>
         </div>
-    </div>
 
-    <!-- Add Task / Event Modal -->
-    <div class="modal-overlay" id="taskModal">
-        <div class="modal">
-            <button class="close-btn" onclick="closeTaskModal()">✕</button>
-            <h3 id="taskModalTitle">Add Task or Event</h3>
-            
-            <label>Title</label>
-            <input type="text" id="taskTitleInput" placeholder="e.g., Contract Law reading">
-            
-            <label>Date</label>
-            <input type="date" id="taskDateInput">
-            
-            <label>Type</label>
-            <select id="taskTypeSelect">
-                <option value="general">General Task (+5 Tokens)</option>
-                <option value="lawschool">Law School Task (+15 Tokens)</option>
-                <option value="vacscheme">Vac Scheme / TC Task (+30 Tokens)</option>
-                <option value="event">Event (Calendar Only)</option>
-            </select>
-
-            <button onclick="saveTaskModal()" style="width:100%; margin-top:15px;">Save Task / Event</button>
-        </div>
-    </div>
-
-    <!-- Add Firm Application Modal -->
-    <div class="modal-overlay" id="addFirmModal">
-        <div class="modal">
-            <button class="close-btn" onclick="closeAddFirmModal()">✕</button>
-            <h3>Add Firm Application</h3>
-            
-            <label>Firm Name</label>
-            <input type="text" id="newFirmName" placeholder="e.g., Clifford Chance">
-            
-            <label>Status</label>
-            <select id="newFirmStatusSelect" onchange="toggleFirmDateInputType()">
-                <option value="pending">Looking to Apply (Pending)</option>
-                <option value="active">Already Applied (Active)</option>
-            </select>
-
-            <div id="firmDateContainer">
-                <label id="firmDateLabel">Application Submission Deadline</label>
-                <input type="date" id="newFirmDateInput">
+        <!-- EXAM COUNTDOWN TAB -->
+        <div id="tab-countdown" class="space-y-6 tab-content hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                <div>
+                    <h2 class="text-xl font-bold text-white">Law School Exam Countdowns</h2>
+                    <p class="text-xs text-slate-400 mt-1">Countdown timers for all upcoming legal exams and midterms.</p>
+                </div>
+                <button onclick="openExamModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-amber-900/20">
+                    <i class="fa-solid fa-calendar-plus"></i> Add Exam
+                </button>
             </div>
 
-            <div id="firmNotesContainer" style="display:none;">
-                <label>Submission Notes / Comments</label>
-                <textarea id="newFirmNotesInput" placeholder="e.g. Submitted online application with tailored cover letter..."></textarea>
+            <div id="exam-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamic Exam Cards -->
             </div>
-            
-            <button onclick="saveNewFirmApplication()" style="width:100%; margin-top:15px;">Create Application</button>
+        </div>
+
+        <!-- HISTORY LOG TAB -->
+        <div id="tab-history" class="space-y-6 tab-content hidden">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-white">Activity History Log</h2>
+                    <p class="text-xs text-slate-400 mt-1">Audit trail of all actions, submissions, and status adjustments. Fully editable.</p>
+                </div>
+                <button onclick="openHistoryModal()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-plus"></i> Log Entry Manually
+                </button>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-950/60 border-b border-slate-800 text-slate-400 text-xs uppercase tracking-wider">
+                                <th class="p-4 font-semibold">Timestamp</th>
+                                <th class="p-4 font-semibold">Action Type</th>
+                                <th class="p-4 font-semibold">Description</th>
+                                <th class="p-4 font-semibold text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body" class="divide-y divide-slate-800/60 text-sm">
+                            <!-- Dynamic History Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 border-t border-slate-800 mt-auto py-4 text-center text-xs text-slate-500">
+        JurisHub Pro &bull; Designed for Future Counsel
+    </footer>
+
+    <!-- MODAL: ADD/EDIT APPLICATION -->
+    <div id="app-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center">
+                <h3 id="app-modal-title" class="text-lg font-bold text-white">Add Application</h3>
+                <button onclick="closeAppModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="app-form" onsubmit="saveApplication(event)" class="space-y-4">
+                <input type="hidden" id="app-id">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Firm / Organization Name</label>
+                    <input type="text" id="app-firm" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" required placeholder="e.g., Skadden, Arps">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Application Status</label>
+                    <select id="app-status" onchange="toggleRoundInput()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                        <option value="Pending">Pending (Not yet submitted)</option>
+                        <option value="Active">Active (In Rounds)</option>
+                        <option value="Offer">Offer Received</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
+                <div id="round-container" class="hidden">
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Current Round / Stage</label>
+                    <input type="text" id="app-round" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="e.g., First-Round Interview / Callback">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Notes / Submission Info</label>
+                    <textarea id="app-notes" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="Add interview details, contact person, or submission reference..."></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeAppModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-medium transition-colors">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-sm font-medium transition-colors">Save Application</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Firm Details / Management Modal -->
-    <div class="modal-overlay" id="firmDetailsModal">
-        <div class="modal" id="firmDetailsModalContent" style="max-width: 800px;"></div>
-    </div>
-
-    <!-- Add Event to Firm Modal -->
-    <div class="modal-overlay" id="firmEventModal">
-        <div class="modal" id="firmEventModalContent" style="max-width: 650px;"></div>
-    </div>
-
-    <!-- Graveyard Modal -->
-    <div class="modal-overlay" id="graveyardModal">
-        <div class="modal" style="max-width: 700px;">
-            <button class="close-btn" onclick="closeGraveyardModal()">✕</button>
-            <h3>💀 Application Graveyard & Archive</h3>
-            <p>Review rejected or archived applications. You can revive any firm for next cycle!</p>
-            <div id="graveyardListContainer" style="margin-top:15px;"></div>
+    <!-- MODAL: ADD/EDIT EXAM -->
+    <div id="exam-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center">
+                <h3 id="exam-modal-title" class="text-lg font-bold text-white">Add Exam</h3>
+                <button onclick="closeExamModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="exam-form" onsubmit="saveExam(event)" class="space-y-4">
+                <input type="hidden" id="exam-id">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Exam Title</label>
+                    <input type="text" id="exam-title" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" required placeholder="e.g., Constitutional Law Final">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Exam Date & Time</label>
+                    <input type="datetime-local" id="exam-date" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" required>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeExamModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-medium transition-colors">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-sm font-medium transition-colors">Save Exam</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Full Firm History Log Modal -->
-    <div class="modal-overlay" id="historyLogModal">
-        <div class="modal" id="historyLogModalContent" style="max-width: 750px;"></div>
+    <!-- MODAL: ADD/EDIT HISTORY LOG -->
+    <div id="history-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center">
+                <h3 id="history-modal-title" class="text-lg font-bold text-white">Log History Entry</h3>
+                <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="history-form" onsubmit="saveHistoryLog(event)" class="space-y-4">
+                <input type="hidden" id="history-id">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Action Type</label>
+                    <input type="text" id="history-type" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" required placeholder="e.g., Application Submitted">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Description</label>
+                    <textarea id="history-desc" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" required placeholder="Details about this activity..."></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeHistoryModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-medium transition-colors">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-sm font-medium transition-colors">Save Log</button>
+                </div>
+            </form>
+        </div>
     </div>
 
+    <!-- JavaScript Application Logic -->
     <script>
-        // Global State
-        let state = {
-            tokens: 20,
-            tasks: [
-                { id: 1, title: "Offer & Acceptance Reading", date: "2026-09-26", type: "lawschool", completed: false, completedAt: null },
-                { id: 2, title: "Linklaters Deadline", date: "2026-09-30", type: "vacscheme", completed: false, completedAt: null }
-            ],
-            lawClasses: [
-                { 
-                    id: 1, 
-                    title: "Contract Law Lecture", 
-                    startDate: "2026-09-01", 
-                    endDate: "2026-11-30", 
-                    dayOfWeek: "1", 
-                    hasTutorial: true, 
-                    tutorialDay: "3", 
-                    exams: ["2026-12-10"] 
-                }
-            ],
-            firms: [
-                {
-                    id: 1,
-                    name: "Linklaters",
-                    status: "pending", // pending, active, rejected, graveyard
-                    deadline: "2026-09-30",
-                    submissionDate: null,
-                    notes: "",
-                    priority: 1,
-                    revived: false,
-                    historyYears: [],
-                    events: [],
-                    stages: [
-                        { roundName: "Pending Application", eventDetails: "Initial tracking", prepNotes: [], reflections: [], keyPeople: [] }
-                    ]
-                },
-                {
-                    id: 2,
-                    name: "Freshfields",
-                    status: "active",
-                    deadline: null,
-                    submissionDate: "2026-09-20",
-                    notes: "Submitted tailored CV and cover letter.",
-                    priority: 2,
-                    revived: false,
-                    historyYears: [],
-                    events: [],
-                    stages: [
-                        { roundName: "Initial Application", eventDetails: "Submitted application", prepNotes: ["Researched corporate practice."], reflections: ["Strong answers."], keyPeople: [{ name: "Alice Smith", position: "Associate", practiceArea: "Banking", commonalities: "LSE alumni", insights: "Advised keeping commercial answers concise." }] }
-                    ]
-                }
-            ]
-        };
-
-        let currentCalendarYear = 2026;
-        let currentCalendarMonth = 8; // September
-
-        // --- TOKENS ---
-        function addTokens(amt) {
-            state.tokens += amt;
-            document.getElementById('tokenCount').innerText = state.tokens;
-            document.getElementById('modalTokenCount').innerText = state.tokens;
-        }
-
-        const quotes = [
-            "“The power of lawyer is in the uncertainty of law.” — Jeremy Bentham",
-            "“Success is not final; failure is not fatal: It is the courage to continue that counts.”",
-            "“Strive for excellence, not perfection, in every submission and argument.”"
+        // Data Store & State Initialization
+        let appData = JSON.parse(localStorage.getItem('jurisHub_apps')) || [
+            { id: 1, firm: 'Sullivan & Cromwell LLP', status: 'Active', round: 'First-Round Interview', submittedDate: '2026-05-10', notes: 'Scheduled via OCI.' },
+            { id: 2, firm: 'Davis Polk & Wardwell', status: 'Pending', round: '', submittedDate: '', notes: 'Waiting for transcript release.' },
+            { id: 3, firm: 'Kirkland & Ellis', status: 'Offer', round: 'Offer Extended', submittedDate: '2026-04-15', notes: 'Received formal offer letter.' }
         ];
+
+        let examData = JSON.parse(localStorage.getItem('jurisHub_exams')) || [
+            { id: 1, title: 'Constitutional Law Final', date: '2026-05-20T09:00' },
+            { id: 2, title: 'Civil Procedure Midterm', date: '2026-06-02T13:30' },
+            { id: 3, title: 'Contracts Final Exam', date: '2026-06-15T10:00' }
+        ];
+
+        let todoData = JSON.parse(localStorage.getItem('jurisHub_todos')) || [
+            { id: 1, text: 'Brief property law cases for Monday seminar', completed: false },
+            { id: 2, text: 'Submit writing sample for law review application', completed: true },
+            { id: 3, text: 'Meet with Career Services advisor', completed: false }
+        ];
+
+        let historyData = JSON.parse(localStorage.getItem('jurisHub_history')) || [
+            { id: 1, timestamp: '2026-05-10 14:30', type: 'Application Submitted', description: 'Submitted application to Sullivan & Cromwell LLP' },
+            { id: 2, timestamp: '2026-04-15 11:15', type: 'Offer Received', description: 'Received formal offer from Kirkland & Ellis' }
+        ];
+
         const compliments = [
-            "✨ You are incredibly resilient and your dedication to your legal career is truly shining through!",
-            "✨ Every single task you complete makes you one step closer to becoming an exceptional lawyer.",
-            "✨ Take a moment to breathe—you are doing amazing work and building a phenomenal future."
+            { quote: "The life of the law has not been logic: it has been experience.", author: "Justice Oliver Wendell Holmes Jr.", tag: "✨ Legal Wisdom" },
+            { quote: "Injustice anywhere is a threat to justice everywhere.", author: "Dr. Martin Luther King Jr.", tag: "⚖️ Core Principle" },
+            { quote: "Law and order exist for the purpose of establishing justice and when they fail in this purpose they become the dangerously structured dams that block the flow of social progress.", author: "Martin Luther King Jr.", tag: "💡 Visionary Counsel" },
+            { quote: "The power of lawyer is in the uncertainty of the law.", author: "Jeremy Bentham", tag: "🔍 Analytical Insight" },
+            { quote: "An investment in knowledge pays the best interest. Keep pushing through your studies!", author: "Benjamin Franklin", tag: "🌟 Academic Motivation" },
+            { quote: "Your dedication today builds the precedent for justice tomorrow. Exceptional focus!", author: "JurisHub Mentor", tag: "🎯 Personal Praise" }
         ];
 
-        function openCafeModal() {
-            document.getElementById('cafeModal').style.display = 'flex';
-            document.getElementById('modalTokenCount').innerText = state.tokens;
-        }
-        function closeCafeModal() { document.getElementById('cafeModal').style.display = 'none'; }
-
-        function buyCafeReward(type) {
-            let cost = type === 'quote' ? 10 : 20;
-            if(state.tokens < cost) {
-                alert("Not enough tokens! Complete tasks on your to-do list to earn more.");
-                return;
-            }
-            state.tokens -= cost;
-            addTokens(0);
-            document.getElementById('modalTokenCount').innerText = state.tokens;
-            let text = type === 'quote' ? quotes[Math.floor(Math.random()*quotes.length)] : compliments[Math.floor(Math.random()*compliments.length)];
-            document.getElementById('cafeRewardOutput').innerText = text;
+        function saveData() {
+            localStorage.setItem('jurisHub_apps', JSON.stringify(appData));
+            localStorage.setItem('jurisHub_exams', JSON.stringify(examData));
+            localStorage.setItem('jurisHub_todos', JSON.stringify(todoData));
+            localStorage.setItem('jurisHub_history', JSON.stringify(historyData));
+            renderAll();
         }
 
-        // --- TABS ---
+        // Tab Switching
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            
-            document.querySelectorAll('.nav-tab').forEach(btn => {
-                if(btn.getAttribute('onclick').includes(tabId)) btn.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-600', 'text-white', 'shadow');
+                btn.classList.add('text-slate-400');
             });
-            if(tabId === 'lawschool') renderLawSchoolHub();
-            if(tabId === 'tracker') renderTracker();
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            activeBtn.classList.add('bg-amber-600', 'text-white', 'shadow');
+            activeBtn.classList.remove('text-slate-400');
         }
 
-        // --- 2-DAY AUTO REMOVAL CLEANER ---
-        function checkAndCleanCompletedTasks() {
-            const now = new Date();
-            state.tasks = state.tasks.filter(t => {
-                if(!t.completed || !t.completedAt) return true;
-                const completedDate = new Date(t.completedAt);
-                const diffDays = (now - completedDate) / (1000 * 60 * 60 * 24);
-                return diffDays < 2;
-            });
+        // Compliments Rotation
+        function refreshMotivation() {
+            const random = compliments[Math.floor(Math.random() * compliments.length)];
+            document.getElementById('quote-text').innerText = `"${random.quote}"`;
+            document.getElementById('quote-author').innerText = `— ${random.author}`;
+            document.getElementById('compliment-badge').innerText = random.tag;
         }
 
-        // --- MASTER SCHEDULE & CALENDAR ---
-        let currentSubView = 'calendar';
+        // To-Do Logic
+        function addTodo(e) {
+            e.preventDefault();
+            const input = document.getElementById('todo-input');
+            if(!input.value.trim()) return;
+            todoData.push({ id: Date.now(), text: input.value.trim(), completed: false });
+            input.value = '';
+            saveData();
+        }
 
-        function switchMasterSubView(view) {
-            currentSubView = view;
-            if(view === 'calendar') {
-                document.getElementById('calViewBtn').style.background = 'var(--primary)';
-                document.getElementById('calViewBtn').style.color = '#fff';
-                document.getElementById('todoViewBtn').style.background = '#f1f5f9';
-                document.getElementById('todoViewBtn').style.color = 'var(--text-main)';
-                renderCalendar();
+        function toggleTodo(id) {
+            const task = todoData.find(t => t.id === id);
+            if(task) {
+                task.completed = !task.completed;
+                saveData();
+            }
+        }
+
+        function deleteTodo(id) {
+            todoData = todoData.filter(t => t.id !== id);
+            saveData();
+        }
+
+        // Application Modals & Logic
+        function openAppModal(id = null) {
+            document.getElementById('app-modal').classList.remove('hidden');
+            if(id) {
+                const app = appData.find(a => a.id === id);
+                document.getElementById('app-modal-title').innerText = 'Edit Application';
+                document.getElementById('app-id').value = app.id;
+                document.getElementById('app-firm').value = app.firm;
+                document.getElementById('app-status').value = app.status;
+                document.getElementById('app-round').value = app.round || '';
+                document.getElementById('app-notes').value = app.notes || '';
             } else {
-                document.getElementById('todoViewBtn').style.background = 'var(--primary)';
-                document.getElementById('todoViewBtn').style.color = '#fff';
-                document.getElementById('calViewBtn').style.background = '#f1f5f9';
-                document.getElementById('calViewBtn').style.color = 'var(--text-main)';
-                renderTodoList();
+                document.getElementById('app-modal-title').innerText = 'Add Application';
+                document.getElementById('app-form').reset();
+                document.getElementById('app-id').value = '';
+            }
+            toggleRoundInput();
+        }
+
+        function closeAppModal() {
+            document.getElementById('app-modal').classList.add('hidden');
+        }
+
+        function toggleRoundInput() {
+            const status = document.getElementById('app-status').value;
+            const roundContainer = document.getElementById('round-container');
+            if(status === 'Active') {
+                roundContainer.classList.remove('hidden');
+            } else {
+                roundContainer.classList.add('hidden');
             }
         }
 
-        function getAllCalendarEvents() {
-            let events = [...state.tasks];
+        function saveApplication(e) {
+            e.preventDefault();
+            const id = document.getElementById('app-id').value;
+            const firm = document.getElementById('app-firm').value;
+            const status = document.getElementById('app-status').value;
+            const round = status === 'Active' ? document.getElementById('app-round').value : (status === 'Offer' ? 'Offer Extended' : (status === 'Rejected' ? 'Rejected' : ''));
+            const notes = document.getElementById('app-notes').value;
+            const currentDate = new Date().toISOString().split('T')[0];
 
-            // Add Law School Classes, Tutorials & Exams
-            state.lawClasses.forEach(lc => {
-                if(lc.startDate && lc.endDate && lc.dayOfWeek !== "") {
-                    let start = new Date(lc.startDate);
-                    let end = new Date(lc.endDate);
-                    let curr = new Date(start);
-                    let targetDay = parseInt(lc.dayOfWeek);
-
-                    while(curr <= end) {
-                        if(curr.getDay() === targetDay) {
-                            events.push({ id: 'ls-' + Math.random(), title: lc.title, date: curr.toISOString().split('T')[0], type: 'lawschool' });
-                        }
-                        curr.setDate(curr.getDate() + 1);
-                    }
+            if(id) {
+                const app = appData.find(a => a.id == id);
+                if(app.status === 'Pending' && status !== 'Pending') {
+                    app.submittedDate = currentDate;
+                    addHistoryLogEntry('Application Submitted / Updated', `Application for ${firm} moved from pending to ${status}. Notes: ${notes}`);
                 }
-                // Tutorials (Start date same as classes)
-                if(lc.hasTutorial && lc.startDate && lc.endDate && lc.tutorialDay !== "") {
-                    let start = new Date(lc.startDate);
-                    let end = new Date(lc.endDate);
-                    let curr = new Date(start);
-                    let targetTutDay = parseInt(lc.tutorialDay);
-
-                    while(curr <= end) {
-                        if(curr.getDay() === targetTutDay) {
-                            events.push({ id: 'tut-' + Math.random(), title: `${lc.title} (Tutorial)`, date: curr.toISOString().split('T')[0], type: 'lawschool' });
-                        }
-                        curr.setDate(curr.getDate() + 1);
-                    }
-                }
-                if(lc.exams && Array.isArray(lc.exams)) {
-                    lc.exams.forEach(exDate => {
-                        if(exDate) events.push({ id: 'ex-' + Math.random(), title: `${lc.title} (Exam)`, date: exDate, type: 'lawschool' });
-                    });
-                }
-            });
-
-            // Add Pending Firm Deadlines
-            state.firms.forEach(f => {
-                if(f.status === 'pending' && f.deadline) {
-                    events.push({ id: 'firm-dl-' + f.id, title: `${f.name} Deadline`, date: f.deadline, type: 'vacscheme' });
-                }
-            });
-
-            return events;
-        }
-
-        function renderCalendar() {
-            checkAndCleanCompletedTasks();
-            const container = document.getElementById('masterSubContainer');
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            
-            let html = `
-                <div class="calendar-nav">
-                    <button class="secondary" onclick="changeMonth(-1)">‹ Prev</button>
-                    <h3 style="margin:0;">${monthNames[currentCalendarMonth]}${currentCalendarYear}</h3>
-                    <button class="secondary" onclick="changeMonth(1)">Next ›</button>
-                </div>
-                <div class="calendar-grid">
-            `;
-
-            const headers = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            headers.forEach(h => html += `<div class="cal-header">${h}</div>`);
-
-            const firstDayIndex = new Date(currentCalendarYear, currentCalendarMonth, 1).getDay();
-            const adjustedFirstDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
-            const totalDays = new Date(currentCalendarYear, currentCalendarMonth + 1, 0).getDate();
-
-            for(let i = 0; i < adjustedFirstDay; i++) {
-                html += `<div class="cal-day" style="opacity:0.3; background:none; cursor:default; border:none;"></div>`;
-            }
-
-            const allEvents = getAllCalendarEvents();
-
-            for(let i = 1; i <= totalDays; i++) {
-                let monthStr = String(currentCalendarMonth + 1).padStart(2, '0');
-                let dayStr = String(i).padStart(2, '0');
-                let dateKey = `${currentCalendarYear}-${monthStr}-${dayStr}`;
-
-                let dayEvents = allEvents.filter(e => e.date === dateKey);
-                let eventsHtml = '';
-                dayEvents.forEach(de => {
-                    let bg = '#0f172a';
-                    if(de.type === 'lawschool') bg = '#3b82f6';
-                    if(de.type === 'vacscheme') bg = '#10b981';
-                    if(de.type === 'event') bg = '#f59e0b';
-                    eventsHtml += `<span class="cal-event-pill" style="background:${bg};">${de.title}</span>`;
+                app.firm = firm;
+                app.status = status;
+                app.round = round;
+                app.notes = notes;
+            } else {
+                const submittedDate = status !== 'Pending' ? currentDate : '';
+                appData.push({
+                    id: Date.now(),
+                    firm,
+                    status,
+                    round,
+                    submittedDate,
+                    notes
                 });
+                addHistoryLogEntry('Application Created', `Added application for ${firm} (${status})`);
+            }
+            closeAppModal();
+            saveData();
+        }
 
-                html += `
-                    <div class="cal-day" onclick="openAddTaskModalForDate('${dateKey}')">
-                        <div style="font-weight:600;">${i}</div>
-                        <div class="cal-events-list">${eventsHtml}</div>
+        function deleteApp(id) {
+            appData = appData.filter(a => a.id !== id);
+            saveData();
+        }
+
+        // Exam Modals & Logic
+        function openExamModal(id = null) {
+            document.getElementById('exam-modal').classList.remove('hidden');
+            if(id) {
+                const exam = examData.find(ex => ex.id === id);
+                document.getElementById('exam-modal-title').innerText = 'Edit Exam';
+                document.getElementById('exam-id').value = exam.id;
+                document.getElementById('exam-title').value = exam.title;
+                document.getElementById('exam-date').value = exam.date;
+            } else {
+                document.getElementById('exam-modal-title').innerText = 'Add Exam';
+                document.getElementById('exam-form').reset();
+                document.getElementById('exam-id').value = '';
+            }
+        }
+
+        function closeExamModal() {
+            document.getElementById('exam-modal').classList.add('hidden');
+        }
+
+        function saveExam(e) {
+            e.preventDefault();
+            const id = document.getElementById('exam-id').value;
+            const title = document.getElementById('exam-title').value;
+            const date = document.getElementById('exam-date').value;
+
+            if(id) {
+                const exam = examData.find(ex => ex.id == id);
+                exam.title = title;
+                exam.date = date;
+            } else {
+                examData.push({ id: Date.now(), title, date });
+                addHistoryLogEntry('Exam Scheduled', `Added exam: ${title}`);
+            }
+            closeExamModal();
+            saveData();
+        }
+
+        function deleteExam(id) {
+            examData = examData.filter(ex => ex.id !== id);
+            saveData();
+        }
+
+        // History Log Modals & Logic
+        function addHistoryLogEntry(type, description) {
+            const now = new Date();
+            const timestamp = now.toISOString().replace('T', ' ').substring(0, 16);
+            historyData.unshift({ id: Date.now(), timestamp, type, description });
+        }
+
+        function openHistoryModal(id = null) {
+            document.getElementById('history-modal').classList.remove('hidden');
+            if(id) {
+                const item = historyData.find(h => h.id === id);
+                document.getElementById('history-modal-title').innerText = 'Edit History Log';
+                document.getElementById('history-id').value = item.id;
+                document.getElementById('history-type').value = item.type;
+                document.getElementById('history-desc').value = item.description;
+            } else {
+                document.getElementById('history-modal-title').innerText = 'Log History Entry';
+                document.getElementById('history-form').reset();
+                document.getElementById('history-id').value = '';
+            }
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('history-modal').classList.add('hidden');
+        }
+
+        function saveHistoryLog(e) {
+            e.preventDefault();
+            const id = document.getElementById('history-id').value;
+            const type = document.getElementById('history-type').value;
+            const description = document.getElementById('history-desc').value;
+
+            if(id) {
+                const item = historyData.find(h => h.id == id);
+                item.type = type;
+                item.description = description;
+            } else {
+                const now = new Date();
+                const timestamp = now.toISOString().replace('T', ' ').substring(0, 16);
+                historyData.unshift({ id: Date.now(), timestamp, type, description });
+            }
+            closeHistoryModal();
+            saveData();
+        }
+
+        function deleteHistory(id) {
+            historyData = historyData.filter(h => h.id !== id);
+            saveData();
+        }
+
+        // Rendering Engine
+        function renderAll() {
+            // Metrics
+            const pendingCount = appData.filter(a => a.status === 'Pending').length;
+            const activeCount = appData.filter(a => a.status === 'Active').length;
+            const offerCount = appData.filter(a => a.status === 'Offer').length;
+            const examCount = examData.length;
+
+            document.getElementById('stat-pending').innerText = pendingCount;
+            document.getElementById('stat-active').innerText = activeCount;
+            document.getElementById('stat-offers').innerText = offerCount;
+            document.getElementById('stat-exams').innerText = examCount;
+
+            // To-Do List
+            const todoListEl = document.getElementById('todo-list');
+            todoListEl.innerHTML = todoData.length === 0 ? '<p class="text-xs text-slate-500 text-center py-4">No tasks added yet.</p>' : '';
+            const pendingTodos = todoData.filter(t => !t.completed).length;
+            document.getElementById('todo-count').innerText = `${pendingTodos} pending`;
+
+            todoData.forEach(task => {
+                todoListEl.innerHTML += `
+                    <div class="flex items-center justify-between bg-slate-950/60 border border-slate-800/80 p-3 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} onclick="toggleTodo(${task.id})" class="w-4 h-4 accent-amber-600 rounded cursor-pointer">
+                            <span class="text-sm ${task.completed ? 'line-through text-slate-500' : 'text-slate-200'}">${task.text}</span>
+                        </div>
+                        <button onclick="deleteTodo(${task.id})" class="text-slate-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
-            }
+            });
 
-            html += `</div>`;
-            container.innerHTML = html;
-        }
+            // App Table
+            const appTableBody = document.getElementById('applications-table-body');
+            appTableBody.innerHTML = appData.length === 0 ? '<tr><td colspan="5" class="p-4 text-center text-slate-500">No applications tracked yet.</td></tr>' : '';
+            
+            appData.forEach(app => {
+                let badgeColor = 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+                let statusDisplay = app.status;
+                if(app.status === 'Active') {
+                    badgeColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+                    statusDisplay = app.round || 'Active Round';
+                } else if(app.status === 'Offer') {
+                    badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+                } else if(app.status === 'Rejected') {
+                    badgeColor = 'bg-red-500/20 text-red-400 border-red-500/30';
+                }
 
-        function changeMonth(direction) {
-            currentCalendarMonth += direction;
-            if(currentCalendarMonth > 11) { currentCalendarMonth = 0; currentCalendarYear++; }
-            else if(currentCalendarMonth < 0) { currentCalendarMonth = 11; currentCalendarYear--; }
-            renderCalendar();
-        }
+                appTableBody.innerHTML += `
+                    <tr class="hover:bg-slate-950/40 transition-colors">
+                        <td class="p-4 font-semibold text-white">${app.firm}</td>
+                        <td class="p-4"><span class="px-2.5 py-1 text-xs font-medium rounded-full border ${badgeColor}">${statusDisplay}</span></td>
+                        <td class="p-4 text-slate-400">${app.submittedDate || 'Not Submitted'}</td>
+                        <td class="p-4 text-slate-400 text-xs max-w-xs truncate">${app.notes || '—'}</td>
+                        <td class="p-4 text-right space-x-2">
+                            <button onclick="openAppModal(${app.id})" class="text-slate-400 hover:text-white"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deleteApp(${app.id})" class="text-slate-400 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
 
-        function renderTodoList() {
-            checkAndCleanCompletedTasks();
-            const container = document.getElementById('masterSubContainer');
-            let html = '';
-            const todoTasks = state.tasks.filter(t => t.type !== 'event');
+            // Exams Countdown (Dashboard & Page)
+            const dashExamList = document.getElementById('dashboard-exam-list');
+            const examGrid = document.getElementById('exam-grid');
+            dashExamList.innerHTML = examData.length === 0 ? '<p class="text-xs text-slate-500 text-center py-4">No exams scheduled.</p>' : '';
+            examGrid.innerHTML = examData.length === 0 ? '<p class="text-slate-500 col-span-full text-center py-8">No exams scheduled.</p>' : '';
 
-            if(todoTasks.length === 0) {
-                container.innerHTML = `<p style="text-align:center; padding:20px;">No active tasks on your to-do list.</p>`;
-                return;
-            }
+            // Sort exams by date
+            const sortedExams = [...examData].sort((a,b) => new Date(a.date) - new Date(b.date));
 
-            const today = new Date();
-            today.setHours(0,0,0,0);
+            sortedExams.forEach((exam, idx) => {
+                const now = new Date();
+                const examDate = new Date(exam.date);
+                const diffTime = examDate - now;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                let countdownText = `${diffDays} days left`;
+                let badgeClass = 'text-purple-400 bg-purple-500/10 border-purple-500/30';
+                if(diffDays < 0) {
+                    countdownText = 'Exam Completed';
+                    badgeClass = 'text-slate-400 bg-slate-800 border-slate-700';
+                } else if(diffDays === 0) {
+                    countdownText = 'Today!';
+                    badgeClass = 'text-red-400 bg-red-500/10 border-red-500/30';
+                }
 
-            todoTasks.forEach(t => {
-                let tokenReward = 5;
-                if(t.type === 'lawschool') tokenReward = 15;
-                if(t.type === 'vacscheme') tokenReward = 30;
+                const formattedDate = examDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-                const taskDate = new Date(t.date);
-                taskDate.setHours(0,0,0,0);
-                const diffDays = Math.ceil((taskDate - today) / (1000 * 60 * 60 * 24));
-
-                let badge = `Due in ${diffDays} days`;
-                if(diffDays === 0) badge = `<span style="color:var(--danger); font-weight:700;">DUE TODAY</span>`;
-                else if(diffDays < 0) badge = `<span style="color:var(--danger); font-weight:700;">OVERDUE</span>`;
-
-                html += `
-                    <div class="todo-item ${t.completed ? 'completed' : ''}">
-                        <div class="todo-left">
-                            <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id},${tokenReward})">
+                if(idx < 3) {
+                    dashExamList.innerHTML += `
+                        <div class="flex items-center justify-between bg-slate-950/60 border border-slate-800/80 p-3.5 rounded-xl">
                             <div>
-                                <span style="font-size:0.9rem; font-weight:500;">${t.title}</span>
-                                <div style="display:flex; gap:8px; align-items:center; margin-top:2px;">
-                                    <span style="font-size:0.75rem; color:var(--warning); font-weight:600;">+${tokenReward} Tokens</span>
-                                    • <span style="font-size:0.75rem;">${badge}</span>
+                                <h4 class="text-sm font-bold text-white">${exam.title}</h4>
+                                <p class="text-xs text-slate-400">${formattedDate}</p>
+                            </div>
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full border ${badgeClass}">${countdownText}</span>
+                        </div>
+                    `;
+                }
+
+                examGrid.innerHTML += `
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 text-purple-500/10 pointer-events-none">
+                            <i class="fa-solid fa-graduation-cap text-6xl"></i>
+                        </div>
+                        <div class="space-y-3 relative z-10">
+                            <div class="flex justify-between items-start">
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full border ${badgeClass}">${countdownText}</span>
+                                <div class="space-x-2">
+                                    <button onclick="openExamModal(${exam.id})" class="text-slate-400 hover:text-white text-xs"><i class="fa-solid fa-pen"></i></button>
+                                    <button onclick="deleteExam(${exam.id})" class="text-slate-400 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </div>
-                        </div>
-                        <button class="secondary" onclick="deleteTask(${t.id})" style="padding:4px 8px; font-size:0.75rem; background:#fee2e2; color:#991b1b;">Delete</button>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function toggleTask(id, tokenReward) {
-            const t = state.tasks.find(task => task.id === id);
-            if(t) {
-                t.completed = !t.completed;
-                if(t.completed) {
-                    t.completedAt = new Date().toISOString();
-                    addTokens(tokenReward);
-                } else {
-                    t.completedAt = null;
-                }
-                if(currentSubView === 'todo') renderTodoList();
-            }
-        }
-
-        function openAddTaskModal(dateStr) {
-            document.getElementById('taskTitleInput').value = "";
-            document.getElementById('taskDateInput').value = dateStr || new Date().toISOString().split('T')[0];
-            document.getElementById('taskTypeSelect').value = "general";
-            document.getElementById('taskModal').style.display = 'flex';
-        }
-        function openAddTaskModalForDate(dateStr) { openAddTaskModal(dateStr); }
-        function closeTaskModal() { document.getElementById('taskModal').style.display = 'none'; }
-
-        function saveTaskModal() {
-            const title = document.getElementById('taskTitleInput').value.trim();
-            const date = document.getElementById('taskDateInput').value;
-            const type = document.getElementById('taskTypeSelect').value;
-            if(!title) { alert("Please enter a title."); return; }
-
-            state.tasks.push({ id: Date.now(), title, date: date || '2026-09-26', type, completed: false, completedAt: null });
-            closeTaskModal();
-            renderCalendar();
-        }
-
-        function deleteTask(id) {
-            state.tasks = state.tasks.filter(t => t.id !== id);
-            renderTodoList();
-        }
-
-        // --- LAW SCHOOL HUB ---
-        function renderLawSchoolHub() {
-            const container = document.getElementById('lawClassesContainer');
-            container.innerHTML = '';
-            state.lawClasses.forEach((lc, idx) => {
-                let examDatesHtml = lc.exams.map((ex, exIdx) => `<div style="display:flex; gap:6px; margin-bottom:6px;"><input type="date" value="${ex}" onchange="updateExamDate(${idx},${exIdx}, this.value)" style="margin-bottom:0;"><button class="secondary" onclick="removeExamDate(${idx},${exIdx})">✕</button></div>`).join('');
-
-                let tutorialSection = lc.hasTutorial ? `
-                    <div style="margin-top:10px; background:#f1f5f9; padding:10px; border-radius:8px;">
-                        <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Tutorial Day of the Week (Starts on Class Start Date)</label>
-                        <select onchange="updateLawClassProp(${idx}, 'tutorialDay', this.value)">
-                            <option value="1" ${lc.tutorialDay==="1"?'selected':''}>Monday</option>
-                            <option value="2" ${lc.tutorialDay==="2"?'selected':''}>Tuesday</option>
-                            <option value="3" ${lc.tutorialDay==="3"?'selected':''}>Wednesday</option>
-                            <option value="4" ${lc.tutorialDay==="4"?'selected':''}>Thursday</option>
-                            <option value="5" ${lc.tutorialDay==="5"?'selected':''}>Friday</option>
-                        </select>
-                        <button class="secondary" onclick="toggleTutorial(${idx})" style="font-size:0.75rem; margin-top:6px;">Remove Tutorial</button>
-                    </div>
-                ` : `<button class="secondary" onclick="toggleTutorial(${idx})" style="font-size:0.75rem; margin-top:8px;">+ Add Tutorial</button>`;
-
-                container.innerHTML += `
-                    <div style="background:#f8fafc; border:1px solid var(--card-border); padding:16px; border-radius:10px; margin-bottom:15px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <input type="text" value="${lc.title}" placeholder="Class Name (e.g. Contract Law)" onchange="updateLawClassProp(${idx}, 'title', this.value)" style="font-weight:600; margin-bottom:0; flex:1; margin-right:10px;">
-                            <button class="secondary" onclick="removeLawClass(${idx})">Remove</button>
-                        </div>
-                        <div class="grid-2">
-                            <div>
-                                <label style="font-size:0.75rem; color:var(--text-muted);">Start Date</label>
-                                <input type="date" value="${lc.startDate}" onchange="updateLawClassProp(${idx}, 'startDate', this.value)">
-                            </div>
-                            <div>
-                                <label style="font-size:0.75rem; color:var(--text-muted);">End Date</label>
-                                <input type="date" value="${lc.endDate}" onchange="updateLawClassProp(${idx}, 'endDate', this.value)">
-                            </div>
-                        </div>
-                        <div>
-                            <label style="font-size:0.75rem; color:var(--text-muted);">Class Day of the Week</label>
-                            <select onchange="updateLawClassProp(${idx}, 'dayOfWeek', this.value)">
-                                <option value="1" ${lc.dayOfWeek==="1"?'selected':''}>Monday</option>
-                                <option value="2" ${lc.dayOfWeek==="2"?'selected':''}>Tuesday</option>
-                                <option value="3" ${lc.dayOfWeek==="3"?'selected':''}>Wednesday</option>
-                                <option value="4" ${lc.dayOfWeek==="4"?'selected':''}>Thursday</option>
-                                <option value="5" ${lc.dayOfWeek==="5"?'selected':''}>Friday</option>
-                            </select>
-                        </div>
-                        ${tutorialSection}
-                        <div style="margin-top:12px;">
-                            <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Standalone Exam Date(s)</label>
-                            ${examDatesHtml}
-                            <button class="secondary" onclick="addExamDate(${idx})" style="font-size:0.75rem;">+ Add Exam Date</button>
+                            <h3 class="text-lg font-bold text-white">${exam.title}</h3>
+                            <p class="text-xs text-slate-400 flex items-center gap-1.5"><i class="fa-regular fa-clock text-amber-500"></i> ${formattedDate}</p>
                         </div>
                     </div>
                 `;
             });
-        }
 
-        function addLawClassInputRow() {
-            state.lawClasses.push({ id: Date.now(), title: "", startDate: "2026-09-01", endDate: "2026-11-30", dayOfWeek: "1", hasTutorial: false, tutorialDay: "3", exams: [] });
-            renderLawSchoolHub();
-        }
-        function updateLawClassProp(idx, prop, val) { state.lawClasses[idx][prop] = val; }
-        function removeLawClass(idx) { state.lawClasses.splice(idx, 1); renderLawSchoolHub(); }
-        function toggleTutorial(idx) {
-            state.lawClasses[idx].hasTutorial = !state.lawClasses[idx].hasTutorial;
-            renderLawSchoolHub();
-        }
-        function addExamDate(idx) { state.lawClasses[idx].exams.push("2026-12-10"); renderLawSchoolHub(); }
-        function updateExamDate(idx, exIdx, val) { state.lawClasses[idx].exams[exIdx] = val; }
-        function removeExamDate(idx, exIdx) { state.lawClasses[idx].exams.splice(exIdx, 1); renderLawSchoolHub(); }
+            // History Log Table
+            const historyTableBody = document.getElementById('history-table-body');
+            historyTableBody.innerHTML = historyData.length === 0 ? '<tr><td colspan="4" class="p-4 text-center text-slate-500">No history records found.</td></tr>' : '';
 
-        function saveLawSchoolData() {
-            alert("Law school hub successfully saved and synced to Master Schedule!");
-            switchTab('master');
-            renderCalendar();
-        }
-
-        // --- VACATION SCHEME & TC TRACKER ---
-        function openAddFirmModal() {
-            document.getElementById('newFirmName').value = "";
-            document.getElementById('newFirmStatusSelect').value = "pending";
-            document.getElementById('newFirmDateInput').value = "2026-09-30";
-            document.getElementById('newFirmNotesInput').value = "";
-            toggleFirmDateInputType();
-            document.getElementById('addFirmModal').style.display = 'flex';
-        }
-        function closeAddFirmModal() { document.getElementById('addFirmModal').style.display = 'none'; }
-
-        function toggleFirmDateInputType() {
-            let status = document.getElementById('newFirmStatusSelect').value;
-            if(status === 'pending') {
-                document.getElementById('firmDateLabel').innerText = "Application Submission Deadline";
-                document.getElementById('firmNotesContainer').style.display = 'none';
-            } else {
-                document.getElementById('firmDateLabel').innerText = "Application Submission Date";
-                document.getElementById('firmNotesContainer').style.display = 'block';
-            }
-        }
-
-        function saveNewFirmApplication() {
-            let name = document.getElementById('newFirmName').value.trim();
-            let status = document.getElementById('newFirmStatusSelect').value;
-            let dateVal = document.getElementById('newFirmDateInput').value;
-            let notes = document.getElementById('newFirmNotesInput').value;
-
-            if(!name) { alert("Please enter a firm name."); return; }
-
-            let newFirm = {
-                id: Date.now(),
-                name,
-                status,
-                deadline: status === 'pending' ? dateVal : null,
-                submissionDate: status === 'active' ? dateVal : null,
-                notes: notes || "",
-                priority: state.firms.length + 1,
-                revived: false,
-                historyYears: [],
-                events: [],
-                stages: [
-                    { 
-                        roundName: status === 'pending' ? "Pending Application" : "Initial Application", 
-                        eventDetails: status === 'pending' ? "Looking to apply" : "Submitted application: " + (notes || "No notes"), 
-                        prepNotes: [], 
-                        reflections: [], 
-                        keyPeople: [] 
-                    }
-                ]
-            };
-
-            state.firms.push(newFirm);
-            closeAddFirmModal();
-            renderTracker();
-        }
-
-        function renderTracker() {
-            const pendingContainer = document.getElementById('pendingFirmsContainer');
-            const activeContainer = document.getElementById('activeFirmsContainer');
-            const historyContainer = document.getElementById('unifiedHistoryContainer');
-            const graveyardCount = document.getElementById('graveyardCount');
-
-            pendingContainer.innerHTML = '';
-            activeContainer.innerHTML = '';
-            historyContainer.innerHTML = '';
-
-            // Filter firms
-            let pendingFirms = state.firms.filter(f => f.status === 'pending');
-            let activeFirms = state.firms.filter(f => f.status === 'active');
-            let graveyardFirms = state.firms.filter(f => f.status === 'graveyard');
-
-            graveyardCount.innerText = graveyardFirms.length;
-
-            // Sort Pending by deadline urgency
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            pendingFirms.sort((a,b) => {
-                let dateA = new Date(a.deadline || '2099-01-01');
-                let dateB = new Date(b.deadline || '2099-01-01');
-                return dateA - dateB;
-            });
-
-            // Sort Active by priority descending (higher priority number or moved up)
-            activeFirms.sort((a,b) => b.priority - a.priority);
-
-            // Render Pending
-            if(pendingFirms.length === 0) {
-                pendingContainer.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted);">No pending applications.</p>`;
-            } else {
-                pendingFirms.forEach(f => {
-                    let deadlineDate = new Date(f.deadline);
-                    deadlineDate.setHours(0,0,0,0);
-                    let diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
-                    let countdownText = diffDays >= 0 ? `Due in ${diffDays} days` : `Overdue by ${Math.abs(diffDays)} days`;
-
-                    pendingContainer.innerHTML += `
-                        <div class="firm-card-item">
-                            <div>
-                                <strong style="font-size:0.95rem;">${f.name}</strong>
-                                <div style="font-size:0.75rem; color:var(--warning); font-weight:600; margin-top:2px;">⏳ ${countdownText} (${f.deadline})</div>
-                            </div>
-                            <div style="display:flex; gap:6px;">
-                                <button class="secondary" onclick="openAddEventModal(${f.id})" style="font-size:0.75rem;">+ Event</button>
-                                <button onclick="moveToActive(${f.id})" style="font-size:0.75rem; background:var(--accent);">Submit 🚀</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            // Render Active
-            if(activeFirms.length === 0) {
-                activeContainer.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted);">No active applications.</p>`;
-            } else {
-                activeFirms.forEach(f => {
-                    let halo = f.revived ? '<span style="font-size:1rem; margin-left:4px;" title="Revived Rev">😇</span>' : '';
-                    activeContainer.innerHTML += `
-                        <div class="firm-card-item" onclick="openFirmDetailsModal(${f.id})">
-                            <div>
-                                <strong style="font-size:0.95rem;">${f.name}${halo}</strong>
-                                <div style="font-size:0.75rem; color:var(--accent); font-weight:600; margin-top:2px;">🚀 Active Application</div>
-                            </div>
-                            <div style="font-size:0.8rem; color:var(--warning); font-weight:600;">Manage ›</div>
-                        </div>
-                    `;
-                });
-            }
-
-            // Render Unified History Log links
-            state.firms.forEach(f => {
-                historyContainer.innerHTML += `
-                    <button class="secondary" onclick="openFullHistoryLog(${f.id})" style="font-weight:600;">📁 ${f.name}${f.revived ? '(Revived)' : ''}</button>
+            historyData.forEach(item => {
+                historyTableBody.innerHTML += `
+                    <tr class="hover:bg-slate-950/40 transition-colors">
+                        <td class="p-4 text-xs font-mono text-slate-400">${item.timestamp}</td>
+                        <td class="p-4 font-medium text-amber-400">${item.type}</td>
+                        <td class="p-4 text-slate-300 text-sm">${item.description}</td>
+                        <td class="p-4 text-right space-x-2">
+                            <button onclick="openHistoryModal(${item.id})" class="text-slate-400 hover:text-white"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deleteHistory(${item.id})" class="text-slate-400 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
                 `;
             });
         }
 
-        function moveToActive(id) {
-            let f = state.firms.find(x => x.id === id);
-            if(f) {
-                f.status = 'active';
-                f.submissionDate = new Date().toISOString().split('T')[0];
-                f.priority = Date.now(); // bump priority
-                f.stages.push({ roundName: "Submitted Application", eventDetails: "Moved from Pending to Active", prepNotes: [], reflections: ["Application successfully submitted."], keyPeople: [] });
-                addTokens(30); // TC/Vac scheme task reward
-                renderTracker();
-                alert(`🚀 ${f.name} application submitted and moved to Active Applications! +30 Tokens awarded.`);
-            }
-        }
-
-        // --- FIRM EVENTS ---
-        function openAddEventModal(firmId) {
-            const f = state.firms.find(x => x.id === firmId);
-            if(!f) return;
-            const modal = document.getElementById('firmEventModal');
-            modal.style.display = 'flex';
-
-            document.getElementById('firmEventModalContent').innerHTML = `
-                <button class="close-btn" onclick="document.getElementById('firmEventModal').style.display='none'">✕</button>
-                <h3>Add Event for ${f.name}</h3>
-                <p>Coffee chat, open house, law fair, career talk, etc.</p>
-
-                <label>Event Type / Title</label>
-                <input type="text" id="evTitle" placeholder="e.g. Clifford Chance Open Day">
-
-                <label>Date</label>
-                <input type="date" id="evDate" value="${new Date().toISOString().split('T')[0]}">
-
-                <label>Reflections & Key Takeaways</label>
-                <textarea id="evReflections" placeholder="What did you learn about the firm's culture or practice areas?"></textarea>
-
-                <h4 style="margin:15px 0 5px 0;">Key People Met</h4>
-                <div id="modalPeopleList">
-                    <div class="dynamic-item-card person-row">
-                        <input type="text" placeholder="Name" class="kp-name" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Position (e.g. Trainee / Partner)" class="kp-pos" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Practice Area" class="kp-area" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Commonalities" class="kp-comm" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Insights / Advice" class="kp-insights" style="margin-bottom:0;">
-                    </div>
-                </div>
-                <button class="secondary" onclick="addModalPersonRow()" style="font-size:0.75rem; margin-bottom:15px;">+ Add Another Person</button>
-
-                <button onclick="saveFirmEvent(${f.id})" style="width:100%;">Save Event & Log</button>
-            `;
-        }
-
-        function addModalPersonRow() {
-            const container = document.getElementById('modalPeopleList');
-            container.innerHTML += `
-                <div class="dynamic-item-card person-row" style="margin-top:10px;">
-                    <input type="text" placeholder="Name" class="kp-name" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Position" class="kp-pos" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Practice Area" class="kp-area" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Commonalities" class="kp-comm" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Insights / Advice" class="kp-insights" style="margin-bottom:0;">
-                </div>
-            `;
-        }
-
-        function saveFirmEvent(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            let title = document.getElementById('evTitle').value.trim();
-            let date = document.getElementById('evDate').value;
-            let reflections = document.getElementById('evReflections').value.trim();
-
-            if(!title) { alert("Please enter event title."); return; }
-
-            let peopleRows = document.querySelectorAll('.person-row');
-            let keyPeople = [];
-            peopleRows.forEach(row => {
-                keyPeople.push({
-                    name: row.querySelector('.kp-name').value,
-                    position: row.querySelector('.kp-pos').value,
-                    practiceArea: row.querySelector('.kp-area').value,
-                    commonalities: row.querySelector('.kp-comm').value,
-                    insights: row.querySelector('.kp-insights').value
-                });
-            });
-
-            let eventObj = { title, date, reflections, keyPeople };
-            f.events.push(eventObj);
-
-            // Also push to stages/history log
-            f.stages.push({
-                roundName: `Networking Event: ${title}`,
-                eventDetails: `Date: ${date} \vert{} Reflections:${reflections}`,
-                prepNotes: [],
-                reflections: [reflections],
-                keyPeople
-            });
-
-            document.getElementById('firmEventModal').style.display = 'none';
-            renderTracker();
-            alert("Event successfully recorded and added to history log!");
-        }
-
-        // --- ACTIVE FIRM DETAILS & STAGES ---
-        function openFirmDetailsModal(firmId) {
-            const f = state.firms.find(x => x.id === firmId);
-            if(!f) return;
-            const modal = document.getElementById('firmDetailsModal');
-            modal.style.display = 'flex';
-
-            let stagesHtml = '';
-            f.stages.forEach((st, sIdx) => {
-                stagesHtml += `
-                    <div style="background:#f8fafc; border:1px solid var(--card-border); padding:16px; border-radius:10px; margin-bottom:12px;">
-                        <strong>${st.roundName}</strong> — <span style="font-size:0.85rem; color:var(--text-muted);">${st.eventDetails}</span><br>
-                        <span style="font-size:0.8rem; color:var(--text-muted);">Reflections: ${st.reflections.join('; ')}</span>
-                    </div>
-                `;
-            });
-
-            document.getElementById('firmDetailsModalContent').innerHTML = `
-                <button class="close-btn" onclick="document.getElementById('firmDetailsModal').style.display='none'">✕</button>
-                <h3>${f.name} - Active Application Management</h3>
-                <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
-                    <button onclick="openAddEventModal(${f.id})" class="secondary">+ Add Networking Event</button>
-                    <button onclick="advanceActiveRound(${f.id})" style="background:var(--accent);">Advance to Next Round (+50 Tokens)</button>
-                    <button onclick="rejectActiveFirm(${f.id})" style="background:var(--danger);">Reject / Send to Graveyard</button>
-                </div>
-                
-                <h4 style="margin-bottom:10px;">Application Stages & Rounds Log</h4>
-                ${stagesHtml}
-            `;
-        }
-
-        function advanceActiveRound(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            if(f) {
-                f.priority = Date.now(); // bump priority up
-                addTokens(50);
-                document.getElementById('firmDetailsModal').style.display = 'none';
-
-                // Open blank template modal for next round input
-                openNextRoundTemplateModal(f.id);
-            }
-        }
-
-        function openNextRoundTemplateModal(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            const modal = document.getElementById('firmDetailsModal');
-            modal.style.display = 'flex';
-
-            document.getElementById('firmDetailsModalContent').innerHTML = `
-                <button class="close-btn" onclick="document.getElementById('firmDetailsModal').style.display='none'">✕</button>
-                <h3>${f.name} - Advance to Next Round</h3>
-                <p>Input details for the new round. +50 Tokens awarded!</p>
-
-                <label>Stage / Round Name</label>
-                <input type="text" id="nrName" placeholder="e.g. Assessment Centre / Partner Interview">
-
-                <label>Event / Round Details</label>
-                <input type="text" id="nrDetails" placeholder="e.g. Group exercise & case study">
-
-                <label>Reflections & Key Takeaways</label>
-                <textarea id="nrReflections" placeholder="How did it go? What could be improved?"></textarea>
-
-                <h4 style="margin:15px 0 5px 0;">Key People Met</h4>
-                <div id="nrPeopleList">
-                    <div class="dynamic-item-card nr-person-row">
-                        <input type="text" placeholder="Name" class="nr-name" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Position" class="nr-pos" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Practice Area" class="nr-area" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Commonalities" class="nr-comm" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Insights" class="nr-insights" style="margin-bottom:0;">
-                    </div>
-                </div>
-                <button class="secondary" onclick="addNrPersonRow()" style="font-size:0.75rem; margin-bottom:15px;">+ Add Person</button>
-
-                <button onclick="saveNextRound(${f.id})" style="width:100%;">Save New Round</button>
-            `;
-        }
-
-        function addNrPersonRow() {
-            document.getElementById('nrPeopleList').innerHTML += `
-                <div class="dynamic-item-card nr-person-row" style="margin-top:10px;">
-                    <input type="text" placeholder="Name" class="nr-name" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Position" class="nr-pos" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Practice Area" class="nr-area" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Commonalities" class="nr-comm" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Insights" class="nr-insights" style="margin-bottom:0;">
-                </div>
-            `;
-        }
-
-        function saveNextRound(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            let roundName = document.getElementById('nrName').value.trim() || "Next Round";
-            let eventDetails = document.getElementById('nrDetails').value.trim() || "";
-            let reflection = document.getElementById('nrReflections').value.trim();
-
-            let rows = document.querySelectorAll('.nr-person-row');
-            let keyPeople = [];
-            rows.forEach(r => {
-                keyPeople.push({
-                    name: r.querySelector('.nr-name').value,
-                    position: r.querySelector('.nr-pos').value,
-                    practiceArea: r.querySelector('.nr-area').value,
-                    commonalities: r.querySelector('.nr-comm').value,
-                    insights: r.querySelector('.nr-insights').value
-                });
-            });
-
-            f.stages.push({
-                roundName,
-                eventDetails,
-                prepNotes: [],
-                reflections: reflection ? [reflection] : [],
-                keyPeople
-            });
-
-            document.getElementById('firmDetailsModal').style.display = 'none';
-            renderTracker();
-            alert("New round successfully added and priority bumped!");
-        }
-
-        function rejectActiveFirm(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            if(f) {
-                f.status = 'graveyard';
-                document.getElementById('firmDetailsModal').style.display = 'none';
-                renderTracker();
-                alert(`${f.name} application sent to the Graveyard.`);
-            }
-        }
-
-        // --- GRAVEYARD & REVIVE ---
-        function openGraveyardModal() {
-            const modal = document.getElementById('graveyardModal');
-            modal.style.display = 'flex';
-            const container = document.getElementById('graveyardListContainer');
-            container.innerHTML = '';
-
-            let graveyardFirms = state.firms.filter(f => f.status === 'graveyard');
-            if(graveyardFirms.length === 0) {
-                container.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted);">The graveyard is empty.</p>`;
-                return;
-            }
-
-            graveyardFirms.forEach(f => {
-                container.innerHTML += `
-                    <div style="background:#f8fafc; border:1px solid var(--card-border); padding:14px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <strong>${f.name}</strong>${f.revived ? '(Previously Revived)' : ''}
-                        </div>
-                        <div style="display:flex; gap:8px;">
-                            <button class="secondary" onclick="openFullHistoryLog(${f.id})" style="font-size:0.75rem;">View History</button>
-                            <button onclick="reviveFirm(${f.id})" style="font-size:0.75rem; background:var(--accent);">💧 Revive for Next Cycle</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-        function closeGraveyardModal() { document.getElementById('graveyardModal').style.display = 'none'; }
-
-        function reviveFirm(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            if(f) {
-                f.revived = true;
-                f.status = 'active';
-                if(!f.historyYears) f.historyYears = [];
-                f.historyYears.push({ stages: [...f.stages] });
-                
-                // Reset stages with 'Revived' tag
-                f.stages = [
-                    { roundName: "Revived Application Round", eventDetails: "Re-applying for next cycle", prepNotes: [], reflections: [], keyPeople: [] }
-                ];
-                closeGraveyardModal();
-                renderTracker();
-                alert(`✨ ${f.name} successfully revived and moved to Active Applications with a revived tag!`);
-            }
-        }
-
-        // --- FULL HISTORY LOG MODAL ---
-        function openFullHistoryLog(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            if(!f) return;
-            const modal = document.getElementById('historyLogModal');
-            modal.style.display = 'flex';
-
-            let historyHtml = ``;
-
-            if(f.historyYears && f.historyYears.length > 0) {
-                f.historyYears.forEach((hy, hyIdx) => {
-                    historyHtml += `<h4 style="color:var(--warning); margin-top:10px;">--- Previous Cycle Round (${hyIdx+1}) ---</h4>`;
-                    hy.stages.forEach(st => {
-                        historyHtml += renderStageDetail(st);
-                    });
-                });
-                historyHtml += `<h4 style="color:var(--accent); margin-top:15px;">--- Current Cycle Rounds ---</h4>`;
-            }
-
-            f.stages.forEach(st => {
-                historyHtml += renderStageDetail(st);
-            });
-
-            document.getElementById('historyLogModalContent').innerHTML = `
-                <button class="close-btn" onclick="document.getElementById('historyLogModal').style.display='none'">✕</button>
-                <h3>📜 Complete History Log: ${f.name} ${f.revived ? '(Revived 😇)' : ''}</h3>
-                <div style="max-height:60vh; overflow-y:auto; margin-top:15px;">
-                    ${historyHtml}
-                </div>
-            `;
-        }
-
-        function renderStageDetail(st) {
-            let peopleList = st.keyPeople && st.keyPeople.length > 0 ? st.keyPeople.map(kp => `
-                <div style="background:#f1f5f9; padding:6px 10px; border-radius:6px; margin-top:4px; font-size:0.8rem;">
-                    <strong>👤 ${kp.name}</strong> (${kp.position} - ${kp.practiceArea})<br>
-                    <em>Commonalities:</em> ${kp.commonalities || 'None'} | <em>Insights:</em> ${kp.insights || 'None'}
-                </div>
-            `).join('') : '<span style="font-size:0.8rem; color:var(--text-muted);">No key people logged for this stage.</span>';
-
-            return `
-                <div style="background:#f8fafc; border:1px solid var(--card-border); padding:14px; border-radius:10px; margin-bottom:12px;">
-                    <strong>${st.roundName}</strong><br>
-                    <span style="font-size:0.85rem; color:var(--text-muted);">Details: ${st.eventDetails || 'None'}</span><br>
-                    <span style="font-size:0.85rem;">Reflections: ${st.reflections && st.reflections.length > 0 ? st.reflections.join(', ') : 'None'}</span>
-                    <div style="margin-top:8px;">
-                        <strong>Key People Met:</strong>
-                        ${peopleList}
-                    </div>
-                </div>
-            `;
-        }
-
-        // Initialize
-        addTokens(0);
-        switchMasterSubView('calendar');
-        renderLawSchoolHub();
-        renderTracker();
+        // Initialize on Load
+        window.onload = function() {
+            renderAll();
+        };
     </script>
 </body>
 </html>
