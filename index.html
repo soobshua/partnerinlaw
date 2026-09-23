@@ -29,7 +29,7 @@
             min-height: 100vh;
         }
 
-        /* Top Bar & Config */
+        /* Top Bar */
         .top-bar {
             background: var(--card-bg);
             border-bottom: 1px solid var(--card-border);
@@ -39,15 +39,6 @@
             align-items: center;
         }
         .app-title { font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 8px; letter-spacing: -0.025em; }
-        .config-box { display: flex; gap: 8px; align-items: center; }
-        .config-box input {
-            background: #f1f5f9;
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-        }
 
         /* Currency & Cafe Bar */
         .currency-bar {
@@ -71,7 +62,7 @@
             font-size: 0.85rem;
         }
 
-        /* Navigation Tabs (Master Schedule Default) */
+        /* Navigation Tabs */
         .nav-tabs {
             display: flex;
             background: var(--card-bg);
@@ -153,7 +144,7 @@
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media(max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
 
-        /* Modals with Exit Button */
+        /* Modals */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000;
@@ -181,25 +172,29 @@
         }
         .served-item { font-size: 3rem; animation: pourServe 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-        /* Timeline Tracker */
-        .timeline-container { position: relative; margin-top: 20px; padding-left: 20px; border-left: 2px solid var(--card-border); }
-        .timeline-item { position: relative; margin-bottom: 20px; background: #f8fafc; border: 1px solid var(--card-border); border-radius: 8px; padding: 14px 16px; }
-        .timeline-item::before { content: ''; position: absolute; left: -26px; top: 18px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); border: 2px solid #fff; }
-        .urgency-tag { font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px; }
-        .urgent-high { background: #fee2e2; color: #991b1b; }
-        .urgent-med { background: #fef3c7; color: #92400e; }
-        .urgent-low { background: #ecfdf5; color: #065f46; }
-
         /* Calendar View Grid */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 15px; text-align: center; }
+        .calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
         .cal-header { font-weight: 600; font-size: 0.8rem; color: var(--text-muted); padding: 6px; }
-        .cal-day { background: #f8fafc; border: 1px solid var(--card-border); border-radius: 6px; min-height: 75px; padding: 6px; font-size: 0.85rem; text-align: left; }
+        .cal-day { background: #f8fafc; border: 1px solid var(--card-border); border-radius: 6px; min-height: 85px; padding: 6px; font-size: 0.85rem; text-align: left; cursor: pointer; position: relative; }
+        .cal-day:hover { border-color: var(--text-main); }
         .cal-day.today { border-color: var(--primary); background: #ffffff; font-weight: bold; }
+        .cal-event-pill { font-size: 0.7rem; padding: 2px 4px; border-radius: 3px; color: #fff; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 
-        /* To-Do List Checkboxes */
-        .todo-item { display: flex; align-items: center; gap: 10px; background: #f8fafc; border: 1px solid var(--card-border); padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; }
+        /* To-Do List */
+        .todo-item { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid var(--card-border); padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; }
+        .todo-left { display: flex; align-items: center; gap: 10px; flex: 1; }
         .todo-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); margin: 0; }
         .todo-item.completed span { text-decoration: line-through; color: var(--text-muted); }
+
+        /* Timeline Tracker */
+        .firm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+        .firm-card {
+            background: #f8fafc; border: 1px solid var(--card-border); border-radius: 8px; padding: 14px;
+            cursor: pointer; position: relative; transition: transform 0.2s;
+        }
+        .firm-card:hover { transform: translateY(-2px); border-color: var(--text-main); }
+        .halo { position: absolute; top: -10px; right: 10px; font-size: 1.2rem; }
 
         /* Mobile Bottom Nav */
         .mobile-nav {
@@ -216,19 +211,15 @@
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="app-title">⚖️ Partner in Law</div>
-        <div class="config-box">
-            <input type="password" id="apiKeyInput" placeholder="Gemini API Key (Optional)" />
-            <button onclick="saveApiKey()">Save</button>
-        </div>
     </div>
 
     <!-- Currency & Cafe Bar -->
     <div class="currency-bar">
-        <div>Vault & Study Rewards</div>
+        <div>Partner in Law Workspace</div>
         <div class="token-pill" onclick="openCafeModal()">☕ <span id="tokenCount">0</span> Tokens (Open Cafe)</div>
     </div>
 
-    <!-- Navigation Tabs (Master Schedule is Default) -->
+    <!-- Navigation Tabs -->
     <div class="nav-tabs">
         <button class="nav-tab active" onclick="switchTab('master')">🗓️ Master Schedule</button>
         <button class="nav-tab" onclick="switchTab('tracker')">💼 Vac Scheme & TC Tracker</button>
@@ -241,9 +232,16 @@
         <!-- TAB 1: MASTER SCHEDULE (DEFAULT) -->
         <div id="tab-master" class="tab-content active">
             <div class="card">
+                <h2>Semester Classes Configuration</h2>
+                <p>Define your classes and assign colors for schedule tagging.</p>
+                <div id="classesConfigContainer"></div>
+                <button class="secondary" onclick="addClassConfigRow()" style="margin-top:8px;">+ Add Class</button>
+            </div>
+
+            <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
                     <h2>Master Schedule & To-Do List</h2>
-                    <button onclick="openAddTaskModal()">+ Add Task / Event</button>
+                    <button onclick="openAddTaskModal(null)">+ Add Task / Event</button>
                 </div>
                 
                 <div style="display:flex; gap:10px; margin-bottom:20px;">
@@ -260,21 +258,22 @@
             <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <div>
                     <h2>Vacation Scheme & TC Tracker</h2>
-                    <p>Timeline sorted by urgency of upcoming deadlines.</p>
+                    <p>Track applications across pending and active stages.</p>
                 </div>
-                <button onclick="openAddFirmModal()">+ Add Firm Application</button>
+                <div style="display:flex; gap:10px;">
+                    <button onclick="openAddFirmModal()">+ Add Firm Application</button>
+                    <button class="secondary" onclick="openGraveyardModal()">🪦 Graveyard (<span id="graveyardCount">0</span>)</button>
+                </div>
             </div>
 
             <div class="grid-2">
                 <div class="card">
-                    <h3>⏳ Pending Applications</h3>
-                    <p style="font-size:0.85rem; margin-top:-5px; margin-bottom:15px;">Not yet applied or awaiting submission.</p>
-                    <div id="pendingTimeline" class="timeline-container"></div>
+                    <h3>⏳ Pending Applications (Want to Apply)</h3>
+                    <div id="pendingFirmGrid" class="firm-grid"></div>
                 </div>
                 <div class="card">
-                    <h3>🚀 Active Applications</h3>
-                    <p style="font-size:0.85rem; margin-top:-5px; margin-bottom:15px;">In progress, interviewing, or assessment rounds.</p>
-                    <div id="activeTimeline" class="timeline-container"></div>
+                    <h3>🚀 Active Applications (In Progress / Interviewing)</h3>
+                    <div id="activeFirmGrid" class="firm-grid"></div>
                 </div>
             </div>
         </div>
@@ -282,28 +281,17 @@
         <!-- TAB 3: EXAM REVISION PLANNER -->
         <div id="tab-planner" class="tab-content">
             <div class="card">
-                <h2>Exam Revision Planner</h2>
-                <p>Input multiple exams below to auto-generate your comprehensive revision calendar.</p>
+                <h2>Exam Revision Planner & Final Countdown</h2>
+                <p>Input your exams to automatically mark them on your Master Schedule and view countdowns.</p>
 
-                <div id="examsListContainer">
-                    <div class="exam-input-row" style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
-                        <input type="text" placeholder="Exam Title (e.g., Contract Law)" class="multiExamTitle" style="margin-bottom:0;">
-                        <input type="date" class="multiExamDate" style="margin-bottom:0;">
-                        <button class="secondary" onclick="this.parentElement.remove()" style="padding:10px;">✕</button>
-                    </div>
-                </div>
-                <button class="secondary" onclick="addExamInputField()" style="margin-top:5px; margin-bottom:15px;">+ Add Another Exam</button>
-
-                <div style="margin-top:15px;">
-                    <label>Overall Class Difficulty (0 = Snooze Fest to 10 = Pack It Up): <span id="diffSliderVal">5</span></label>
-                    <input type="range" id="revClassDiff" min="0" max="10" value="5" oninput="document.getElementById('diffSliderVal').innerText=this.value" style="width:100%; margin-bottom:15px;">
-                    <button onclick="generateMultiExamPlan()" style="width:100%;">Generate Smart Revision Calendar</button>
-                </div>
+                <div id="examsListContainer"></div>
+                <button class="secondary" onclick="addExamInputRow()" style="margin-top:5px; margin-bottom:15px;">+ Add Exam</button>
+                <button onclick="saveExamsList()" style="width:100%;">Save Exams to Master Schedule</button>
             </div>
 
-            <div id="revisionPlanOutput" class="card" style="display:none;">
-                <h3>Generated Multi-Exam Schedule</h3>
-                <div id="revisionCalendarList"></div>
+            <div class="card">
+                <h3>⏳ Exam Countdowns</h3>
+                <div id="examCountdownsContainer"></div>
             </div>
         </div>
 
@@ -333,16 +321,28 @@
         </div>
     </div>
 
-    <!-- Add Task Modal -->
-    <div class="modal-overlay" id="addTaskModal">
+    <!-- Add/Edit Task Modal -->
+    <div class="modal-overlay" id="taskModal">
         <div class="modal">
-            <button class="close-btn" onclick="closeAddTaskModal()">✕</button>
-            <h3>Add Task or Event</h3>
-            <label>Task / Event Title</label>
-            <input type="text" id="newTaskTitle" placeholder="e.g., Moot Court preparation">
+            <button class="close-btn" onclick="closeTaskModal()">✕</button>
+            <h3 id="taskModalTitle">Add Task or Event</h3>
+            <label>Title</label>
+            <input type="text" id="taskTitleInput" placeholder="e.g., Contract Law reading">
             <label>Date</label>
-            <input type="date" id="newTaskDate">
-            <button onclick="saveNewTask()" style="width:100%; margin-top:10px;">Add to Schedule (+10 Tokens)</button>
+            <input type="date" id="taskDateInput">
+            <label>Class</label>
+            <select id="taskClassSelect"></select>
+            <label>Type</label>
+            <select id="taskTypeSelect">
+                <option value="reading">Reading</option>
+                <option value="tutorial">Tutorial</option>
+                <option value="revision">Revision</option>
+                <option value="exam">Exam</option>
+            </select>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button onclick="saveTaskModal()" style="flex:1;">Save Task</button>
+                <button id="taskDeleteBtn" class="secondary" onclick="deleteCurrentTask()" style="background:#fee2e2; color:#991b1b; display:none;">Delete</button>
+            </div>
         </div>
     </div>
 
@@ -353,22 +353,29 @@
             <h3>Add Firm Application</h3>
             <label>Firm Name</label>
             <input type="text" id="newFirmName" placeholder="e.g., Magic Circle LLP">
-            <label>Stage / What it's for</label>
-            <select id="newFirmStage">
-                <option value="Application">Application</option>
-                <option value="Online Test">Online Test</option>
-                <option value="Video Interview">Video Interview</option>
-                <option value="Assessment Centre">Assessment Centre</option>
-                <option value="Partner Interview">Partner Interview</option>
-            </select>
-            <label>Category</label>
+            <label>Initial Stage</label>
             <select id="newFirmCategory">
-                <option value="pending">Pending Application</option>
+                <option value="pending">Want to Apply (Pending)</option>
                 <option value="active">Active Application</option>
             </select>
             <label>Deadline Date</label>
             <input type="date" id="newFirmDeadline">
-            <button onclick="saveNewFirm()" style="width:100%; margin-top:10px;">Save Application</button>
+            <button onclick="saveNewFirm()" style="width:100%; margin-top:10px;">Add Application</button>
+        </div>
+    </div>
+
+    <!-- Firm Details / Update Modal -->
+    <div class="modal-overlay" id="firmDetailsModal">
+        <div class="modal" id="firmDetailsContent"></div>
+    </div>
+
+    <!-- Graveyard Modal -->
+    <div class="modal-overlay" id="graveyardModal">
+        <div class="modal">
+            <button class="close-btn" onclick="closeGraveyardModal()">✕</button>
+            <h3>🪦 The Graveyard</h3>
+            <p>Unsuccessful applications lie here. Use the watering can 💧 to revive them with an angel halo for the next cycle!</p>
+            <div id="graveyardGrid" class="firm-grid"></div>
         </div>
     </div>
 
@@ -376,24 +383,61 @@
         // Global App State
         let state = {
             tokens: 0,
-            firms: [
-                { id: 1, name: "Clifford Chance", stage: "Application", category: "pending", deadline: "2026-04-15" },
-                { id: 2, name: "Linklaters", stage: "Assessment Centre", category: "active", deadline: "2026-04-10" }
+            classes: [
+                { name: "Contract Law", color: "#3b82f6" },
+                { name: "Tort Law", color: "#10b981" },
+                { name: "Land Law", color: "#f59e0b" }
             ],
             tasks: [
-                { id: 1, title: "Tort Law reading: Negligence breach", date: "2026-04-01", completed: false },
-                { id: 2, title: "Submit application to Allen & Overy", date: "2026-04-05", completed: true }
+                { id: 1, title: "Offer and Acceptance reading", date: "2026-06-01", className: "Contract Law", type: "reading", completed: false },
+                { id: 2, title: "Contract Law Final Exam", date: "2026-06-20", className: "Contract Law", type: "exam", completed: false }
+            ],
+            firms: [
+                { id: 1, name: "Clifford Chance", category: "pending", deadline: "2026-06-15", round: "Written Application", inviteDate: "", assessmentDate: "", prepNotes: "", postNotes: "", revived: false },
+                { id: 2, name: "Linklaters", category: "active", deadline: "2026-06-10", round: "Assessment Centre", inviteDate: "2026-05-01", assessmentDate: "2026-06-08", prepNotes: "Reviewed commercial awareness cases.", postNotes: "Went well, good group interaction.", revived: false }
+            ],
+            graveyard: [],
+            exams: [
+                { title: "Contract Law Final Exam", date: "2026-06-20" }
             ]
         };
 
-        function saveApiKey() {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            if(key) {
-                localStorage.setItem('GEMINI_API_KEY', key);
-                alert('API Key saved successfully.');
-            }
+        let currentCalendarYear = 2026;
+        let currentCalendarMonth = 5; // June (0-indexed)
+
+        // --- CLASSES CONFIG ---
+        function renderClassesConfig() {
+            const container = document.getElementById('classesConfigContainer');
+            container.innerHTML = '';
+            state.classes.forEach((c, idx) => {
+                container.innerHTML += `
+                    <div style="display:flex; gap:10px; margin-bottom:8px; align-items:center;">
+                        <input type="text" value="${c.name}" onchange="updateClassName(${idx}, this.value)" style="margin-bottom:0;">
+                        <input type="color" value="${c.color}" onchange="updateClassColor(${idx}, this.value)" style="width:50px; height:38px; border:1px solid var(--card-border); background:none; border-radius:6px; cursor:pointer;">
+                        <button class="secondary" onclick="removeClassConfig(${idx})" style="padding:10px;">✕</button>
+                    </div>
+                `;
+            });
+            updateTaskClassDropdown();
         }
-        function getApiKey() { return localStorage.getItem('GEMINI_API_KEY') || ""; }
+
+        function addClassConfigRow() {
+            state.classes.push({ name: "New Class", color: "#6366f1" });
+            renderClassesConfig();
+        }
+
+        function updateClassName(idx, val) { state.classes[idx].name = val; updateTaskClassDropdown(); }
+        function updateClassColor(idx, val) { state.classes[idx].color = val; if(currentSubView === 'calendar') renderCalendar(); }
+        function removeClassConfig(idx) { state.classes.splice(idx, 1); renderClassesConfig(); }
+
+        function updateTaskClassDropdown() {
+            const select = document.getElementById('taskClassSelect');
+            if(!select) return;
+            select.innerHTML = '';
+            state.classes.forEach(c => {
+                select.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+            });
+        }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -403,6 +447,7 @@
             document.querySelectorAll('.nav-tab').forEach(btn => {
                 if(btn.getAttribute('onclick').includes(tabId)) btn.classList.add('active');
             });
+            if(tabId === 'planner') renderExamsPlanner();
         }
 
         function highlightMobileNav(btn) {
@@ -450,7 +495,7 @@
         function buyCafeItem(idx) {
             const item = cafeItems[idx];
             if(state.tokens < item.price) {
-                alert("Not enough tokens! Complete study tasks or add milestones to earn tokens.");
+                alert("Not enough tokens! Complete study tasks to earn more.");
                 return;
             }
             state.tokens -= item.price;
@@ -466,6 +511,8 @@
 
         // --- MASTER SCHEDULE: CALENDAR & TODO ---
         let currentSubView = 'calendar';
+        let editingTaskId = null;
+
         function switchMasterSubView(view) {
             currentSubView = view;
             const container = document.getElementById('masterSubContainer');
@@ -475,57 +522,172 @@
                 document.getElementById('calViewBtn').style.color = '#fff';
                 document.getElementById('todoViewBtn').style.background = '#f1f5f9';
                 document.getElementById('todoViewBtn').style.color = 'var(--text-main)';
-
-                let daysHtml = '';
-                const headers = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                headers.forEach(h => daysHtml += `<div class="cal-header">${h}</div>`);
-                
-                for(let i = 1; i <= 31; i++) {
-                    let isToday = i === 15 ? 'today' : '';
-                    daysHtml += `<div class="cal-day ${isToday}"><div style="font-weight:600; margin-bottom:4px;">${i}</div><span style="font-size:0.75rem; color:var(--text-muted);">${i === 15 ? 'Exam Prep' : ''}</span></div>`;
-                }
-                container.innerHTML = `<div class="calendar-grid">${daysHtml}</div>`;
+                renderCalendar();
             } else {
                 document.getElementById('todoViewBtn').style.background = 'var(--primary)';
                 document.getElementById('todoViewBtn').style.color = '#fff';
                 document.getElementById('calViewBtn').style.background = '#f1f5f9';
                 document.getElementById('calViewBtn').style.color = 'var(--text-main)';
-
-                let html = '';
-                state.tasks.forEach((t, idx) => {
-                    html += `
-                        <div class="todo-item ${t.completed ? 'completed' : ''}">
-                            <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${idx})">
-                            <div style="flex:1;">
-                                <span style="font-size:0.9rem; font-weight:500;">${t.title}</span>
-                                <div style="font-size:0.75rem; color:var(--text-muted);">${t.date}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
+                renderTodoList();
             }
         }
 
-        function toggleTask(idx) {
-            state.tasks[idx].completed = !state.tasks[idx].completed;
-            if(state.tasks[idx].completed) addTokens(5);
-            switchMasterSubView('todo');
+        function renderCalendar() {
+            const container = document.getElementById('masterSubContainer');
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            let html = `
+                <div class="calendar-nav">
+                    <button class="secondary" onclick="changeMonth(-1)">‹ Prev</button>
+                    <h3 style="margin:0;">${monthNames[currentCalendarMonth]} ${currentCalendarYear}</h3>
+                    <button class="secondary" onclick="changeMonth(1)">Next ›</button>
+                </div>
+                <div class="calendar-grid">
+            `;
+
+            const headers = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            headers.forEach(h => html += `<div class="cal-header">${h}</div>`);
+
+            const firstDayIndex = new Date(currentCalendarYear, currentCalendarMonth, 1).getDay();
+            const adjustedFirstDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+            const totalDays = new Date(currentCalendarYear, currentCalendarMonth + 1, 0).getDate();
+
+            // Blank padding for previous month days
+            for(let i = 0; i < adjustedFirstDay; i++) {
+                html += `<div class="cal-day" style="opacity:0.3; background:none; cursor:default;"></div>`;
+            }
+
+            for(let i = 1; i <= totalDays; i++) {
+                let monthStr = String(currentCalendarMonth + 1).padStart(2, '0');
+                let dayStr = String(i).padStart(2, '0');
+                let dateKey = `${currentCalendarYear}-${monthStr}-${dayStr}`;
+
+                let dayTasks = state.tasks.filter(t => t.date === dateKey);
+                let eventsHtml = '';
+                dayTasks.forEach(dt => {
+                    let classObj = state.classes.find(c => c.name === dt.className);
+                    let color = classObj ? classObj.color : '#0f172a';
+                    eventsHtml += `<span class="cal-event-pill" style="background:${color};" onclick="event.stopPropagation(); openEditTaskModal(${dt.id})">${dt.title} (${dt.type})</span>`;
+                });
+
+                html += `
+                    <div class="cal-day" onclick="openAddTaskModalForDate('${dateKey}')">
+                        <div style="font-weight:600; margin-bottom:4px;">${i}</div>
+                        ${eventsHtml}
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            container.innerHTML = html;
         }
 
-        function openAddTaskModal() { document.getElementById('addTaskModal').style.display = 'flex'; }
-        function closeAddTaskModal() { document.getElementById('addTaskModal').style.display = 'none'; }
-        
-        function saveNewTask() {
-            const title = document.getElementById('newTaskTitle').value.trim();
-            const date = document.getElementById('newTaskDate').value;
-            if(!title) return;
+        function changeMonth(direction) {
+            currentCalendarMonth += direction;
+            if(currentCalendarMonth > 11) { currentCalendarMonth = 0; currentCalendarYear++; }
+            else if(currentCalendarMonth < 0) { currentCalendarMonth = 11; currentCalendarYear--; }
+            renderCalendar();
+        }
 
-            state.tasks.push({ id: Date.now(), title, date: date || '2026-04-01', completed: false });
-            closeAddTaskModal();
-            addTokens(10);
-            if(currentSubView === 'todo') switchMasterSubView('todo');
-            alert("Task added successfully (+10 Tokens)!");
+        function renderTodoList() {
+            const container = document.getElementById('masterSubContainer');
+            let html = '';
+            if(state.tasks.length === 0) {
+                container.innerHTML = `<p style="text-align:center;">No tasks scheduled yet.</p>`;
+                return;
+            }
+            state.tasks.forEach((t, idx) => {
+                let classObj = state.classes.find(c => c.name === t.className);
+                let color = classObj ? classObj.color : '#0f172a';
+                html += `
+                    <div class="todo-item ${t.completed ? 'completed' : ''}">
+                        <div class="todo-left">
+                            <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})">
+                            <div>
+                                <span style="font-size:0.9rem; font-weight:500;">${t.title}</span>
+                                <div style="font-size:0.75rem; color:var(--text-muted);">
+                                    <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${color}; margin-right:4px;"></span>
+                                    ${t.className} • ${t.type} • ${t.date}
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <button class="secondary" onclick="openEditTaskModal(${t.id})" style="padding:4px 8px; font-size:0.75rem;">Edit</button>
+                            <button class="secondary" onclick="deleteTask(${t.id})" style="padding:4px 8px; font-size:0.75rem; background:#fee2e2; color:#991b1b;">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function toggleTask(id) {
+            const t = state.tasks.find(task => task.id === id);
+            if(t) {
+                t.completed = !t.completed;
+                if(t.completed) addTokens(5);
+                if(currentSubView === 'todo') renderTodoList();
+            }
+        }
+
+        function openAddTaskModal(dateStr) {
+            editingTaskId = null;
+            document.getElementById('taskModalTitle').innerText = "Add Task or Event";
+            document.getElementById('taskTitleInput').value = "";
+            document.getElementById('taskDateInput').value = dateStr || new Date().toISOString().split('T')[0];
+            document.getElementById('taskDeleteBtn').style.display = 'none';
+            updateTaskClassDropdown();
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+
+        function openAddTaskModalForDate(dateStr) { openAddTaskModal(dateStr); }
+
+        function openEditTaskModal(id) {
+            editingTaskId = id;
+            const t = state.tasks.find(task => task.id === id);
+            if(!t) return;
+            document.getElementById('taskModalTitle').innerText = "Edit Task or Event";
+            document.getElementById('taskTitleInput').value = t.title;
+            document.getElementById('taskDateInput').value = t.date;
+            updateTaskClassDropdown();
+            document.getElementById('taskClassSelect').value = t.className;
+            document.getElementById('taskTypeSelect').value = t.type;
+            document.getElementById('taskDeleteBtn').style.display = 'block';
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+
+        function closeTaskModal() { document.getElementById('taskModal').style.display = 'none'; }
+
+        function saveTaskModal() {
+            const title = document.getElementById('taskTitleInput').value.trim();
+            const date = document.getElementById('taskDateInput').value;
+            const className = document.getElementById('taskClassSelect').value;
+            const type = document.getElementById('taskTypeSelect').value;
+            if(!title) { alert("Please enter a title."); return; }
+
+            if(editingTaskId) {
+                const t = state.tasks.find(task => task.id === editingTaskId);
+                if(t) { t.title = title; t.date = date; t.className = className; t.type = type; }
+            } else {
+                state.tasks.push({ id: Date.now(), title, date: date || '2026-06-01', className, type, completed: false });
+                addTokens(10);
+            }
+            closeTaskModal();
+            if(currentSubView === 'calendar') renderCalendar();
+            else renderTodoList();
+        }
+
+        function deleteTask(id) {
+            state.tasks = state.tasks.filter(t => t.id !== id);
+            if(currentSubView === 'calendar') renderCalendar();
+            else renderTodoList();
+        }
+
+        function deleteCurrentTask() {
+            if(editingTaskId) {
+                deleteTask(editingTaskId);
+                closeTaskModal();
+            }
         }
 
         // --- VACATION SCHEME & TC TRACKER ---
@@ -534,84 +696,225 @@
 
         function saveNewFirm() {
             const name = document.getElementById('newFirmName').value.trim();
-            const stage = document.getElementById('newFirmStage').value;
             const category = document.getElementById('newFirmCategory').value;
             const deadline = document.getElementById('newFirmDeadline').value;
             if(!name) return;
 
-            // Notice: Assumes haven't applied yet (no points added on creation)
-            state.firms.push({ id: Date.now(), name, stage, category, deadline: deadline || '2026-05-01' });
+            state.firms.push({
+                id: Date.now(),
+                name, category,
+                deadline: deadline || '2026-06-15',
+                round: "Written Application",
+                inviteDate: "",
+                assessmentDate: "",
+                prepNotes: "",
+                postNotes: "",
+                revived: false
+            });
             closeAddFirmModal();
-            renderFirmsTimeline();
-            alert("Firm added to timeline.");
+            renderFirmsTracker();
         }
 
-        function renderFirmsTimeline() {
-            // Sort by deadline urgency
-            state.firms.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
-
-            const pendingContainer = document.getElementById('pendingTimeline');
-            const activeContainer = document.getElementById('activeTimeline');
-            pendingContainer.innerHTML = '';
-            activeContainer.innerHTML = '';
+        function renderFirmsTracker() {
+            const pendingGrid = document.getElementById('pendingFirmGrid');
+            const activeGrid = document.getElementById('activeFirmGrid');
+            pendingGrid.innerHTML = '';
+            activeGrid.innerHTML = '';
 
             state.firms.forEach(f => {
+                let halo = f.revived ? '<div class="halo">😇</div>' : '';
                 let html = `
-                    <div class="timeline-item">
-                        <span class="urgency-tag urgent-med">Deadline: ${f.deadline}</span>
-                        <div style="font-weight:600; font-size:0.95rem; margin-top:2px;">${f.name}</div>
-                        <div style="font-size:0.8rem; color:var(--text-muted);">Stage: ${f.stage}</div>
+                    <div class="firm-card" onclick="openFirmDetails(${f.id})">
+                        ${halo}
+                        <div style="font-weight:600; font-size:0.95rem; margin-bottom:4px;">${f.name}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">Stage: ${f.round}</div>
+                        <div style="font-size:0.75rem; color:var(--warning); margin-top:6px;">Deadline: ${f.deadline}</div>
                     </div>
                 `;
-                if(f.category === 'pending') {
-                    pendingContainer.innerHTML += html;
-                } else {
-                    activeContainer.innerHTML += html;
-                }
+                if(f.category === 'pending') pendingGrid.innerHTML += html;
+                else activeGrid.innerHTML += html;
             });
+            document.getElementById('graveyardCount').innerText = state.graveyard.length;
+        }
+
+        function openFirmDetails(id) {
+            const f = state.firms.find(firm => firm.id === id);
+            if(!f) return;
+            const modal = document.getElementById('firmDetailsModal');
+            modal.style.display = 'flex';
+
+            document.getElementById('firmDetailsContent').innerHTML = `
+                <button class="close-btn" onclick="document.getElementById('firmDetailsModal').style.display='none'">✕</button>
+                <h3>${f.name} Application</h3>
+                
+                <label>Category / Status</label>
+                <select id="editFirmCategory">
+                    <option value="pending" ${f.category==='pending'?'selected':''}>Pending (Want to Apply)</option>
+                    <option value="active" ${f.category==='active'?'selected':''}>Active Application</option>
+                </select>
+
+                <label>Current Round / Stage</label>
+                <select id="editFirmRound">
+                    <option value="Written Application" ${f.round==='Written Application'?'selected':''}>Written Application</option>
+                    <option value="Online Test" ${f.round==='Online Test'?'selected':''}>Online Test</option>
+                    <option value="Video Interview" ${f.round==='Video Interview'?'selected':''}>Video Interview</option>
+                    <option value="Assessment Centre" ${f.round==='Assessment Centre'?'selected':''}>Assessment Centre</option>
+                    <option value="Partner Interview" ${f.round==='Partner Interview'?'selected':''}>Partner Interview</option>
+                </select>
+
+                <label>Deadline Date</label>
+                <input type="date" id="editFirmDeadline" value="${f.deadline}">
+
+                <label>Invitation Date</label>
+                <input type="date" id="editFirmInviteDate" value="${f.inviteDate}">
+
+                <label>Interview / Assessment Date</label>
+                <input type="date" id="editFirmAssessmentDate" value="${f.assessmentDate}">
+
+                <label>Preparatory Notes (Research, Key Cases, Firm Values)</label>
+                <textarea id="editFirmPrepNotes">${f.prepNotes}</textarea>
+
+                <label>Post-Interview Reflection (How it went, what to improve)</label>
+                <textarea id="editFirmPostNotes">${f.postNotes}</textarea>
+
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button onclick="saveFirmDetails(${f.id})" style="flex:1;">Save Updates</button>
+                    <button onclick="rejectFirm(${f.id})" class="secondary" style="background:#fee2e2; color:#991b1b;">Reject / Graveyard 🪦</button>
+                </div>
+            `;
+        }
+
+        function saveFirmDetails(id) {
+            const f = state.firms.find(firm => firm.id === id);
+            if(!f) return;
+            f.category = document.getElementById('editFirmCategory').value;
+            f.round = document.getElementById('editFirmRound').value;
+            f.deadline = document.getElementById('editFirmDeadline').value;
+            f.inviteDate = document.getElementById('editFirmInviteDate').value;
+            f.assessmentDate = document.getElementById('editFirmAssessmentDate').value;
+            f.prepNotes = document.getElementById('editFirmPrepNotes').value;
+            f.postNotes = document.getElementById('editFirmPostNotes').value;
+
+            document.getElementById('firmDetailsModal').style.display = 'none';
+            renderFirmsTracker();
+        }
+
+        function rejectFirm(id) {
+            const idx = state.firms.findIndex(firm => firm.id === id);
+            if(idx > -1) {
+                const f = state.firms.splice(idx, 1)[0];
+                state.graveyard.push(f);
+                document.getElementById('firmDetailsModal').style.display = 'none';
+                renderFirmsTracker();
+            }
+        }
+
+        function openGraveyardModal() {
+            document.getElementById('graveyardModal').style.display = 'flex';
+            renderGraveyard();
+        }
+        function closeGraveyardModal() { document.getElementById('graveyardModal').style.display = 'none'; }
+
+        function renderGraveyard() {
+            const grid = document.getElementById('graveyardGrid');
+            grid.innerHTML = "";
+            if(state.graveyard.length === 0) {
+                grid.innerHTML = `<p style="grid-column: span 2; text-align:center;">The graveyard is empty.</p>`;
+                return;
+            }
+            state.graveyard.forEach((f, idx) => {
+                grid.innerHTML += `
+                    <div class="firm-card" style="opacity:0.7;">
+                        <div style="font-weight:600;">${f.name}</div>
+                        <div style="font-size:0.75rem; color:var(--danger); margin-bottom:8px;">Tombstone</div>
+                        <button onclick="reviveFirm(${idx})" style="background:var(--accent); font-size:0.75rem; padding:4px 8px;">💧 Revive</button>
+                    </div>
+                `;
+            });
+        }
+
+        function reviveFirm(idx) {
+            const f = state.graveyard.splice(idx, 1)[0];
+            f.revived = true;
+            f.category = "pending";
+            state.firms.push(f);
+            renderGraveyard();
+            renderFirmsTracker();
+            alert(`✨ ${f.name} revived with a halo angel badge!`);
         }
 
         // --- EXAM REVISION PLANNER ---
-        function addExamInputField() {
+        function renderExamsPlanner() {
             const container = document.getElementById('examsListContainer');
-            const row = document.createElement('div');
-            row.className = 'exam-input-row';
-            row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px; align-items:center;';
-            row.innerHTML = `
-                <input type="text" placeholder="Exam Title" class="multiExamTitle" style="margin-bottom:0;">
-                <input type="date" class="multiExamDate" style="margin-bottom:0;">
-                <button class="secondary" onclick="this.parentElement.remove()" style="padding:10px;">✕</button>
-            `;
-            container.appendChild(row);
+            container.innerHTML = '';
+            state.exams.forEach((ex, idx) => {
+                container.innerHTML += `
+                    <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+                        <input type="text" value="${ex.title}" onchange="updateExamTitle(${idx}, this.value)" style="margin-bottom:0;">
+                        <input type="date" value="${ex.date}" onchange="updateExamDate(${idx}, this.value)" style="margin-bottom:0;">
+                        <button class="secondary" onclick="removeExam(${idx})" style="padding:10px;">✕</button>
+                    </div>
+                `;
+            });
+            renderExamsCountdowns();
         }
 
-        function generateMultiExamPlan() {
-            const titles = document.querySelectorAll('.multiExamTitle');
-            const dates = document.querySelectorAll('.multiExamDate');
-            const diff = document.getElementById('revClassDiff').value;
+        function addExamInputRow() {
+            state.exams.push({ title: "New Exam", date: "2026-06-25" });
+            renderExamsPlanner();
+        }
 
-            let exams = [];
-            for(let i = 0; i < titles.length; i++) {
-                if(titles[i].value.trim()) {
-                    exams.push({ title: titles[i].value.trim(), date: dates[i].value || '2026-05-15' });
+        function updateExamTitle(idx, val) { state.exams[idx].title = val; }
+        function updateExamDate(idx, val) { state.exams[idx].date = val; }
+        function removeExam(idx) { state.exams.splice(idx, 1); renderExamsPlanner(); }
+
+        function saveExamsList() {
+            // Also ensure corresponding exam tasks exist on Master Schedule
+            state.exams.forEach(ex => {
+                let exists = state.tasks.find(t => t.title === ex.title && t.type === 'exam');
+                if(!exists) {
+                    state.tasks.push({ id: Date.now() + Math.random(), title: ex.title, date: ex.date, className: state.classes[0]?.name || 'General', type: 'exam', completed: false });
+                } else {
+                    exists.date = ex.date;
                 }
+            });
+            renderExamsCountdowns();
+            alert("Exams marked on your Master Schedule!");
+        }
+
+        function renderExamsCountdowns() {
+            const container = document.getElementById('examCountdownsContainer');
+            container.innerHTML = '';
+            if(state.exams.length === 0) {
+                container.innerHTML = `<p>No exams configured.</p>`;
+                return;
             }
 
-            if(exams.length === 0) { alert("Please input at least one exam."); return; }
-
-            document.getElementById('revisionPlanOutput').style.display = 'block';
-            let html = `<p><strong>Pack-It-Up Difficulty Rating:</strong> ${diff}/10</p><ul>`;
-            exams.forEach(ex => {
-                html += `<li>📚 <strong>${ex.title}</strong> (Exam Date: ${ex.date}) — 3-week sprint scheduled with active recall & practice papers.</li>`;
+            const today = new Date();
+            state.exams.forEach(ex => {
+                const examDate = new Date(ex.date);
+                const diffTime = examDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                container.innerHTML += `
+                    <div style="background:#f8fafc; border:1px solid var(--card-border); padding:14px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-weight:600; font-size:0.95rem;">${ex.title}</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Date: ${ex.date}</div>
+                        </div>
+                        <div style="font-weight:bold; color:${diffDays <= 7 ? 'var(--danger)' : 'var(--primary)'}; font-size:1.1rem;">
+                            ${diffDays >= 0 ? `${diffDays} days left` : 'Passed'}
+                        </div>
+                    </div>
+                `;
             });
-            html += `</ul>`;
-            document.getElementById('revisionCalendarList').innerHTML = html;
-            addTokens(15);
         }
 
-        // Initial renders
+        // Initial Renders
+        renderClassesConfig();
         switchMasterSubView('calendar');
-        renderFirmsTimeline();
+        renderFirmsTracker();
+        renderExamsPlanner();
     </script>
 </body>
 </html>
