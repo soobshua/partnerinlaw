@@ -44,7 +44,6 @@
         .token-badge {
             background: #fef3c7; border: 1px solid #fde68a; color: #d97706; padding: 6px 14px;
             border-radius: 20px; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;
-            cursor: pointer;
         }
         
         .guide-container { position: relative; display: inline-block; }
@@ -186,6 +185,11 @@
         .firm-card-left:hover { opacity: 0.8; }
 
         .dynamic-item-card { background: #ffffff; border: 1px solid var(--card-border); padding: 12px; border-radius: 8px; margin-bottom: 10px; position: relative; }
+
+        /* Timeline & History Log Styling */
+        .timeline-container { position: relative; padding-left: 20px; border-left: 2px solid var(--card-border); margin-top: 15px; display: flex; flex-direction: column; gap: 20px; }
+        .timeline-node { position: relative; background: #f8fafc; border: 1px solid var(--card-border); border-radius: 10px; padding: 16px; }
+        .timeline-node::before { content: ''; position: absolute; left: -27px; top: 18px; width: 12px; height: 12px; background: var(--primary); border-radius: 50%; border: 2px solid #ffffff; }
     </style>
 </head>
 <body>
@@ -194,8 +198,8 @@
     <div class="top-bar">
         <div class="app-title">⚖️ Partner in Law</div>
         <div class="top-right-controls">
-            <div class="token-badge" onclick="openBreakStore()">
-                🪙 <span id="tokenCount">50</span> Tokens (Buy Break)
+            <div class="token-badge">
+                🪙 <span id="tokenCount">50</span> Tokens
             </div>
             <div class="guide-container">
                 <button class="guide-btn">Guide ?</button>
@@ -248,12 +252,16 @@
         <!-- TAB 2: LAW SCHOOL -->
         <div id="tab-lawschool" class="tab-content">
             <div class="card">
-                <h2>Law School Hub</h2>
-                <p>Add your class names along with their exam or assignment dates. These automatically sync to your Master Schedule and Exam Countdowns.</p>
-                
-                <div id="lawClassesContainer" style="margin-top:15px;"></div>
-                <button class="secondary" onclick="addLawClassInputRow()" style="margin-top:10px;">+ Add Class & Exam/Assignment</button>
-                <button onclick="saveLawSchoolData()" style="width:100%; margin-top:15px;">Save & Sync to Master Schedule</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <h2>Law School Hub</h2>
+                        <p>Track your modules, assignments, and exam countdowns.</p>
+                    </div>
+                    <button onclick="addLawClassInputRow()">+ Add Module / Exam</button>
+                </div>
+
+                <div id="lawSchoolOverviewBar" style="display:flex; gap:15px; margin-bottom:20px; flex-wrap:wrap;"></div>
+                <div id="lawClassesContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:16px;"></div>
             </div>
         </div>
 
@@ -309,7 +317,7 @@
             <h3 id="taskModalTitle">Add Task or Event</h3>
             
             <label>Title</label>
-            <input type="text" id="taskTitleInput" placeholder="e.g., Contract Law reading">
+            <input type="text" id="taskTitleInput">
             
             <label>Date</label>
             <input type="date" id="taskDateInput">
@@ -333,7 +341,7 @@
             <h3>Add Firm Application</h3>
             
             <label>Firm Name</label>
-            <input type="text" id="newFirmName" placeholder="e.g., Clifford Chance">
+            <input type="text" id="newFirmName">
             
             <label>Status</label>
             <select id="newFirmStatusSelect" onchange="toggleFirmDateInputType()">
@@ -348,7 +356,7 @@
 
             <div id="firmNotesContainer" style="display:none;">
                 <label>Submission Notes / Comments</label>
-                <textarea id="newFirmNotesInput" placeholder="e.g. Submitted online application with tailored cover letter..."></textarea>
+                <textarea id="newFirmNotesInput"></textarea>
             </div>
             
             <button onclick="saveNewFirmApplication()" style="width:100%; margin-top:15px;">Create Application</button>
@@ -395,7 +403,7 @@
             <input type="date" id="pendingSubDateInput">
 
             <label>Submission Notes</label>
-            <textarea id="pendingSubNotesInput" placeholder="e.g. Submitted online application via portal..."></textarea>
+            <textarea id="pendingSubNotesInput"></textarea>
 
             <button onclick="confirmSubmitPending()" style="width:100%; margin-top:15px;">Confirm & Move to Active</button>
         </div>
@@ -423,7 +431,7 @@
 
     <!-- Full Firm History Log Modal -->
     <div class="modal-overlay" id="historyLogModal">
-        <div class="modal" id="historyLogModalContent" style="max-width: 750px;"></div>
+        <div class="modal" id="historyLogModalContent" style="max-width: 800px;"></div>
     </div>
 
     <script>
@@ -454,7 +462,7 @@
                     historyYears: [],
                     events: [],
                     stages: [
-                        { roundName: "Pending Application", eventDetails: "Initial tracking", prepNotes: [], reflections: [], keyPeople: [] }
+                        { date: "2026-09-01", roundName: "Pending Application", eventDetails: "Initial tracking", prepNotes: [], reflections: [], keyPeople: [], isStage: true }
                     ]
                 },
                 {
@@ -469,7 +477,8 @@
                     historyYears: [],
                     events: [],
                     stages: [
-                        { roundName: "Initial Application", eventDetails: "Submitted application", prepNotes: ["Researched corporate practice."], reflections: ["Strong answers."], keyPeople: [{ name: "Alice Smith", position: "Associate", practiceArea: "Banking", commonalities: "LSE alumni", insights: "Advised keeping commercial answers concise." }] }
+                        { date: "2026-09-15", roundName: "Open House Event", eventDetails: "Attended firm open day presentation.", prepNotes: [], reflections: ["Impressive global footprint and training structure."], keyPeople: [{ name: "Alice Smith", position: "Associate", practiceArea: "Banking", commonalities: "LSE alumni", insights: "Advised keeping commercial answers concise." }], isStage: false },
+                        { date: "2026-09-20", roundName: "Initial Application", eventDetails: "Submitted online application form.", prepNotes: ["Researched corporate practice."], reflections: ["Strong tailored answers."], keyPeople: [], isStage: true }
                     ]
                 }
             ]
@@ -580,14 +589,12 @@
         function getAllCalendarEvents() {
             let events = [...state.tasks];
 
-            // Add Law School Class Exams/Assignments
             state.lawClasses.forEach(lc => {
                 if(lc.className && lc.examDate) {
                     events.push({ id: 'ls-ex-' + Math.random(), title: `${lc.className} (Exam/Assignment)`, date: lc.examDate, type: 'lawschool' });
                 }
             });
 
-            // Add Pending Firm Deadlines
             state.firms.forEach(f => {
                 if(f.status === 'pending' && f.deadline) {
                     events.push({ id: 'firm-dl-' + f.id, title: `${f.name} Deadline`, date: f.deadline, type: 'vacscheme' });
@@ -774,49 +781,52 @@
             else renderTodoList();
         }
 
-        // --- LAW SCHOOL HUB ---
+        // --- LAW SCHOOL HUB (Streamlined & Boxed) ---
         function renderLawSchoolHub() {
+            const overviewBar = document.getElementById('lawSchoolOverviewBar');
             const container = document.getElementById('lawClassesContainer');
+            overviewBar.innerHTML = '';
             container.innerHTML = '';
 
-            let examCountdownHtml = `<h4 style="margin-bottom:10px;">⏰ Exam & Assignment Countdown Tracker</h4>`;
             const today = new Date();
             today.setHours(0,0,0,0);
 
-            let hasExam = false;
-            state.lawClasses.forEach(lc => {
-                if(lc.className && lc.examDate) {
-                    hasExam = true;
-                    let exDate = new Date(lc.examDate);
-                    exDate.setHours(0,0,0,0);
-                    let diffDays = Math.ceil((exDate - today) / (1000 * 60 * 60 * 24));
-                    let countdownStr = diffDays >= 0 ? `Due in ${diffDays} days (${lc.examDate})` : `Overdue by ${Math.abs(diffDays)} days (${lc.examDate})`;
-                    
-                    examCountdownHtml += `
-                        <div style="background:#f1f5f9; padding:10px 14px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                            <div><strong>${lc.className}</strong></div>
-                            <div style="color:var(--danger); font-weight:600; font-size:0.85rem;">${countdownStr}</div>
-                        </div>
-                    `;
-                }
-            });
+            let validExams = state.lawClasses.filter(lc => lc.className && lc.examDate);
 
-            if(!hasExam) {
-                examCountdownHtml += `<p style="font-size:0.85rem; color:var(--text-muted);">No exams or assignments recorded yet.</p>`;
+            overviewBar.innerHTML = `
+                <div style="background:#f1f5f9; border:1px solid var(--card-border); border-radius:10px; padding:16px 20px; flex:1; min-width:220px;">
+                    <div style="font-size:0.8rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Total Modules & Exams</div>
+                    <div style="font-size:1.8rem; font-weight:700; color:var(--primary); margin-top:4px;">${validExams.length}</div>
+                </div>
+            `;
+
+            if(validExams.length === 0) {
+                container.innerHTML = `<p style="grid-column: 1 / -1; text-align:center; padding:20px;">No modules or exams recorded yet.</p>`;
+                return;
             }
 
-            container.innerHTML += `<div style="background:#fff; border:1px solid var(--card-border); padding:16px; border-radius:10px; margin-bottom:20px;">${examCountdownHtml}</div>`;
+            validExams.forEach((lc) => {
+                let exDate = new Date(lc.examDate);
+                exDate.setHours(0,0,0,0);
+                let diffDays = Math.ceil((exDate - today) / (1000 * 60 * 60 * 24));
+                let countdownLabel = diffDays >= 0 ? `${diffDays} days left` : `${Math.abs(diffDays)} days overdue`;
+                let countdownColor = diffDays < 0 ? 'var(--danger)' : (diffDays <= 7 ? 'var(--warning)' : 'var(--accent)');
 
-            state.lawClasses.forEach((lc, idx) => {
+                let originalIndex = state.lawClasses.findIndex(x => x.id === lc.id);
+
                 container.innerHTML += `
-                    <div style="background:#f8fafc; border:1px solid var(--card-border); padding:16px; border-radius:10px; margin-bottom:15px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <input type="text" value="${lc.className}" placeholder="Class Name (e.g. Contract Law)" onchange="updateLawClassProp(${idx}, 'className', this.value)" style="font-weight:600; margin-bottom:0; flex:1; margin-right:10px;">
-                            <button class="secondary" onclick="removeLawClass(${idx})">Remove</button>
-                        </div>
+                    <div style="background:#ffffff; border:1px solid var(--card-border); border-radius:12px; padding:20px; display:flex; flex-direction:column; justify-content:space-between; gap:16px; box-shadow:0 1px 2px rgba(0,0,0,0.02);">
                         <div>
-                            <label style="font-size:0.75rem; color:var(--text-muted);">Exam / Assignment Date</label>
-                            <input type="date" value="${lc.examDate}" onchange="updateLawClassProp(${idx}, 'examDate', this.value)">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                                <input type="text" value="${lc.className}" onchange="updateLawClassProp(${originalIndex}, 'className', this.value)" style="font-weight:700; font-size:1rem; margin-bottom:0; border:none; background:transparent; padding:0; width:auto; flex:1;">
+                                <button class="secondary" onclick="removeLawClass(${originalIndex})" style="padding:2px 8px; font-size:0.75rem;">✕</button>
+                            </div>
+                            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">Exam / Submission Date</div>
+                            <input type="date" value="${lc.examDate}" onchange="updateLawClassProp(${originalIndex}, 'examDate', this.value)" style="margin-bottom:0;">
+                        </div>
+                        <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:8px; padding:12px; text-align:center;">
+                            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Countdown</div>
+                            <div style="font-size:1.5rem; font-weight:800; color:${countdownColor}; margin-top:2px;">${countdownLabel}</div>
                         </div>
                     </div>
                 `;
@@ -824,16 +834,16 @@
         }
 
         function addLawClassInputRow() {
-            state.lawClasses.push({ id: Date.now(), className: "", examDate: "2026-10-15" });
+            state.lawClasses.push({ id: Date.now(), className: "New Module", examDate: "2026-10-15" });
             renderLawSchoolHub();
         }
-        function updateLawClassProp(idx, prop, val) { state.lawClasses[idx][prop] = val; }
-        function removeLawClass(idx) { state.lawClasses.splice(idx, 1); renderLawSchoolHub(); }
-
-        function saveLawSchoolData() {
-            alert("Law school hub successfully saved and synced to Master Schedule and Exam Countdowns!");
-            switchTab('master');
-            renderCalendar();
+        function updateLawClassProp(idx, prop, val) { 
+            state.lawClasses[idx][prop] = val; 
+            renderLawSchoolHub();
+        }
+        function removeLawClass(idx) { 
+            state.lawClasses.splice(idx, 1); 
+            renderLawSchoolHub(); 
         }
 
         // --- VACATION SCHEME & TC TRACKER ---
@@ -879,11 +889,13 @@
                 events: [],
                 stages: [
                     { 
+                        date: dateVal || new Date().toISOString().split('T')[0],
                         roundName: status === 'pending' ? "Pending Application" : "Initial Application", 
                         eventDetails: status === 'pending' ? "Looking to apply" : "Submitted application: " + (notes || "No notes"), 
                         prepNotes: [], 
                         reflections: [status === 'active' && notes ? `Submission notes: ${notes}` : ""], 
-                        keyPeople: [] 
+                        keyPeople: [],
+                        isStage: true 
                     }
                 ]
             };
@@ -893,7 +905,6 @@
             renderTracker();
         }
 
-        // Edit Firm Application modal
         function openEditFirmModal(firmId) {
             let f = state.firms.find(x => x.id === firmId);
             if(!f) return;
@@ -977,7 +988,6 @@
 
             activeFirms.sort((a,b) => b.priority - a.priority);
 
-            // Render Pending
             if(pendingFirms.length === 0) {
                 pendingContainer.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted);">No pending applications.</p>`;
             } else {
@@ -1006,13 +1016,14 @@
                 });
             }
 
-            // Render Active
             if(activeFirms.length === 0) {
                 activeContainer.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted);">No active applications.</p>`;
             } else {
                 activeFirms.forEach(f => {
                     let halo = f.revived ? '<span style="font-size:1rem; margin-left:4px;" title="Revived">😇</span>' : '';
-                    let currentRoundName = f.stages.length > 0 ? f.stages[f.stages.length - 1].roundName : "Initial Application";
+                    let actualStages = f.stages.filter(st => st.isStage !== false);
+                    let sortedStages = [...actualStages].sort((a,b) => new Date(a.date || '2026-01-01') - new Date(b.date || '2026-01-01'));
+                    let currentRoundName = sortedStages.length > 0 ? sortedStages[sortedStages.length - 1].roundName : "Initial Application";
 
                     activeContainer.innerHTML += `
                         <div class="firm-card-item">
@@ -1032,7 +1043,6 @@
                 });
             }
 
-            // Render Unified History Log buttons
             state.firms.forEach(f => {
                 historyContainer.innerHTML += `
                     <button class="secondary" onclick="openFullHistoryLog(${f.id})" style="font-weight:600;">📁 ${f.name}${f.revived ? '(Revived)' : ''}</button>
@@ -1040,7 +1050,6 @@
             });
         }
 
-        // --- SUBMIT PENDING APPLICATION WITH DATE & NOTES ---
         function openSubmitPendingModal(id) {
             pendingSubmitFirmId = id;
             document.getElementById('pendingSubDateInput').value = new Date().toISOString().split('T')[0];
@@ -1059,11 +1068,13 @@
                 f.notes = subNotes;
                 f.priority = Date.now();
                 f.stages.push({ 
+                    date: subDate,
                     roundName: "Submitted Application", 
-                    eventDetails: `Submitted on ${subDate} \vert{} Notes:${subNotes || 'None'}`, 
+                    eventDetails: `Submitted on ${subDate}`, 
                     prepNotes: [], 
                     reflections: [subNotes ? `Submission notes: ${subNotes}` : "Application successfully submitted."], 
-                    keyPeople: [] 
+                    keyPeople: [],
+                    isStage: true 
                 });
                 addTokens(30);
                 document.getElementById('submitPendingModal').style.display = 'none';
@@ -1082,22 +1093,21 @@
             document.getElementById('firmEventModalContent').innerHTML = `
                 <button class="close-btn" onclick="document.getElementById('firmEventModal').style.display='none'">✕</button>
                 <h3>Add Event for ${f.name}</h3>
-                <p>Coffee chat, open house, law fair, career talk, etc.</p>
 
                 <label>Event Type / Title</label>
-                <input type="text" id="evTitle" placeholder="e.g. Clifford Chance Open Day">
+                <input type="text" id="evTitle">
 
                 <label>Date</label>
                 <input type="date" id="evDate" value="${new Date().toISOString().split('T')[0]}">
 
                 <label>Reflections & Key Takeaways</label>
-                <textarea id="evReflections" placeholder="What did you learn about the firm's culture or practice areas?"></textarea>
+                <textarea id="evReflections"></textarea>
 
                 <h4 style="margin:15px 0 5px 0;">Key People Met</h4>
                 <div id="modalPeopleList">
                     <div class="dynamic-item-card person-row">
                         <input type="text" placeholder="Name" class="kp-name" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Position (e.g. Trainee / Partner)" class="kp-pos" style="margin-bottom:6px;">
+                        <input type="text" placeholder="Position" class="kp-pos" style="margin-bottom:6px;">
                         <input type="text" placeholder="Practice Area" class="kp-area" style="margin-bottom:6px;">
                         <input type="text" placeholder="Commonalities" class="kp-comm" style="margin-bottom:6px;">
                         <input type="text" placeholder="Insights / Advice" class="kp-insights" style="margin-bottom:0;">
@@ -1133,24 +1143,26 @@
             let peopleRows = document.querySelectorAll('.person-row');
             let keyPeople = [];
             peopleRows.forEach(row => {
-                keyPeople.push({
-                    name: row.querySelector('.kp-name').value,
-                    position: row.querySelector('.kp-pos').value,
-                    practiceArea: row.querySelector('.kp-area').value,
-                    commonalities: row.querySelector('.kp-comm').value,
-                    insights: row.querySelector('.kp-insights').value
-                });
+                let name = row.querySelector('.kp-name').value.trim();
+                if(name) {
+                    keyPeople.push({
+                        name,
+                        position: row.querySelector('.kp-pos').value.trim(),
+                        practiceArea: row.querySelector('.kp-area').value.trim(),
+                        commonalities: row.querySelector('.kp-comm').value.trim(),
+                        insights: row.querySelector('.kp-insights').value.trim()
+                    });
+                }
             });
 
-            let eventObj = { title, date, reflections, keyPeople };
-            f.events.push(eventObj);
-
             f.stages.push({
-                roundName: `Networking Event: ${title}`,
-                eventDetails: `Date: ${date} \vert{} Reflections:${reflections}`,
+                date: date || new Date().toISOString().split('T')[0],
+                roundName: title,
+                eventDetails: `Event date: ${date}`,
                 prepNotes: [],
-                reflections: [reflections],
-                keyPeople
+                reflections: reflections ? [reflections] : [],
+                keyPeople,
+                isStage: false
             });
 
             document.getElementById('firmEventModal').style.display = 'none';
@@ -1165,12 +1177,29 @@
             const modal = document.getElementById('firmDetailsModal');
             modal.style.display = 'flex';
 
+            let sortedStages = [...f.stages].sort((a,b) => new Date(a.date || '2026-01-01') - new Date(b.date || '2026-01-01'));
             let stagesHtml = '';
-            f.stages.forEach((st) => {
+            sortedStages.forEach((st) => {
+                let kpHtml = '';
+                if(st.keyPeople && st.keyPeople.length > 0) {
+                    kpHtml += `<div style="margin-top:8px; font-size:0.85rem;"><strong>Key People Met:</strong><ul style="margin:4px 0; padding-left:16px;">`;
+                    st.keyPeople.forEach(p => {
+                        kpHtml += `<li><strong>${p.name}</strong> (${p.position \vert{}\vert{} 'N/A'},${p.practiceArea || 'N/A'}) — Commonalities: ${p.commonalities \vert{}\vert{} 'None'}, Insights:${p.insights || 'None'}</li>`;
+                    });
+                    kpHtml += `</ul></div>`;
+                }
+
+                let refHtml = st.reflections && st.reflections.length > 0 && st.reflections[0] ? `<div style="margin-top:6px; font-size:0.85rem;"><strong>Reflections:</strong> ${st.reflections.join('; ')}</div>` : '';
+                let typeBadge = st.isStage === false ? `<span style="font-size:0.7rem; background:#fef3c7; color:#d97706; padding:2px 6px; border-radius:4px; margin-left:6px;">Event</span>` : `<span style="font-size:0.7rem; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; margin-left:6px;">Stage</span>`;
+
                 stagesHtml += `
                     <div style="background:#f8fafc; border:1px solid var(--card-border); padding:16px; border-radius:10px; margin-bottom:12px;">
-                        <strong>${st.roundName}</strong> — <span style="font-size:0.85rem; color:var(--text-muted);">${st.eventDetails}</span><br>
-                        <span style="font-size:0.8rem; color:var(--text-muted);">Reflections: ${st.reflections.join('; ')}</span>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div><strong>${st.roundName}</strong>${typeBadge}</div>
+                            <span style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">📅 ${st.date || 'No Date'}</span>
+                        </div>
+                        <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">${st.eventDetails}</div>
+                        ${refHtml}${kpHtml}
                     </div>
                 `;
             });
@@ -1210,13 +1239,16 @@
                 <p>Input details for the new round. +50 Tokens awarded!</p>
 
                 <label>Stage / Round Name</label>
-                <input type="text" id="nrName" placeholder="e.g. Assessment Centre / Partner Interview">
+                <input type="text" id="nrName">
+
+                <label>Date</label>
+                <input type="date" id="nrDate" value="${new Date().toISOString().split('T')[0]}">
 
                 <label>Event / Round Details</label>
-                <input type="text" id="nrDetails" placeholder="e.g. Group exercise & case study">
+                <input type="text" id="nrDetails">
 
                 <label>Reflections & Key Takeaways</label>
-                <textarea id="nrReflections" placeholder="How did it go? What could be improved?"></textarea>
+                <textarea id="nrReflections"></textarea>
 
                 <h4 style="margin:15px 0 5px 0;">Key People Met</h4>
                 <div id="nrPeopleList">
@@ -1249,27 +1281,33 @@
         function saveNextRound(firmId) {
             let f = state.firms.find(x => x.id === firmId);
             let roundName = document.getElementById('nrName').value.trim() || "Next Round";
+            let date = document.getElementById('nrDate').value;
             let eventDetails = document.getElementById('nrDetails').value.trim() || "";
             let reflection = document.getElementById('nrReflections').value.trim();
 
             let rows = document.querySelectorAll('.nr-person-row');
             let keyPeople = [];
             rows.forEach(r => {
-                keyPeople.push({
-                    name: r.querySelector('.nr-name').value,
-                    position: r.querySelector('.nr-pos').value,
-                    practiceArea: r.querySelector('.nr-area').value,
-                    commonalities: r.querySelector('.nr-comm').value,
-                    insights: r.querySelector('.nr-insights').value
-                });
+                let name = r.querySelector('.nr-name').value.trim();
+                if(name) {
+                    keyPeople.push({
+                        name,
+                        position: r.querySelector('.nr-pos').value.trim(),
+                        practiceArea: r.querySelector('.nr-area').value.trim(),
+                        commonalities: r.querySelector('.nr-comm').value.trim(),
+                        insights: r.querySelector('.nr-insights').value.trim()
+                    });
+                }
             });
 
             f.stages.push({
+                date: date || new Date().toISOString().split('T')[0],
                 roundName,
                 eventDetails,
                 prepNotes: [],
                 reflections: reflection ? [reflection] : [],
-                keyPeople
+                keyPeople,
+                isStage: true
             });
 
             document.getElementById('firmDetailsModal').style.display = 'none';
@@ -1326,7 +1364,7 @@
                 f.historyYears.push({ stages: [...f.stages] });
                 
                 f.stages = [
-                    { roundName: "Revived Application Round", eventDetails: "Re-applying for next cycle", prepNotes: [], reflections: [], keyPeople: [] }
+                    { date: new Date().toISOString().split('T')[0], roundName: "Revived Application Round", eventDetails: "Re-applying for next cycle", prepNotes: [], reflections: [], keyPeople: [], isStage: true }
                 ];
                 closeGraveyardModal();
                 renderTracker();
@@ -1334,7 +1372,7 @@
             }
         }
 
-        // --- FULL HISTORY LOG MODAL WITH EDIT & DELETE CAPABILITY ---
+        // --- FULL HISTORY LOG MODAL (Chronological Timeline with Clear Sections) ---
         function openFullHistoryLog(firmId) {
             let f = state.firms.find(x => x.id === firmId);
             if(!f) return;
@@ -1348,42 +1386,71 @@
 
             if(f.historyYears && f.historyYears.length > 0) {
                 f.historyYears.forEach((hy, hyIdx) => {
-                    historyHtml += `<h4 style="color:var(--warning); margin-top:10px;">--- Previous Cycle Round (${hyIdx+1}) ---</h4>`;
-                    hy.stages.forEach((st, sIdx) => {
-                        historyHtml += renderEditableStageDetail(f.id, sIdx, st, true, hyIdx);
+                    historyHtml += `<h4 style="color:var(--warning); margin:20px 0 10px 0;">--- Previous Cycle (${hyIdx+1}) ---</h4>`;
+                    let sortedHyStages = [...hy.stages].sort((a,b) => new Date(a.date || '2026-01-01') - new Date(b.date || '2026-01-01'));
+                    historyHtml += `<div class="timeline-container">`;
+                    sortedHyStages.forEach((st, sIdx) => {
+                        historyHtml += renderTimelineNode(f.id, sIdx, st, true, hyIdx);
                     });
+                    historyHtml += `</div>`;
                 });
-                historyHtml += `<h4 style="color:var(--accent); margin-top:15px;">--- Current Cycle Rounds ---</h4>`;
+                historyHtml += `<h4 style="color:var(--accent); margin:25px 0 10px 0;">--- Current Cycle ---</h4>`;
             }
 
-            f.stages.forEach((st, sIdx) => {
-                historyHtml += renderEditableStageDetail(f.id, sIdx, st, false);
+            let sortedCurrentStages = [...f.stages].sort((a,b) => new Date(a.date || '2026-01-01') - new Date(b.date || '2026-01-01'));
+            historyHtml += `<div class="timeline-container">`;
+            sortedCurrentStages.forEach((st, sIdx) => {
+                historyHtml += renderTimelineNode(f.id, sIdx, st, false, 0);
             });
+            historyHtml += `</div>`;
 
             document.getElementById('historyLogModalContent').innerHTML = `
                 <button class="close-btn" onclick="document.getElementById('historyLogModal').style.display='none'">✕</button>
-                <h3>📜 Complete History Log & Editor: ${f.name} ${f.revived ? '(Revived 😇)' : ''}</h3>
-                <div style="max-height:60vh; overflow-y:auto; margin-top:15px;">
+                <h3>📜 Chronological History Log & Timeline: ${f.name} ${f.revived ? '(Revived 😇)' : ''}</h3>
+                <div style="max-height:65vh; overflow-y:auto; margin-top:15px; padding-right:5px;">
                     ${historyHtml}
                 </div>
             `;
         }
 
-        function renderEditableStageDetail(firmId, stageIdx, st, isHistoryYear, historyYearIdx = 0) {
+        function renderTimelineNode(firmId, stageIdx, st, isHistoryYear, historyYearIdx) {
+            let kpListHtml = '';
+            if(st.keyPeople && st.keyPeople.length > 0) {
+                let kpHtml = st.keyPeople.map(p => `
+                    <div style="background:#ffffff; border:1px solid var(--card-border); border-radius:6px; padding:8px; margin-top:6px; font-size:0.8rem;">
+                        <strong>👤 ${p.name || 'Unnamed'}</strong> — <em>${p.position || 'Position N/A'} (${p.practiceArea || 'Practice Area N/A'})</em><br>
+                        <strong>Commonalities:</strong> ${p.commonalities || 'None'} | <strong>Insights:</strong> ${p.insights || 'None'}
+                    </div>
+                `).join('');
+                kpListHtml = `<div style="margin-top:10px;"><strong>Key People Met:</strong>${kpHtml}</div>`;
+            }
+
+            let refListHtml = '';
+            if(st.reflections && st.reflections.length > 0 && st.reflections[0]) {
+                refListHtml = `<div style="margin-top:8px; font-size:0.85rem; background:#f1f5f9; padding:8px; border-radius:6px;"><strong>Reflections & Takeaways:</strong> ${st.reflections.join('; ')}</div>`;
+            }
+
+            let typeBadge = st.isStage === false ? `<span style="font-size:0.7rem; background:#fef3c7; color:#d97706; padding:2px 6px; border-radius:4px;">Event</span>` : `<span style="font-size:0.7rem; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">Stage</span>`;
+
             return `
-                <div style="background:#f8fafc; border:1px solid var(--card-border); padding:14px; border-radius:10px; margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <input type="text" id="edit-round-${isHistoryYear}-${historyYearIdx}-${stageIdx}" value="${st.roundName}" style="font-weight:bold; margin-bottom:0; flex:1; margin-right:10px;">
+                <div class="timeline-node">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:10px;">
+                        <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                            <input type="text" id="edit-round-${isHistoryYear}-${historyYearIdx}-${stageIdx}" value="${st.roundName || ''}" style="font-weight:700; font-size:0.95rem; margin-bottom:0; flex:1;">
+                            ${typeBadge}
+                        </div>
+                        <input type="date" id="edit-date-${isHistoryYear}-${historyYearIdx}-${stageIdx}" value="${st.date || new Date().toISOString().split('T')[0]}" style="width:140px; margin-bottom:0; font-size:0.8rem;">
                         <div style="display:flex; gap:6px;">
-                            <button class="secondary" onclick="saveHistoryEdit(${firmId}, ${stageIdx}, ${isHistoryYear}, ${historyYearIdx})" style="font-size:0.75rem;">Save</button>
-                            <button class="secondary" onclick="deleteHistoryStage(${firmId}, ${stageIdx}, ${isHistoryYear}, ${historyYearIdx})" style="font-size:0.75rem; background:#fee2e2; color:#991b1b;">Delete</button>
+                            <button class="secondary" onclick="saveHistoryEdit(${firmId}, ${stageIdx}, ${isHistoryYear}, ${historyYearIdx})" style="font-size:0.75rem; padding:6px 10px;">Save</button>
+                            <button class="secondary" onclick="deleteHistoryStage(${firmId}, ${stageIdx}, ${isHistoryYear}, ${historyYearIdx})" style="font-size:0.75rem; padding:6px 10px; background:#fee2e2; color:#991b1b;">Delete</button>
                         </div>
                     </div>
-                    <label style="font-size:0.7rem; color:var(--text-muted);">Details / Event Info</label>
-                    <input type="text" id="edit-details-${isHistoryYear}-${historyYearIdx}-${stageIdx}" value="${st.eventDetails || ''}" style="font-size:0.85rem; margin-bottom:6px;">
-                    
-                    <label style="font-size:0.7rem; color:var(--text-muted);">Reflections</label>
-                    <input type="text" id="edit-reflections-${isHistoryYear}-${historyYearIdx}-${stageIdx}" value="${st.reflections ? st.reflections.join(', ') : ''}" style="font-size:0.85rem; margin-bottom:0;">
+                    <div style="margin-bottom:8px;">
+                        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">Details / Description</label>
+                        <input type="text" id="edit-details-${isHistoryYear}-${historyYearIdx}-${stageIdx}" value="${st.eventDetails || ''}" style="font-size:0.85rem; margin-bottom:0;">
+                    </div>
+                    ${refListHtml}
+                    ${kpListHtml}
                 </div>
             `;
         }
@@ -1400,10 +1467,9 @@
             }
 
             if(targetStage) {
-                targetStage.roundName = document.getElementById(`edit-round-${isHistoryYear}-${historyYearIdx}-${stageIdx}`).value;
-                targetStage.eventDetails = document.getElementById(`edit-details-${isHistoryYear}-${historyYearIdx}-${stageIdx}`).value;
-                let refVal = document.getElementById(`edit-reflections-${isHistoryYear}-${historyYearIdx}-${stageIdx}`).value;
-                targetStage.reflections = refVal ? [refVal] : [];
+                targetStage.roundName = document.getElementById(`edit-round-${isHistoryYear}-${historyYearIdx}-${stageIdx}`).value.trim();
+                targetStage.date = document.getElementById(`edit-date-${isHistoryYear}-${historyYearIdx}-${stageIdx}`).value;
+                targetStage.eventDetails = document.getElementById(`edit-details-${isHistoryYear}-${historyYearIdx}-${stageIdx}`).value.trim();
                 
                 renderHistoryLogContent(f);
                 renderTracker();
