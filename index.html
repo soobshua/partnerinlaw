@@ -3,1489 +3,1456 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partner in Law</title>
+    <title>Partner in Law - Law School & Career Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --card-border: #e2e8f0;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --primary: #0f172a;
-            --primary-hover: #1e293b;
-            --accent: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* Top Bar */
-        .top-bar {
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--card-border);
-            padding: 16px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .app-title { font-size: 1.35rem; font-weight: 700; display: flex; align-items: center; gap: 10px; letter-spacing: -0.025em; }
-
-        .top-right-controls { display: flex; align-items: center; gap: 12px; position: relative; }
-        .token-badge {
-            background: #fef3c7; border: 1px solid #fde68a; color: #d97706; padding: 6px 14px;
-            border-radius: 20px; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;
-        }
-        
-        .guide-container { position: relative; display: inline-block; }
-        .guide-btn { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--card-border); padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
-        .guide-btn:hover { background: #e2e8f0; }
-        .guide-tooltip {
-            visibility: hidden; width: 300px; background-color: var(--card-bg); color: var(--text-main);
-            text-align: left; border-radius: 12px; padding: 16px; border: 1px solid var(--card-border);
-            position: absolute; z-index: 100; top: 125%; right: 0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            opacity: 0; transition: opacity 0.2s; font-size: 0.8rem; line-height: 1.5;
-        }
-        .guide-container:hover .guide-tooltip { visibility: visible; opacity: 1; }
-        .guide-tooltip ul { padding-left: 16px; margin: 6px 0; }
-        .guide-tooltip li { margin-bottom: 4px; }
-
-        /* App Layout */
-        .app-layout {
-            flex: 1;
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-            box-sizing: border-box;
-            padding: 32px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-            overflow-y: auto;
-        }
-
-        /* Navigation Tabs */
-        .nav-tabs {
-            display: flex;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 10px;
-            padding: 4px;
-            gap: 4px;
-            width: fit-content;
-        }
-        .nav-tab {
-            padding: 10px 18px;
-            cursor: pointer;
-            border: none;
-            background: none;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.9rem;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        .nav-tab.active { background: var(--primary); color: white; }
-
-        .tab-content { display: none; flex-direction: column; gap: 24px; }
-        .tab-content.active { display: flex; }
-
-        /* Cards */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 24px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
-        }
-        h2 { margin-top: 0; font-size: 1.25rem; color: var(--text-main); font-weight: 700; letter-spacing: -0.025em; }
-        h3 { margin-top: 0; font-size: 1.05rem; color: var(--text-main); font-weight: 600; }
-        p { color: var(--text-muted); line-height: 1.5; font-size: 0.9rem; margin-top: 4px; }
-
-        button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: background 0.2s;
-        }
-        button:hover { background: var(--primary-hover); }
-        button.secondary { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--card-border); }
-        button.secondary:hover { background: #e2e8f0; }
-
-        input[type="text"], input[type="date"], select, textarea {
-            width: 100%;
-            background: #ffffff;
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            padding: 10px 12px;
-            border-radius: 8px;
-            box-sizing: border-box;
-            margin-bottom: 12px;
-            font-family: inherit;
-            font-size: 0.9rem;
-        }
-        textarea { height: 80px; resize: vertical; }
-
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media(max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
-
-        /* Modals */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000;
-        }
-        .modal {
-            background: var(--card-bg); border: 1px solid var(--card-border); width: 90%; max-width: 650px;
-            border-radius: 16px; padding: 28px; box-sizing: border-box; max-height: 90vh; overflow-y: auto; position: relative;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
-        }
-        .close-btn { position: absolute; top: 18px; right: 18px; background: #f1f5f9; border: none; color: var(--text-main); width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .close-btn:hover { background: #e2e8f0; }
-
-        /* Break Timer Fullscreen Modal */
-        #breakModal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 2000; flex-direction: column; color: white;
-        }
-        #breakModal h2 { color: white; font-size: 2rem; margin-bottom: 1rem; }
-        #timerDisplay { font-size: 5rem; font-weight: bold; font-family: monospace; margin-bottom: 2rem; color: #93c5fd; }
-
-        /* Calendar Grid */
-        .calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; width: 100%; table-layout: fixed; }
-        .cal-header { font-weight: 600; font-size: 0.8rem; color: var(--text-muted); padding: 8px; text-align: center; }
-        .cal-day { background: #f8fafc; border: 1px solid var(--card-border); border-radius: 8px; height: 110px; padding: 8px; font-size: 0.85rem; text-align: left; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; }
-        .cal-day:hover { border-color: var(--text-main); }
-        .cal-events-list { margin-top: 4px; overflow-y: auto; max-height: 75px; display: flex; flex-direction: column; gap: 2px; }
-        .cal-event-pill { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-
-        /* To-Do List */
-        .todo-item { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid var(--card-border); padding: 12px 16px; border-radius: 10px; margin-bottom: 10px; }
-        .todo-left { display: flex; align-items: center; gap: 12px; flex: 1; }
-        .todo-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); margin: 0; }
-        .todo-item.completed span { text-decoration: line-through; color: var(--text-muted); }
-
-        /* Firm Container in Tracker */
-        .firm-card-item { border: 1px solid var(--card-border); border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; }
-        .firm-card-left { display: flex; align-items: center; gap: 12px; flex: 1; cursor: pointer; }
-        .firm-card-left:hover { opacity: 0.8; }
-
-        .dynamic-item-card { background: #ffffff; border: 1px solid var(--card-border); padding: 12px; border-radius: 8px; margin-bottom: 10px; position: relative; }
-
-        /* Timeline & History Log Styling */
-        .timeline-container { position: relative; padding-left: 20px; border-left: 2px solid var(--card-border); margin-top: 15px; display: flex; flex-direction: column; gap: 20px; }
-        .timeline-node { position: relative; background: #f8fafc; border: 1px solid var(--card-border); border-radius: 10px; padding: 16px; }
-        .timeline-node::before { content: ''; position: absolute; left: -27px; top: 18px; width: 12px; height: 12px; background: var(--primary); border-radius: 50%; border: 2px solid #ffffff; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Top Bar -->
-    <div class="top-bar">
-        <div class="app-title">⚖️ Partner in Law</div>
-        <div class="top-right-controls">
-            <div class="token-badge">
-                🪙 <span id="tokenCount">50</span> Tokens
+    <!-- TOP HEADER -->
+    <header class="bg-indigo-900 text-white shadow-md px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-0 z-40">
+        <div class="flex items-center gap-3">
+            <div class="bg-indigo-700 p-2.5 rounded-xl shadow-inner">
+                <i class="fa-solid fa-scale-balanced text-xl text-indigo-200"></i>
             </div>
-            <div class="guide-container">
-                <button class="guide-btn">Guide ?</button>
-                <div class="guide-tooltip">
-                    <strong>Token Earning Guide:</strong>
-                    <ul>
-                        <li>Daily login/visit: +1 Token</li>
-                        <li>General Task: +5 Tokens</li>
-                        <li>Law School Exam Entry: +15 Tokens</li>
-                        <li>Vac Scheme / TC Task: +30 Tokens</li>
-                        <li>Advance to Next Round: +50 Tokens</li>
-                        <li>TC / Vac Scheme Offer: +100 Tokens</li>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight">Partner in Law</h1>
+                <p class="text-xs text-indigo-300">Law School & Career Command Center</p>
+            </div>
+        </div>
+
+        <!-- TOKEN & BREAK SYSTEM & DAILY CHECK-IN -->
+        <div class="flex items-center gap-4">
+            <!-- Daily Check-in Button -->
+            <button onclick="dailyCheckIn()" id="checkInBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow transition flex items-center gap-1.5">
+                <i class="fa-solid fa-calendar-check"></i> <span id="checkInText">Daily Check-In (+1)</span>
+            </button>
+
+            <!-- Token Counter & Info -->
+            <div class="relative group flex items-center bg-indigo-950 px-4 py-2 rounded-xl border border-indigo-800">
+                <i class="fa-solid fa-coins text-amber-400 mr-2"></i>
+                <span class="text-sm font-medium">Tokens: <strong id="tokenCount" class="text-amber-300">0</strong></span>
+                <i class="fa-solid fa-circle-info text-indigo-400 ml-2.5 cursor-pointer text-xs"></i>
+
+                <!-- Hover Token Breakdown List -->
+                <div class="absolute right-0 top-full mt-2 w-64 bg-white text-slate-700 rounded-xl shadow-2xl p-4 text-xs hidden group-hover:block z-50 border border-slate-200">
+                    <p class="font-bold text-slate-900 mb-2 border-b pb-1">Token Rewards Guide:</p>
+                    <ul class="space-y-1.5">
+                        <li class="flex justify-between"><span>Check-in:</span> <strong class="text-emerald-600">+1 token</strong></li>
+                        <li class="flex justify-between"><span>General Task:</span> <strong class="text-emerald-600">+10 tokens</strong></li>
+                        <li class="flex justify-between"><span>Law School Task:</span> <strong class="text-emerald-600">+20 tokens</strong></li>
+                        <li class="flex justify-between"><span>VS/TC Task:</span> <strong class="text-emerald-600">+50 tokens</strong></li>
+                        <li class="flex justify-between"><span>VS/TC Offer:</span> <strong class="text-amber-600">+100 tokens</strong></li>
                     </ul>
                 </div>
             </div>
-            <button class="secondary" onclick="openBreakStore()">☕ Buy Break</button>
+
+            <!-- Buy Break Button -->
+            <button onclick="openBreakModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm shadow transition flex items-center gap-2">
+                <i class="fa-solid fa-mug-hot"></i> Buy Break
+            </button>
         </div>
-    </div>
+    </header>
 
-    <!-- App Layout -->
-    <div class="app-layout">
+    <!-- NAVIGATION TABS -->
+    <nav class="bg-white border-b border-slate-200 px-6 flex gap-8 shadow-sm">
+        <button onclick="switchTab(0)" class="tab-btn py-4 font-semibold text-sm border-b-2 border-indigo-600 text-indigo-600 flex items-center gap-2">
+            <i class="fa-solid fa-house"></i> Dashboard & Schedule
+        </button>
+        <button onclick="switchTab(1)" class="tab-btn py-4 font-medium text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-2">
+            <i class="fa-solid fa-briefcase"></i> VS / TC Tracker
+        </button>
+        <button onclick="switchTab(2)" class="tab-btn py-4 font-medium text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-2">
+            <i class="fa-solid fa-graduation-cap"></i> Law School
+        </button>
+    </nav>
 
-        <!-- Navigation Tabs -->
-        <div class="nav-tabs">
-            <button class="nav-tab active" onclick="switchTab('master')">🗓️ Master Schedule</button>
-            <button class="nav-tab" onclick="switchTab('lawschool')">📚 Law School Hub</button>
-            <button class="nav-tab" onclick="switchTab('tracker')">💼 Vac Scheme & TC Tracker</button>
-        </div>
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-6">
 
-        <!-- TAB 1: MASTER SCHEDULE -->
-        <div id="tab-master" class="tab-content active">
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+        <!-- ================= TAB 0: DASHBOARD & SCHEDULE ================= -->
+        <div id="tab-0" class="space-y-8">
+            <!-- Top Dashboard Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
                     <div>
-                        <h2>Master Schedule & To-Do List</h2>
-                        <p>All deadlines, law school classes, exam dates, and firm schedules synced automatically.</p>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tasks to be Completed</p>
+                        <h3 id="dashPendingCount" class="text-3xl font-bold text-slate-800 mt-1">0</h3>
                     </div>
-                    <button onclick="openAddTaskModal()">+ Add Task or Event</button>
+                    <div class="bg-blue-50 text-blue-600 p-4 rounded-xl text-xl"><i class="fa-solid fa-list-check"></i></div>
                 </div>
-
-                <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <button class="secondary" id="calViewBtn" onclick="switchMasterSubView('calendar')">Calendar View</button>
-                    <button class="secondary" id="todoViewBtn" onclick="switchMasterSubView('todo')">To-Do List & Countdown</button>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Upcoming Key Events</p>
+                        <h3 id="dashEventsCount" class="text-3xl font-bold text-indigo-600 mt-1">0</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Within next 10 days</p>
+                    </div>
+                    <div class="bg-indigo-50 text-indigo-600 p-4 rounded-xl text-xl"><i class="fa-solid fa-calendar-days"></i></div>
                 </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active VS/TC Apps</p>
+                        <h3 id="dashActiveAppsCount" class="text-3xl font-bold text-emerald-600 mt-1">0</h3>
+                    </div>
+                    <div class="bg-emerald-50 text-emerald-600 p-4 rounded-xl text-xl"><i class="fa-solid fa-rocket"></i></div>
+                </div>
+            </div>
 
-                <div id="masterSubContainer"></div>
+            <!-- Master To-Do & Quick Add -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-circle-check text-indigo-600 mr-2"></i> Global To-Do Master List</h2>
+                    <button onclick="openAddTaskModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Add Task / Event
+                    </button>
+                </div>
+                <div id="masterTodoList" class="space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Calendar & Schedule View -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-calendar-alt text-indigo-600 mr-2"></i> Schedule & Calendar</h2>
+                    <div class="flex items-center gap-3">
+                        <button onclick="setCalendarView('monthly')" id="calViewMonthly" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white">Monthly</button>
+                        <button onclick="setCalendarView('weekly')" id="calViewWeekly" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 text-slate-600">Weekly</button>
+                    </div>
+                </div>
+                <div id="calendarContainer">
+                    <!-- Calendar Rendered Here -->
+                </div>
             </div>
         </div>
 
-        <!-- TAB 2: LAW SCHOOL -->
-        <div id="tab-lawschool" class="tab-content">
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
-                    <div>
-                        <h2>Law School Hub</h2>
-                        <p>Track your modules, assignments, and exam countdowns.</p>
-                    </div>
-                    <button onclick="addLawClassInputRow()">+ Add Module / Exam</button>
+        <!-- ================= TAB 1: VS/TC TRACKER ================= -->
+        <div id="tab-1" class="space-y-8 hidden">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-briefcase text-indigo-600 mr-2"></i> Vacation Scheme & Training Contract Tracker</h2>
                 </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="openNetworkingDirectory()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-address-book"></i> Networking Directory
+                    </button>
+                    <button onclick="openGraveyardModal()" class="bg-rose-900 hover:bg-rose-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-skull"></i> Graveyard
+                    </button>
+                    <button onclick="openAddAppModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Add Application
+                    </button>
+                </div>
+            </div>
 
-                <div id="lawSchoolOverviewBar" style="display:flex; gap:15px; margin-bottom:20px; flex-wrap:wrap;"></div>
-                <div id="lawClassesContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:16px;"></div>
+            <!-- 1. Pending Applications -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-hourglass-half text-amber-500"></i> Pending Applications (Sorted by Deadline)
+                </h3>
+                <div id="pendingAppsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <!-- 2. Active Applications -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-rocket text-emerald-500"></i> Active Applications (Sorted by Furthest Stage)
+                </h3>
+                <div id="activeAppsList" class="space-y-4"></div>
+            </div>
+
+            <!-- 3. History Log Files -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-folder-open text-indigo-500"></i> History Log Files (All Recorded Firm Timelines)
+                </h3>
+                <div id="historyAppsList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
             </div>
         </div>
 
-        <!-- TAB 3: VAC SCHEME & TC TRACKER -->
-        <div id="tab-tracker" class="tab-content">
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <!-- ================= TAB 2: LAW SCHOOL ================= -->
+        <div id="tab-2" class="space-y-8 hidden">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-graduation-cap text-indigo-600 mr-2"></i> Law School Classes & Exams</h2>
+                <div class="flex gap-3">
+                    <button onclick="openAddClassModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Add Class
+                    </button>
+                    <button onclick="openAddExamModal()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-plus"></i> Add Exam
+                    </button>
+                </div>
+            </div>
+
+            <!-- Classes Columns -->
+            <div>
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Semester Classes & To-Dos</h3>
+                <div id="classesColumnsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+
+            <!-- Exams Section -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mt-8">
+                <h3 class="text-base font-bold text-slate-800 mb-4"><i class="fa-solid fa-file-lines text-indigo-600 mr-2"></i> Upcoming Exams Countdown</h3>
+                <div id="examsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"></div>
+
+                <h3 class="text-base font-bold text-slate-800 mb-4 pt-4 border-t border-slate-100"><i class="fa-solid fa-check-double text-emerald-600 mr-2"></i> Completed Exams & Grades</h3>
+                <div id="completedExamsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ================= MODALS & POP-UPS (ALL WITH CLOSE BUTTONS) ================= -->
+
+    <!-- Break Countdown Modal -->
+    <div id="breakModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeModal('breakModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-lg font-bold text-slate-800 mb-2"><i class="fa-solid fa-mug-hot text-amber-500 mr-2"></i> Buy Break</h3>
+            <p class="text-xs text-slate-500 mb-4">Cost: 10 tokens per minute. Enter how many minutes you want to take off:</p>
+            <div class="space-y-4">
                 <div>
-                    <h2>Vacation Scheme & Training Contract Tracker</h2>
-                    <p>Manage pending and active applications, add networking events, log reflections, and access the Graveyard.</p>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Minutes (Max: <span id="maxBreakMins">0</span>)</label>
+                    <input type="number" id="breakMinutesInput" min="1" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-                <div style="display:flex; gap:10px;">
-                    <button class="secondary" onclick="openGraveyardModal()">💀 Graveyard (<span id="graveyardCount">0</span>)</button>
-                    <button onclick="openAddFirmModal()">+ Add Firm Application</button>
+                <button onclick="startBreakTimer()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition">Start Break</button>
+            </div>
+            <div id="breakTimerDisplay" class="hidden text-center mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                <p class="text-xs text-emerald-700 font-bold uppercase tracking-wider mb-1">Go touch grass and don't doomscroll!</p>
+                <h2 id="timerCountdown" class="text-3xl font-black text-emerald-800">01:00</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task/Event Modal -->
+    <div id="taskModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('taskModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 id="taskModalTitle" class="text-lg font-bold text-slate-800 mb-4">Add Task or Event</h3>
+            <form id="taskForm" onsubmit="saveTask(event)" class="space-y-4">
+                <input type="hidden" id="taskId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Title</label>
+                    <input type="text" id="taskTitle" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
                 </div>
-            </div>
-
-            <div class="grid-2">
-                <div class="card">
-                    <h3>⏳ Pending Applications</h3>
-                    <p style="font-size:0.8rem;">Sorted by deadline urgency. Submit with optional notes to move to Active.</p>
-                    <div id="pendingFirmsContainer" style="margin-top:15px;"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Type</label>
+                        <select id="taskType" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                            <option value="general">General Task (+10)</option>
+                            <option value="lawschool">Law School Task (+20)</option>
+                            <option value="vstc">VS/TC Task (+50)</option>
+                            <option value="event">Event (No tokens)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Deadline / Date</label>
+                        <input type="date" id="taskDeadline" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                    </div>
                 </div>
-                <div class="card">
-                    <h3>🚀 Active Applications</h3>
-                    <p style="font-size:0.8rem;">Sorted by priority with current recruitment round displayed.</p>
-                    <div id="activeFirmsContainer" style="margin-top:15px;"></div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Item</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Application Modal -->
+    <div id="appModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('appModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 id="appModalTitle" class="text-lg font-bold text-slate-800 mb-4">Add Application</h3>
+            <form id="appForm" onsubmit="saveApplication(event)" class="space-y-4">
+                <input type="hidden" id="appId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Firm Name</label>
+                    <input type="text" id="appName" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
                 </div>
-            </div>
-
-            <!-- Unified History Log -->
-            <div class="card" style="margin-top:20px;">
-                <h3>📜 Unified History Log</h3>
-                <p style="font-size:0.8rem;">Click any firm name below to review, edit, or delete every event, person, note, and stage ever entered.</p>
-                <div id="unifiedHistoryContainer" style="margin-top:15px; display:flex; flex-wrap:wrap; gap:10px;"></div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- MODALS -->
-
-    <!-- Break Timer Fullscreen Modal -->
-    <div id="breakModal">
-        <h2>☕ Break Time Countdown</h2>
-        <div id="timerDisplay">00:00</div>
-        <button class="secondary" onclick="cancelBreak()" style="background:#ef4444; color:white; border:none;">End Break Early</button>
-    </div>
-
-    <!-- Add / Edit Task Modal -->
-    <div class="modal-overlay" id="taskModal">
-        <div class="modal">
-            <button class="close-btn" onclick="closeTaskModal()">✕</button>
-            <h3 id="taskModalTitle">Add Task or Event</h3>
-            
-            <label>Title</label>
-            <input type="text" id="taskTitleInput">
-            
-            <label>Date</label>
-            <input type="date" id="taskDateInput">
-            
-            <label>Type</label>
-            <select id="taskTypeSelect">
-                <option value="general">General Task (+5 Tokens)</option>
-                <option value="lawschool">Law School Exam/Assignment (+15 Tokens)</option>
-                <option value="vacscheme">Vac Scheme / TC Task (+30 Tokens)</option>
-                <option value="event">Event (Calendar Only)</option>
-            </select>
-
-            <button id="taskModalSaveBtn" onclick="saveTaskModal()" style="width:100%; margin-top:15px;">Save Task / Event</button>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Firm Details / Notes</label>
+                    <textarea id="appDetails" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Status Type</label>
+                        <select id="appInitialStatus" onchange="toggleAppStatusFields()" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                            <option value="pending">Looking to Apply</option>
+                            <option value="submitted">Submitted Application</option>
+                        </select>
+                    </div>
+                    <div id="appDateContainer">
+                        <label id="appDateLabel" class="block text-xs font-semibold text-slate-600 mb-1">Application Deadline</label>
+                        <input type="date" id="appDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Application</button>
+            </form>
         </div>
     </div>
 
-    <!-- Add Firm Application Modal -->
-    <div class="modal-overlay" id="addFirmModal">
-        <div class="modal">
-            <button class="close-btn" onclick="closeAddFirmModal()">✕</button>
-            <h3>Add Firm Application</h3>
-            
-            <label>Firm Name</label>
-            <input type="text" id="newFirmName">
-            
-            <label>Status</label>
-            <select id="newFirmStatusSelect" onchange="toggleFirmDateInputType()">
-                <option value="pending">Looking to Apply (Pending)</option>
-                <option value="active">Already Applied (Active)</option>
-            </select>
-
-            <div id="firmDateContainer">
-                <label id="firmDateLabel">Application Submission Deadline</label>
-                <input type="date" id="newFirmDateInput">
-            </div>
-
-            <div id="firmNotesContainer" style="display:none;">
-                <label>Submission Notes / Comments</label>
-                <textarea id="newFirmNotesInput"></textarea>
-            </div>
-            
-            <button onclick="saveNewFirmApplication()" style="width:100%; margin-top:15px;">Create Application</button>
+    <!-- Submit Pending Application Modal -->
+    <div id="submitAppModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeModal('submitAppModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Submit Application</h3>
+            <form onsubmit="confirmSubmitApp(event)" class="space-y-4">
+                <input type="hidden" id="submitAppTargetId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Date of Submission</label>
+                    <input type="date" id="submitDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Notes (Optional)</label>
+                    <textarea id="submitNotes" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Confirm Submission (+50 Tokens)</button>
+            </form>
         </div>
     </div>
 
-    <!-- Edit Firm Modal -->
-    <div class="modal-overlay" id="editFirmModal">
-        <div class="modal">
-            <button class="close-btn" onclick="closeEditFirmModal()">✕</button>
-            <h3>Edit Firm Application</h3>
-            
-            <label>Firm Name</label>
-            <input type="text" id="editFirmNameInput">
+    <!-- Add Event Modal (for Pending/Active Apps) -->
+    <div id="appEventModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('appEventModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Add Firm Event</h3>
+            <form onsubmit="saveAppEvent(event)" class="space-y-4">
+                <input type="hidden" id="eventAppId">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Event Type</label>
+                        <select id="appEventType" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                            <option value="Open House">Open House</option>
+                            <option value="Career Talk">Career Talk</option>
+                            <option value="Law Fair">Law Fair</option>
+                            <option value="Coffee Chat">Coffee Chat</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Event Date</label>
+                        <input type="date" id="appEventDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                    </div>
+                </div>
 
-            <label>Status</label>
-            <select id="editFirmStatusSelect" onchange="toggleEditFirmDateInputType()">
-                <option value="pending">Pending Application</option>
-                <option value="active">Active Application</option>
-            </select>
+                <!-- Reflections Section (Manual Text Fill + Add More) -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold text-slate-600">Reflections</label>
+                        <button type="button" onclick="addReflectionField()" class="text-xs text-indigo-600 font-bold hover:underline">+ Add Reflection</button>
+                    </div>
+                    <div id="reflectionsList" class="space-y-2">
+                        <input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm reflection-input">
+                    </div>
+                </div>
 
-            <div id="editFirmDateContainer">
-                <label id="editFirmDateLabel">Deadline / Submission Date</label>
-                <input type="date" id="editFirmDateInput">
-            </div>
+                <!-- People Section (Manual Text Fill + Add More) -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold text-slate-600">People Met</label>
+                        <button type="button" onclick="addPersonField()" class="text-xs text-indigo-600 font-bold hover:underline">+ Add Person</button>
+                    </div>
+                    <div id="peopleList" class="space-y-3 border border-slate-100 p-3 rounded-xl bg-slate-50">
+                        <div class="grid grid-cols-2 gap-2 person-group">
+                            <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-name">
+                            <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-pos">
+                            <input type="text" placeholder="Practice Area" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-pa">
+                            <input type="text" placeholder="Commonalities" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-com">
+                            <input type="text" placeholder="Key Insights" class="col-span-2 border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-ins">
+                        </div>
+                    </div>
+                </div>
 
-            <div id="editFirmNotesContainer" style="display:none;">
-                <label>Notes</label>
-                <textarea id="editFirmNotesInput"></textarea>
-            </div>
-            
-            <button onclick="saveEditedFirm()" style="width:100%; margin-top:15px;">Save Changes</button>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Event</button>
+            </form>
         </div>
     </div>
 
-    <!-- Submit Pending Modal (with Notes & Date) -->
-    <div class="modal-overlay" id="submitPendingModal">
-        <div class="modal">
-            <button class="close-btn" onclick="document.getElementById('submitPendingModal').style.display='none'">✕</button>
-            <h3 id="submitPendingTitle">Submit Application</h3>
-            <p>Log your application submission date and custom notes.</p>
-            
-            <label>Submission Date</label>
-            <input type="date" id="pendingSubDateInput">
+    <!-- Next Round Modal -->
+    <div id="nextRoundModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('nextRoundModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Move to Next Round</h3>
+            <form onsubmit="saveNextRound(event)" class="space-y-4">
+                <input type="hidden" id="roundAppId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">New Stage Name (e.g., Assessment Centre, Interview)</label>
+                    <input type="text" id="roundStageName" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Date</label>
+                    <input type="date" id="roundDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                </div>
 
-            <label>Submission Notes</label>
-            <textarea id="pendingSubNotesInput"></textarea>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold text-slate-600">Reflections</label>
+                        <button type="button" onclick="addRoundReflectionField()" class="text-xs text-indigo-600 font-bold hover:underline">+ Add Reflection</button>
+                    </div>
+                    <div id="roundReflectionsList" class="space-y-2">
+                        <input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm round-reflection-input">
+                    </div>
+                </div>
 
-            <button onclick="confirmSubmitPending()" style="width:100%; margin-top:15px;">Confirm & Move to Active</button>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold text-slate-600">People Met</label>
+                        <button type="button" onclick="addRoundPersonField()" class="text-xs text-indigo-600 font-bold hover:underline">+ Add Person</button>
+                    </div>
+                    <div id="roundPeopleList" class="space-y-3 border border-slate-100 p-3 rounded-xl bg-slate-50">
+                        <div class="grid grid-cols-2 gap-2 round-person-group">
+                            <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-name">
+                            <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-pos">
+                            <input type="text" placeholder="Practice Area" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-pa">
+                            <input type="text" placeholder="Commonalities" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-com">
+                            <input type="text" placeholder="Key Insights" class="col-span-2 border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-ins">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Round</button>
+            </form>
         </div>
-    </div>
-
-    <!-- Firm Details / Management Modal -->
-    <div class="modal-overlay" id="firmDetailsModal">
-        <div class="modal" id="firmDetailsModalContent" style="max-width: 800px;"></div>
-    </div>
-
-    <!-- Add Event to Firm Modal -->
-    <div class="modal-overlay" id="firmEventModal">
-        <div class="modal" id="firmEventModalContent" style="max-width: 650px;"></div>
     </div>
 
     <!-- Graveyard Modal -->
-    <div class="modal-overlay" id="graveyardModal">
-        <div class="modal" style="max-width: 700px;">
-            <button class="close-btn" onclick="closeGraveyardModal()">✕</button>
-            <h3>💀 Application Graveyard & Archive</h3>
-            <p>Review rejected or archived applications. You can revive any firm for next cycle or delete them permanently!</p>
-            <div id="graveyardListContainer" style="margin-top:15px;"></div>
+    <div id="graveyardModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('graveyardModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-lg font-bold text-slate-800 mb-4"><i class="fa-solid fa-skull text-rose-800 mr-2"></i> Application Graveyard</h3>
+            <div id="graveyardAppsList" class="space-y-3"></div>
         </div>
     </div>
 
-    <!-- Full Firm History Log Modal -->
-    <div class="modal-overlay" id="historyLogModal">
-        <div class="modal" id="historyLogModalContent" style="max-width: 800px;"></div>
+    <!-- Revive Application Modal -->
+    <div id="reviveModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeModal('reviveModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">Revive Application for Next Cycle</h3>
+            <p id="reviveFirmSubtitle" class="text-xs text-slate-500 mb-4">Choose how you want to revive this firm:</p>
+            <input type="hidden" id="reviveAppId">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Revive Action</label>
+                    <select id="reviveActionType" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                        <option value="pending">Looking to apply again</option>
+                        <option value="submitted">Application submitted again</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Date (Deadline or Submission Date)</label>
+                    <input type="date" id="reviveDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Notes (Optional)</label>
+                    <textarea id="reviveNotes" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm"></textarea>
+                </div>
+                <button onclick="confirmReviveApp()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Revive Application</button>
+            </div>
+        </div>
     </div>
 
+    <!-- Networking Directory Modal -->
+    <div id="networkingModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-4xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('networkingModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-address-book text-indigo-600 mr-2"></i> Global Networking Directory</h3>
+                <div class="flex gap-2">
+                    <select id="netSortBy" onchange="renderNetworkingDirectory()" class="border border-slate-200 rounded-xl px-3 py-1.5 text-xs">
+                        <option value="date">Sort Chronologically</option>
+                        <option value="pa">Sort by Practice Area</option>
+                        <option value="pos">Sort by Position</option>
+                    </select>
+                </div>
+            </div>
+            <div id="networkingDirectoryList" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- History Log Detail Modal -->
+    <div id="historyModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('historyModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 id="historyModalTitle" class="text-lg font-bold text-slate-800 mb-4">Firm Timeline Log</h3>
+            <div id="historyModalContent" class="space-y-6"></div>
+        </div>
+    </div>
+
+    <!-- Add Class Modal -->
+    <div id="classModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeModal('classModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Add Law School Class</h3>
+            <form onsubmit="saveClass(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Class Name</label>
+                    <input type="text" id="classNameInput" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Add Class</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Exam Modal -->
+    <div id="examModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeModal('examModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Add Exam</h3>
+            <form onsubmit="saveExam(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Exam Name / Subject</label>
+                    <input type="text" id="examName" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Exam Date</label>
+                    <input type="date" id="examDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Exam</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Global State
-        let state = {
-            tokens: 50,
-            tasks: [
-                { id: 1, title: "Offer & Acceptance Assignment", date: "2026-09-26", type: "lawschool", completed: false, completedAt: null },
-                { id: 2, title: "Linklaters Deadline", date: "2026-09-30", type: "vacscheme", completed: false, completedAt: null }
+        // State Management
+        let appState = JSON.parse(localStorage.getItem('partnerInLawState')) || {
+            tokens: 0,
+            lastCheckInDate: null,
+            tasks: [],
+            applications: [],
+            classes: [
+                { id: 'c1', name: 'Contract Law', tasks: [] },
+                { id: 'c2', name: 'Tort Law', tasks: [] },
+                { id: 'c3', name: 'Equity & Trusts', tasks: [] },
+                { id: 'c4', name: 'Criminal Law', tasks: [] },
+                { id: 'c5', name: 'Public Law', tasks: [] }
             ],
-            lawClasses: [
-                { 
-                    id: 1, 
-                    className: "Contract Law", 
-                    examDate: "2026-10-15" 
-                }
-            ],
-            firms: [
-                {
-                    id: 1,
-                    name: "Linklaters",
-                    status: "pending", 
-                    deadline: "2026-09-30",
-                    submissionDate: null,
-                    notes: "",
-                    priority: 1,
-                    revived: false,
-                    historyYears: [],
-                    events: [],
-                    stages: [
-                        { date: "2026-09-01", roundName: "Pending Application", eventDetails: "Initial tracking", prepNotes: [], reflections: [], keyPeople: [] }
-                    ]
-                },
-                {
-                    id: 2,
-                    name: "Freshfields",
-                    status: "active",
-                    deadline: null,
-                    submissionDate: "2026-09-20",
-                    notes: "Submitted tailored CV and cover letter.",
-                    priority: 2,
-                    revived: false,
-                    historyYears: [],
-                    events: [],
-                    stages: [
-                        { date: "2026-09-15", roundName: "Open House Event", eventDetails: "Attended firm open day presentation.", prepNotes: [], reflections: ["Impressive global footprint and training structure."], keyPeople: [{ name: "Alice Smith", position: "Associate", practiceArea: "Banking", commonalities: "LSE alumni", insights: "Advised keeping commercial answers concise." }] },
-                        { date: "2026-09-20", roundName: "Initial Application", eventDetails: "Submitted online application form.", prepNotes: ["Researched corporate practice."], reflections: ["Strong tailored answers."], keyPeople: [] }
-                    ]
-                }
-            ]
+            exams: []
         };
 
-        let currentCalendarYear = 2026;
-        let currentCalendarMonth = 8; // September
-        let activeBreakTimer = null;
-        let pendingSubmitFirmId = null;
-        let editingTaskId = null;
-        let editingFirmId = null;
-
-        // --- TOKENS & BREAK STORE (10 tokens per minute) ---
-        function addTokens(amt) {
-            state.tokens += amt;
-            document.getElementById('tokenCount').innerText = state.tokens;
+        function saveState() {
+            localStorage.setItem('partnerInLawState', JSON.stringify(appState));
+            renderAll();
         }
 
-        function openBreakStore() {
-            let input = prompt("☕ Token Break Store\nCost: 10 tokens per minute.\nHow many minutes would you like to buy?");
-            if(input === null) return;
-            let mins = parseInt(input);
-            if(isNaN(mins) || mins <= 0) {
-                alert("Please enter a valid positive number of minutes.");
-                return;
-            }
-            let cost = mins * 10;
-            if(state.tokens < cost) {
-                alert(`Not enough tokens! You requested a ${mins}-minute break (${cost} tokens), but you only have ${state.tokens} tokens.`);
-                return;
-            }
-            state.tokens -= cost;
-            addTokens(0);
-            startBreakTimer(mins * 60);
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAll();
+            setInterval(checkAutoCleanTasks, 60000); // Check 24-hr completed item clean
+        });
+
+        function renderAll() {
+            document.getElementById('tokenCount').innerText = appState.tokens;
+            renderDashboard();
+            renderTasks();
+            renderCalendar();
+            renderApplications();
+            renderClasses();
+            renderExams();
         }
 
-        function startBreakTimer(totalSeconds) {
-            const modal = document.getElementById('breakModal');
-            const display = document.getElementById('timerDisplay');
-            modal.style.display = 'flex';
-
-            let remaining = totalSeconds;
-            if(activeBreakTimer) clearInterval(activeBreakTimer);
-
-            activeBreakTimer = setInterval(() => {
-                let m = Math.floor(remaining / 60);
-                let s = remaining % 60;
-                display.innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-                
-                if(remaining <= 0) {
-                    clearInterval(activeBreakTimer);
-                    modal.style.display = 'none';
-                    alert("Break time is over! Welcome back.");
+        // Tab Switching
+        function switchTab(index) {
+            document.querySelectorAll('#tab-0, #tab-1, #tab-2').forEach((el, i) => {
+                el.classList.toggle('hidden', i !== index);
+            });
+            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+                if (i === index) {
+                    btn.className = "tab-btn py-4 font-semibold text-sm border-b-2 border-indigo-600 text-indigo-600 flex items-center gap-2";
+                } else {
+                    btn.className = "tab-btn py-4 font-medium text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-2";
                 }
-                remaining--;
+            });
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Daily Check-In
+        function dailyCheckIn() {
+            const today = new Date().toDateString();
+            if (appState.lastCheckInDate === today) {
+                alert('You have already completed your daily check-in today!');
+                return;
+            }
+            appState.lastCheckInDate = today;
+            appState.tokens += 1;
+            saveState();
+            alert('Daily check-in successful! +1 token earned.');
+        }
+
+        // Token Break Timer
+        function openBreakModal() {
+            document.getElementById('maxBreakMins').innerText = Math.floor(appState.tokens / 10);
+            document.getElementById('breakModal').classList.remove('hidden');
+        }
+
+        let breakTimerInterval = null;
+        function startBreakTimer() {
+            const mins = parseInt(document.getElementById('breakMinutesInput').value);
+            const maxMins = Math.floor(appState.tokens / 10);
+            if (!mins || mins <= 0 || mins > maxMins) {
+                alert('Invalid minutes or exceeds available tokens!');
+                return;
+            }
+            appState.tokens -= mins * 10;
+            saveState();
+
+            document.getElementById('breakTimerDisplay').classList.remove('hidden');
+            let totalSeconds = mins * 60;
+            
+            clearInterval(breakTimerInterval);
+            breakTimerInterval = setInterval(() => {
+                if (totalSeconds <= 0) {
+                    clearInterval(breakTimerInterval);
+                    alert('Break over! Time to get back to work!');
+                    closeModal('breakModal');
+                    return;
+                }
+                totalSeconds--;
+                let m = Math.floor(totalSeconds / 60);
+                let s = totalSeconds % 60;
+                document.getElementById('timerCountdown').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
             }, 1000);
         }
 
-        function cancelBreak() {
-            if(activeBreakTimer) clearInterval(activeBreakTimer);
-            document.getElementById('breakModal').style.display = 'none';
+        // Task & Event Logic
+        function openAddTaskModal() {
+            document.getElementById('taskId').value = '';
+            document.getElementById('taskForm').reset();
+            document.getElementById('taskModalTitle').innerText = 'Add Task or Event';
+            document.getElementById('taskModal').classList.remove('hidden');
         }
 
-        // --- TABS ---
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            
-            document.querySelectorAll('.nav-tab').forEach(btn => {
-                if(btn.getAttribute('onclick').includes(tabId)) btn.classList.add('active');
-            });
-            if(tabId === 'lawschool') renderLawSchoolHub();
-            if(tabId === 'tracker') renderTracker();
-        }
+        function saveTask(e) {
+            e.preventDefault();
+            const id = document.getElementById('taskId').value || 't_' + Date.now();
+            const title = document.getElementById('taskTitle').value;
+            const type = document.getElementById('taskType').value;
+            const deadline = document.getElementById('taskDeadline').value;
 
-        // --- 24-HOUR AUTO REMOVAL CLEANER FOR CHECKED OFF TASKS ---
-        function checkAndCleanCompletedTasks() {
-            const now = new Date();
-            state.tasks = state.tasks.filter(t => {
-                if(!t.completed || !t.completedAt) return true;
-                const completedDate = new Date(t.completedAt);
-                const diffHours = (now - completedDate) / (1000 * 60 * 60);
-                return diffHours < 24;
-            });
-        }
-
-        // --- MASTER SCHEDULE & CALENDAR ---
-        let currentSubView = 'calendar';
-
-        function switchMasterSubView(view) {
-            currentSubView = view;
-            if(view === 'calendar') {
-                document.getElementById('calViewBtn').style.background = 'var(--primary)';
-                document.getElementById('calViewBtn').style.color = '#fff';
-                document.getElementById('todoViewBtn').style.background = '#f1f5f9';
-                document.getElementById('todoViewBtn').style.color = 'var(--text-main)';
-                renderCalendar();
+            const existingIndex = appState.tasks.findIndex(t => t.id === id);
+            if (existingIndex >= 0) {
+                appState.tasks[existingIndex] = { ...appState.tasks[existingIndex], title, type, deadline };
             } else {
-                document.getElementById('todoViewBtn').style.background = 'var(--primary)';
-                document.getElementById('todoViewBtn').style.color = '#fff';
-                document.getElementById('calViewBtn').style.background = '#f1f5f9';
-                document.getElementById('calViewBtn').style.color = 'var(--text-main)';
-                renderTodoList();
+                appState.tasks.push({ id, title, type, deadline, completed: false, completedAt: null });
             }
+            closeModal('taskModal');
+            saveState();
         }
 
-        function getAllCalendarEvents() {
-            let events = [...state.tasks];
+        function toggleTaskComplete(id) {
+            const task = appState.tasks.find(t => t.id === id);
+            if (!task) return;
+            task.completed = !task.completed;
+            task.completedAt = task.completed ? new Date().toISOString() : null;
 
-            state.lawClasses.forEach(lc => {
-                if(lc.className && lc.examDate) {
-                    events.push({ id: 'ls-ex-' + Math.random(), title: `${lc.className} (Exam/Assignment)`, date: lc.examDate, type: 'lawschool' });
-                }
-            });
-
-            state.firms.forEach(f => {
-                if(f.status === 'pending' && f.deadline) {
-                    events.push({ id: 'firm-dl-' + f.id, title: `${f.name} Deadline`, date: f.deadline, type: 'vacscheme' });
-                }
-            });
-
-            return events;
-        }
-
-        function renderCalendar() {
-            checkAndCleanCompletedTasks();
-            const container = document.getElementById('masterSubContainer');
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            
-            let html = `
-                <div class="calendar-nav">
-                    <button class="secondary" onclick="changeMonth(-1)">‹ Prev</button>
-                    <h3 style="margin:0;">${monthNames[currentCalendarMonth]}${currentCalendarYear}</h3>
-                    <button class="secondary" onclick="changeMonth(1)">Next ›</button>
-                </div>
-                <div class="calendar-grid">
-            `;
-
-            const headers = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            headers.forEach(h => html += `<div class="cal-header">${h}</div>`);
-
-            const firstDayIndex = new Date(currentCalendarYear, currentCalendarMonth, 1).getDay();
-            const adjustedFirstDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
-            const totalDays = new Date(currentCalendarYear, currentCalendarMonth + 1, 0).getDate();
-
-            for(let i = 0; i < adjustedFirstDay; i++) {
-                html += `<div class="cal-day" style="opacity:0.3; background:none; cursor:default; border:none;"></div>`;
+            if (task.completed) {
+                if (task.type === 'general') appState.tokens += 10;
+                if (task.type === 'lawschool') appState.tokens += 20;
+                if (task.type === 'vstc') appState.tokens += 50;
             }
-
-            const allEvents = getAllCalendarEvents();
-
-            for(let i = 1; i <= totalDays; i++) {
-                let monthStr = String(currentCalendarMonth + 1).padStart(2, '0');
-                let dayStr = String(i).padStart(2, '0');
-                let dateKey = `${currentCalendarYear}-${monthStr}-${dayStr}`;
-
-                let dayEvents = allEvents.filter(e => e.date === dateKey);
-                let eventsHtml = '';
-                dayEvents.forEach(de => {
-                    let bg = '#0f172a';
-                    if(de.type === 'lawschool') bg = '#3b82f6';
-                    if(de.type === 'vacscheme') bg = '#10b981';
-                    if(de.type === 'event') bg = '#f59e0b';
-                    eventsHtml += `<span class="cal-event-pill" style="background:${bg};">${de.title}</span>`;
-                });
-
-                html += `
-                    <div class="cal-day" onclick="openAddTaskModalForDate('${dateKey}')">
-                        <div style="font-weight:600;">${i}</div>
-                        <div class="cal-events-list">${eventsHtml}</div>
-                    </div>
-                `;
-            }
-
-            html += `</div>`;
-            container.innerHTML = html;
-        }
-
-        function changeMonth(direction) {
-            currentCalendarMonth += direction;
-            if(currentCalendarMonth > 11) { currentCalendarMonth = 0; currentCalendarYear++; }
-            else if(currentCalendarMonth < 0) { currentCalendarMonth = 11; currentCalendarYear--; }
-            renderCalendar();
-        }
-
-        function renderTodoList() {
-            checkAndCleanCompletedTasks();
-            const container = document.getElementById('masterSubContainer');
-            let html = '';
-            const todoTasks = state.tasks.filter(t => t.type !== 'event');
-
-            if(todoTasks.length === 0) {
-                container.innerHTML = `<p style="text-align:center; padding:20px;">No active tasks on your to-do list.</p>`;
-                return;
-            }
-
-            const today = new Date();
-            today.setHours(0,0,0,0);
-
-            todoTasks.forEach(t => {
-                let tokenReward = 5;
-                if(t.type === 'lawschool') tokenReward = 15;
-                if(t.type === 'vacscheme') tokenReward = 30;
-
-                const taskDate = new Date(t.date);
-                taskDate.setHours(0,0,0,0);
-                const diffDays = Math.ceil((taskDate - today) / (1000 * 60 * 60 * 24));
-
-                let badge = `Due in ${diffDays} days`;
-                if(diffDays === 0) badge = `<span style="color:var(--danger); font-weight:700;">DUE TODAY</span>`;
-                else if(diffDays < 0) badge = `<span style="color:var(--danger); font-weight:700;">OVERDUE</span>`;
-
-                html += `
-                    <div class="todo-item ${t.completed ? 'completed' : ''}">
-                        <div class="todo-left">
-                            <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id},${tokenReward})">
-                            <div>
-                                <span style="font-size:0.9rem; font-weight:500;">${t.title}</span>
-                                <div style="display:flex; gap:8px; align-items:center; margin-top:2px;">
-                                    <span style="font-size:0.75rem; color:var(--warning); font-weight:600;">+${tokenReward} Tokens</span>
-                                    • <span style="font-size:0.75rem;">${badge}</span>${t.completed ? ' • <span style="font-size:0.75rem; color:var(--accent);">Auto-deletes in 24h</span>' : ''}
-                                </div>
-                            </div>
-                        </div>
-                        <div style="display:flex; gap:6px;">
-                            <button class="secondary" onclick="openEditTaskModal(${t.id})" style="padding:4px 8px; font-size:0.75rem;">Edit</button>
-                            <button class="secondary" onclick="deleteTask(${t.id})" style="padding:4px 8px; font-size:0.75rem; background:#fee2e2; color:#991b1b;">Delete</button>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function toggleTask(id, tokenReward) {
-            const t = state.tasks.find(task => task.id === id);
-            if(t) {
-                t.completed = !t.completed;
-                if(t.completed) {
-                    t.completedAt = new Date().toISOString();
-                    addTokens(tokenReward);
-                } else {
-                    t.completedAt = null;
-                }
-                if(currentSubView === 'todo') renderTodoList();
-            }
-        }
-
-        function openAddTaskModal(dateStr) {
-            editingTaskId = null;
-            document.getElementById('taskModalTitle').innerText = "Add Task or Event";
-            document.getElementById('taskTitleInput').value = "";
-            document.getElementById('taskDateInput').value = dateStr || new Date().toISOString().split('T')[0];
-            document.getElementById('taskTypeSelect').value = "general";
-            document.getElementById('taskModalSaveBtn').innerText = "Save Task / Event";
-            document.getElementById('taskModal').style.display = 'flex';
-        }
-        function openAddTaskModalForDate(dateStr) { openAddTaskModal(dateStr); }
-
-        function openEditTaskModal(id) {
-            const t = state.tasks.find(x => x.id === id);
-            if(!t) return;
-            editingTaskId = id;
-            document.getElementById('taskModalTitle').innerText = "Edit Task";
-            document.getElementById('taskTitleInput').value = t.title;
-            document.getElementById('taskDateInput').value = t.date;
-            document.getElementById('taskTypeSelect').value = t.type;
-            document.getElementById('taskModalSaveBtn').innerText = "Save Changes";
-            document.getElementById('taskModal').style.display = 'flex';
-        }
-
-        function closeTaskModal() { document.getElementById('taskModal').style.display = 'none'; }
-
-        function saveTaskModal() {
-            const title = document.getElementById('taskTitleInput').value.trim();
-            const date = document.getElementById('taskDateInput').value;
-            const type = document.getElementById('taskTypeSelect').value;
-            if(!title) { alert("Please enter a title."); return; }
-
-            if(editingTaskId !== null) {
-                let t = state.tasks.find(x => x.id === editingTaskId);
-                if(t) {
-                    t.title = title;
-                    t.date = date;
-                    t.type = type;
-                }
-            } else {
-                state.tasks.push({ id: Date.now(), title, date: date || '2026-09-26', type, completed: false, completedAt: null });
-            }
-
-            closeTaskModal();
-            if(currentSubView === 'calendar') renderCalendar();
-            else renderTodoList();
+            saveState();
         }
 
         function deleteTask(id) {
-            state.tasks = state.tasks.filter(t => t.id !== id);
-            if(currentSubView === 'calendar') renderCalendar();
-            else renderTodoList();
+            if (!confirm('Are you sure you want to delete this task?')) return;
+            appState.tasks = appState.tasks.filter(t => t.id !== id);
+            saveState();
         }
 
-        // --- LAW SCHOOL HUB (Streamlined & Boxed) ---
-        function renderLawSchoolHub() {
-            const overviewBar = document.getElementById('lawSchoolOverviewBar');
-            const container = document.getElementById('lawClassesContainer');
-            overviewBar.innerHTML = '';
-            container.innerHTML = '';
-
-            const today = new Date();
-            today.setHours(0,0,0,0);
-
-            let validExams = state.lawClasses.filter(lc => lc.className && lc.examDate);
-
-            overviewBar.innerHTML = `
-                <div style="background:#f1f5f9; border:1px solid var(--card-border); border-radius:10px; padding:16px 20px; flex:1; min-width:220px;">
-                    <div style="font-size:0.8rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Total Modules & Exams</div>
-                    <div style="font-size:1.8rem; font-weight:700; color:var(--primary); margin-top:4px;">${validExams.length}</div>
-                </div>
-            `;
-
-            if(validExams.length === 0) {
-                container.innerHTML = `<p style="grid-column: 1 / -1; text-align:center; padding:20px;">No modules or exams recorded yet.</p>`;
-                return;
-            }
-
-            validExams.forEach((lc) => {
-                let exDate = new Date(lc.examDate);
-                exDate.setHours(0,0,0,0);
-                let diffDays = Math.ceil((exDate - today) / (1000 * 60 * 60 * 24));
-                let countdownLabel = diffDays >= 0 ? `${diffDays} days left` : `${Math.abs(diffDays)} days overdue`;
-                let countdownColor = diffDays < 0 ? 'var(--danger)' : (diffDays <= 7 ? 'var(--warning)' : 'var(--accent)');
-
-                let originalIndex = state.lawClasses.findIndex(x => x.id === lc.id);
-
-                container.innerHTML += `
-                    <div style="background:#ffffff; border:1px solid var(--card-border); border-radius:12px; padding:20px; display:flex; flex-direction:column; justify-content:space-between; gap:16px; box-shadow:0 1px 2px rgba(0,0,0,0.02);">
-                        <div>
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-                                <input type="text" value="${lc.className}" onchange="updateLawClassProp(${originalIndex}, 'className', this.value)" style="font-weight:700; font-size:1rem; margin-bottom:0; border:none; background:transparent; padding:0; width:auto; flex:1;">
-                                <button class="secondary" onclick="removeLawClass(${originalIndex})" style="padding:2px 8px; font-size:0.75rem;">✕</button>
-                            </div>
-                            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">Exam / Submission Date</div>
-                            <input type="date" value="${lc.examDate}" onchange="updateLawClassProp(${originalIndex}, 'examDate', this.value)" style="margin-bottom:0;">
-                        </div>
-                        <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:8px; padding:12px; text-align:center;">
-                            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Countdown</div>
-                            <div style="font-size:1.5rem; font-weight:800; color:${countdownColor}; margin-top:2px;">${countdownLabel}</div>
-                        </div>
-                    </div>
-                `;
-            });
+        function editTask(id) {
+            const task = appState.tasks.find(t => t.id === id);
+            if (!task) return;
+            document.getElementById('taskId').value = task.id;
+            document.getElementById('taskTitle').value = task.title;
+            document.getElementById('taskType').value = task.type;
+            document.getElementById('taskDeadline').value = task.deadline;
+            document.getElementById('taskModalTitle').innerText = 'Edit Task';
+            document.getElementById('taskModal').classList.remove('hidden');
         }
 
-        function addLawClassInputRow() {
-            state.lawClasses.push({ id: Date.now(), className: "New Module", examDate: "2026-10-15" });
-            renderLawSchoolHub();
-        }
-        function updateLawClassProp(idx, prop, val) { 
-            state.lawClasses[idx][prop] = val; 
-            renderLawSchoolHub();
-        }
-        function removeLawClass(idx) { 
-            state.lawClasses.splice(idx, 1); 
-            renderLawSchoolHub(); 
-        }
-
-        // --- VACATION SCHEME & TC TRACKER ---
-        function openAddFirmModal() {
-            document.getElementById('newFirmName').value = "";
-            document.getElementById('newFirmStatusSelect').value = "pending";
-            document.getElementById('newFirmDateInput').value = "2026-09-30";
-            document.getElementById('newFirmNotesInput').value = "";
-            toggleFirmDateInputType();
-            document.getElementById('addFirmModal').style.display = 'flex';
-        }
-        function closeAddFirmModal() { document.getElementById('addFirmModal').style.display = 'none'; }
-
-        function toggleFirmDateInputType() {
-            let status = document.getElementById('newFirmStatusSelect').value;
-            if(status === 'pending') {
-                document.getElementById('firmDateLabel').innerText = "Application Submission Deadline";
-                document.getElementById('firmNotesContainer').style.display = 'none';
-            } else {
-                document.getElementById('firmDateLabel').innerText = "Application Submission Date";
-                document.getElementById('firmNotesContainer').style.display = 'block';
-            }
-        }
-
-        function saveNewFirmApplication() {
-            let name = document.getElementById('newFirmName').value.trim();
-            let status = document.getElementById('newFirmStatusSelect').value;
-            let dateVal = document.getElementById('newFirmDateInput').value;
-            let notes = document.getElementById('newFirmNotesInput').value;
-
-            if(!name) { alert("Please enter a firm name."); return; }
-
-            let newFirm = {
-                id: Date.now(),
-                name,
-                status,
-                deadline: status === 'pending' ? dateVal : null,
-                submissionDate: status === 'active' ? dateVal : null,
-                notes: notes || "",
-                priority: state.firms.length + 1,
-                revived: false,
-                historyYears: [],
-                events: [],
-                stages: [
-                    { 
-                        date: dateVal || new Date().toISOString().split('T')[0],
-                        roundName: status === 'pending' ? "Pending Application" : "Initial Application", 
-                        eventDetails: status === 'pending' ? "Looking to apply" : "Submitted application: " + (notes || "No notes"), 
-                        prepNotes: [], 
-                        reflections: [status === 'active' && notes ? `Submission notes: ${notes}` : ""], 
-                        keyPeople: [] 
+        function checkAutoCleanTasks() {
+            const now = new Date();
+            let changed = false;
+            appState.tasks = appState.tasks.filter(t => {
+                if (t.completed && t.completedAt) {
+                    const diffHours = (now - new Date(t.completedAt)) / (1000 * 60 * 60);
+                    if (diffHours >= 24) {
+                        changed = true;
+                        return false;
                     }
-                ]
-            };
-
-            state.firms.push(newFirm);
-            closeAddFirmModal();
-            renderTracker();
+                }
+                return true;
+            });
+            if (changed) saveState();
         }
 
-        function openEditFirmModal(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            if(!f) return;
-            editingFirmId = firmId;
-            document.getElementById('editFirmNameInput').value = f.name;
-            document.getElementById('editFirmStatusSelect').value = f.status === 'graveyard' ? 'pending' : f.status;
-            document.getElementById('editFirmDateInput').value = f.status === 'pending' ? f.deadline : f.submissionDate;
-            document.getElementById('editFirmNotesInput').value = f.notes;
-            toggleEditFirmDateInputType();
-            document.getElementById('editFirmModal').style.display = 'flex';
-        }
-        function closeEditFirmModal() { document.getElementById('editFirmModal').style.display = 'none'; }
-
-        function toggleEditFirmDateInputType() {
-            let status = document.getElementById('editFirmStatusSelect').value;
-            if(status === 'pending') {
-                document.getElementById('editFirmDateLabel').innerText = "Application Submission Deadline";
-                document.getElementById('editFirmNotesContainer').style.display = 'none';
-            } else {
-                document.getElementById('editFirmDateLabel').innerText = "Application Submission Date";
-                document.getElementById('editFirmNotesContainer').style.display = 'block';
-            }
-        }
-
-        function saveEditedFirm() {
-            let f = state.firms.find(x => x.id === editingFirmId);
-            if(!f) return;
-            let name = document.getElementById('editFirmNameInput').value.trim();
-            let status = document.getElementById('editFirmStatusSelect').value;
-            let dateVal = document.getElementById('editFirmDateInput').value;
-            let notes = document.getElementById('editFirmNotesInput').value;
-
-            if(!name) { alert("Please enter a firm name."); return; }
-
-            f.name = name;
-            f.status = status;
-            f.notes = notes;
-            if(status === 'pending') {
-                f.deadline = dateVal;
-                f.submissionDate = null;
-            } else {
-                f.submissionDate = dateVal;
-                f.deadline = null;
-            }
-
-            closeEditFirmModal();
-            renderTracker();
-            alert("Firm application updated successfully!");
-        }
-
-        function deleteFirmApplication(firmId) {
-            if(confirm("Are you sure you want to permanently delete this firm application and its complete history?")) {
-                state.firms = state.firms.filter(x => x.id !== firmId);
-                renderTracker();
-            }
-        }
-
-        function renderTracker() {
-            const pendingContainer = document.getElementById('pendingFirmsContainer');
-            const activeContainer = document.getElementById('activeFirmsContainer');
-            const historyContainer = document.getElementById('unifiedHistoryContainer');
-            const graveyardCount = document.getElementById('graveyardCount');
-
-            pendingContainer.innerHTML = '';
-            activeContainer.innerHTML = '';
-            historyContainer.innerHTML = '';
-
-            let pendingFirms = state.firms.filter(f => f.status === 'pending');
-            let activeFirms = state.firms.filter(f => f.status === 'active');
-            let graveyardFirms = state.firms.filter(f => f.status === 'graveyard');
-
-            graveyardCount.innerText = graveyardFirms.length;
+        // Render Dashboard & Master List
+        function renderDashboard() {
+            const pendingTasks = appState.tasks.filter(t => !t.completed);
+            document.getElementById('dashPendingCount').innerText = pendingTasks.length;
 
             const today = new Date();
             today.setHours(0,0,0,0);
-            pendingFirms.sort((a,b) => {
-                let dateA = new Date(a.deadline || '2099-01-01');
-                let dateB = new Date(b.deadline || '2099-01-01');
-                return dateA - dateB;
+            const tenDaysOut = new Date(today.getTime() + 10 * 24 * 60 * 60 * 1000);
+
+            let keyEventsCount = 0;
+            // Check exams within 10 days
+            appState.exams.forEach(e => {
+                const d = new Date(e.date);
+                if (d >= today && d <= tenDaysOut) keyEventsCount++;
             });
-
-            activeFirms.sort((a,b) => b.priority - a.priority);
-
-            if(pendingFirms.length === 0) {
-                pendingContainer.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted);">No pending applications.</p>`;
-            } else {
-                pendingFirms.forEach(f => {
-                    let deadlineDate = new Date(f.deadline);
-                    deadlineDate.setHours(0,0,0,0);
-                    let diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
-                    let countdownText = diffDays >= 0 ? `Due in ${diffDays} days` : `Overdue by ${Math.abs(diffDays)} days`;
-
-                    pendingContainer.innerHTML += `
-                        <div class="firm-card-item">
-                            <div class="firm-card-left" onclick="openFirmDetailsModal(${f.id})">
-                                <div>
-                                    <strong style="font-size:0.95rem;">${f.name}</strong>
-                                    <div style="font-size:0.75rem; color:var(--warning); font-weight:600; margin-top:2px;">⏳ ${countdownText} (${f.deadline})</div>
-                                </div>
-                            </div>
-                            <div style="display:flex; gap:6px; align-items:center;">
-                                <button class="secondary" onclick="openEditFirmModal(${f.id})" style="font-size:0.75rem;">Edit</button>
-                                <button class="secondary" onclick="openAddEventModal(${f.id})" style="font-size:0.75rem;">+ Event</button>
-                                <button onclick="openSubmitPendingModal(${f.id})" style="font-size:0.75rem; background:var(--accent);">Submit 🚀</button>
-                                <button class="secondary" onclick="deleteFirmApplication(${f.id})" style="font-size:0.75rem; background:#fee2e2; color:#991b1b;">✕</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            if(activeFirms.length === 0) {
-                activeContainer.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted);">No active applications.</p>`;
-            } else {
-                activeFirms.forEach(f => {
-                    let halo = f.revived ? '<span style="font-size:1rem; margin-left:4px;" title="Revived">😇</span>' : '';
-                    let sortedStages = [...f.stages].sort((a,b) => new Date(a.date || '2026-01-01') - new Date(b.date || '2026-01-01'));
-                    let currentRoundName = sortedStages.length > 0 ? sortedStages[sortedStages.length - 1].roundName : "Initial Application";
-
-                    activeContainer.innerHTML += `
-                        <div class="firm-card-item">
-                            <div class="firm-card-left" onclick="openFirmDetailsModal(${f.id})">
-                                <div>
-                                    <strong style="font-size:0.95rem;">${f.name}${halo}</strong>
-                                    <div style="font-size:0.75rem; color:var(--accent); font-weight:600; margin-top:2px;">Round: ${currentRoundName}</div>
-                                </div>
-                            </div>
-                            <div style="display:flex; gap:6px; align-items:center;">
-                                <button class="secondary" onclick="openEditFirmModal(${f.id})" style="font-size:0.75rem;">Edit</button>
-                                <button class="secondary" onclick="openFirmDetailsModal(${f.id})" style="font-size:0.75rem;">Manage ›</button>
-                                <button class="secondary" onclick="deleteFirmApplication(${f.id})" style="font-size:0.75rem; background:#fee2e2; color:#991b1b;">✕</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            state.firms.forEach(f => {
-                historyContainer.innerHTML += `
-                    <button class="secondary" onclick="openFullHistoryLog(${f.id})" style="font-weight:600;">📁 ${f.name}${f.revived ? '(Revived)' : ''}</button>
-                `;
-            });
-        }
-
-        function openSubmitPendingModal(id) {
-            pendingSubmitFirmId = id;
-            document.getElementById('pendingSubDateInput').value = new Date().toISOString().split('T')[0];
-            document.getElementById('pendingSubNotesInput').value = "";
-            document.getElementById('submitPendingModal').style.display = 'flex';
-        }
-
-        function confirmSubmitPending() {
-            let f = state.firms.find(x => x.id === pendingSubmitFirmId);
-            let subDate = document.getElementById('pendingSubDateInput').value;
-            let subNotes = document.getElementById('pendingSubNotesInput').value.trim();
-
-            if(f) {
-                f.status = 'active';
-                f.submissionDate = subDate;
-                f.notes = subNotes;
-                f.priority = Date.now();
-                f.stages.push({ 
-                    date: subDate,
-                    roundName: "Submitted Application", 
-                    eventDetails: `Submitted on ${subDate}`, 
-                    prepNotes: [], 
-                    reflections: [subNotes ? `Submission notes: ${subNotes}` : "Application successfully submitted."], 
-                    keyPeople: [] 
-                });
-                addTokens(30);
-                document.getElementById('submitPendingModal').style.display = 'none';
-                renderTracker();
-                alert(`🚀 ${f.name} application submitted and moved to Active Applications! +30 Tokens awarded.`);
-            }
-        }
-
-        // --- FIRM EVENTS ---
-        function openAddEventModal(firmId) {
-            const f = state.firms.find(x => x.id === firmId);
-            if(!f) return;
-            const modal = document.getElementById('firmEventModal');
-            modal.style.display = 'flex';
-
-            document.getElementById('firmEventModalContent').innerHTML = `
-                <button class="close-btn" onclick="document.getElementById('firmEventModal').style.display='none'">✕</button>
-                <h3>Add Event for ${f.name}</h3>
-
-                <label>Event Type / Title</label>
-                <input type="text" id="evTitle">
-
-                <label>Date</label>
-                <input type="date" id="evDate" value="${new Date().toISOString().split('T')[0]}">
-
-                <label>Reflections & Key Takeaways</label>
-                <textarea id="evReflections"></textarea>
-
-                <h4 style="margin:15px 0 5px 0;">Key People Met</h4>
-                <div id="modalPeopleList">
-                    <div class="dynamic-item-card person-row">
-                        <input type="text" placeholder="Name" class="kp-name" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Position" class="kp-pos" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Practice Area" class="kp-area" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Commonalities" class="kp-comm" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Insights / Advice" class="kp-insights" style="margin-bottom:0;">
-                    </div>
-                </div>
-                <button class="secondary" onclick="addModalPersonRow()" style="font-size:0.75rem; margin-bottom:15px;">+ Add Another Person</button>
-
-                <button onclick="saveFirmEvent(${f.id})" style="width:100%;">Save Event & Log</button>
-            `;
-        }
-
-        function addModalPersonRow() {
-            const container = document.getElementById('modalPeopleList');
-            container.innerHTML += `
-                <div class="dynamic-item-card person-row" style="margin-top:10px;">
-                    <input type="text" placeholder="Name" class="kp-name" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Position" class="kp-pos" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Practice Area" class="kp-area" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Commonalities" class="kp-comm" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Insights / Advice" class="kp-insights" style="margin-bottom:0;">
-                </div>
-            `;
-        }
-
-        function saveFirmEvent(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            let title = document.getElementById('evTitle').value.trim();
-            let date = document.getElementById('evDate').value;
-            let reflections = document.getElementById('evReflections').value.trim();
-
-            if(!title) { alert("Please enter event title."); return; }
-
-            let peopleRows = document.querySelectorAll('.person-row');
-            let keyPeople = [];
-            peopleRows.forEach(row => {
-                let name = row.querySelector('.kp-name').value.trim();
-                if(name) {
-                    keyPeople.push({
-                        name,
-                        position: row.querySelector('.kp-pos').value.trim(),
-                        practiceArea: row.querySelector('.kp-area').value.trim(),
-                        commonalities: row.querySelector('.kp-comm').value.trim(),
-                        insights: row.querySelector('.kp-insights').value.trim()
-                    });
+            // Check application deadlines within 10 days
+            appState.applications.forEach(a => {
+                if (a.status === 'pending' && a.deadline) {
+                    const d = new Date(a.deadline);
+                    if (d >= today && d <= tenDaysOut) keyEventsCount++;
                 }
             });
+            document.getElementById('dashEventsCount').innerText = keyEventsCount;
 
-            f.stages.push({
-                date: date || new Date().toISOString().split('T')[0],
-                roundName: title,
-                eventDetails: `Event date: ${date}`,
-                prepNotes: [],
-                reflections: reflections ? [reflections] : [],
-                keyPeople
-            });
+            const activeApps = appState.applications.filter(a => a.status === 'active');
+            document.getElementById('dashActiveAppsCount').innerText = activeApps.length;
 
-            document.getElementById('firmEventModal').style.display = 'none';
-            renderTracker();
-            alert("Event successfully recorded and added to history log!");
-        }
-
-        // --- ACTIVE FIRM DETAILS & STAGES ---
-        function openFirmDetailsModal(firmId) {
-            const f = state.firms.find(x => x.id === firmId);
-            if(!f) return;
-            const modal = document.getElementById('firmDetailsModal');
-            modal.style.display = 'flex';
-
-            let sortedStages = [...f.stages].sort((a,b) => new Date(a.date || '2026-01-01') - new Date(b.date || '2026-01-01'));
-            let stagesHtml = '';
-            sortedStages.forEach((st) => {
-                let kpHtml = '';
-                if(st.keyPeople && st.keyPeople.length > 0) {
-                    kpHtml += `<div style="margin-top:8px; font-size:0.85rem;"><strong>Key People Met:</strong><ul style="margin:4px 0; padding-left:16px;">`;
-                    st.keyPeople.forEach(p => {
-                        kpHtml += `<li><strong>${p.name}</strong> (${p.position \vert{}\vert{} 'N/A'},${p.practiceArea || 'N/A'}) — Commonalities: ${p.commonalities \vert{}\vert{} 'None'}, Insights:${p.insights || 'None'}</li>`;
-                    });
-                    kpHtml += `</ul></div>`;
-                }
-
-                let refHtml = st.reflections && st.reflections.length > 0 && st.reflections[0] ? `<div style="margin-top:6px; font-size:0.85rem;"><strong>Reflections:</strong> ${st.reflections.join('; ')}</div>` : '';
-
-                stagesHtml += `
-                    <div style="background:#f8fafc; border:1px solid var(--card-border); padding:16px; border-radius:10px; margin-bottom:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <strong>${st.roundName}</strong>
-                            <span style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">📅 ${st.date || 'No Date'}</span>
-                        </div>
-                        <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">${st.eventDetails}</div>
-                        ${refHtml}${kpHtml}
-                    </div>
-                `;
-            });
-
-            document.getElementById('firmDetailsModalContent').innerHTML = `
-                <button class="close-btn" onclick="document.getElementById('firmDetailsModal').style.display='none'">✕</button>
-                <h3>${f.name} - Active Application Management</h3>
-                <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
-                    <button onclick="openAddEventModal(${f.id})" class="secondary">+ Add Networking Event</button>
-                    <button onclick="advanceActiveRound(${f.id})" style="background:var(--accent);">Advance to Next Round (+50 Tokens)</button>
-                    <button onclick="rejectActiveFirm(${f.id})" style="background:var(--danger);">Reject / Send to Graveyard</button>
-                </div>
-                
-                <h4 style="margin-bottom:10px;">Application Stages & Rounds Log</h4>
-                ${stagesHtml}
-            `;
-        }
-
-        function advanceActiveRound(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            if(f) {
-                f.priority = Date.now();
-                addTokens(50);
-                document.getElementById('firmDetailsModal').style.display = 'none';
-                openNextRoundTemplateModal(f.id);
-            }
-        }
-
-        function openNextRoundTemplateModal(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            const modal = document.getElementById('firmDetailsModal');
-            modal.style.display = 'flex';
-
-            document.getElementById('firmDetailsModalContent').innerHTML = `
-                <button class="close-btn" onclick="document.getElementById('firmDetailsModal').style.display='none'">✕</button>
-                <h3>${f.name} - Advance to Next Round</h3>
-                <p>Input details for the new round. +50 Tokens awarded!</p>
-
-                <label>Stage / Round Name</label>
-                <input type="text" id="nrName">
-
-                <label>Date</label>
-                <input type="date" id="nrDate" value="${new Date().toISOString().split('T')[0]}">
-
-                <label>Event / Round Details</label>
-                <input type="text" id="nrDetails">
-
-                <label>Reflections & Key Takeaways</label>
-                <textarea id="nrReflections"></textarea>
-
-                <h4 style="margin:15px 0 5px 0;">Key People Met</h4>
-                <div id="nrPeopleList">
-                    <div class="dynamic-item-card nr-person-row">
-                        <input type="text" placeholder="Name" class="nr-name" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Position" class="nr-pos" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Practice Area" class="nr-area" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Commonalities" class="nr-comm" style="margin-bottom:6px;">
-                        <input type="text" placeholder="Insights" class="nr-insights" style="margin-bottom:0;">
-                    </div>
-                </div>
-                <button class="secondary" onclick="addNrPersonRow()" style="font-size:0.75rem; margin-bottom:15px;">+ Add Person</button>
-
-                <button onclick="saveNextRound(${f.id})" style="width:100%;">Save New Round</button>
-            `;
-        }
-
-        function addNrPersonRow() {
-            document.getElementById('nrPeopleList').innerHTML += `
-                <div class="dynamic-item-card nr-person-row" style="margin-top:10px;">
-                    <input type="text" placeholder="Name" class="nr-name" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Position" class="nr-pos" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Practice Area" class="nr-area" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Commonalities" class="nr-comm" style="margin-bottom:6px;">
-                    <input type="text" placeholder="Insights" class="nr-insights" style="margin-bottom:0;">
-                </div>
-            `;
-        }
-
-        function saveNextRound(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            let roundName = document.getElementById('nrName').value.trim() || "Next Round";
-            let date = document.getElementById('nrDate').value;
-            let eventDetails = document.getElementById('nrDetails').value.trim() || "";
-            let reflection = document.getElementById('nrReflections').value.trim();
-
-            let rows = document.querySelectorAll('.nr-person-row');
-            let keyPeople = [];
-            rows.forEach(r => {
-                let name = r.querySelector('.nr-name').value.trim();
-                if(name) {
-                    keyPeople.push({
-                        name,
-                        position: r.querySelector('.nr-pos').value.trim(),
-                        practiceArea: r.querySelector('.nr-area').value.trim(),
-                        commonalities: r.querySelector('.nr-comm').value.trim(),
-                        insights: r.querySelector('.nr-insights').value.trim()
-                    });
-                }
-            });
-
-            f.stages.push({
-                date: date || new Date().toISOString().split('T')[0],
-                roundName,
-                eventDetails,
-                prepNotes: [],
-                reflections: reflection ? [reflection] : [],
-                keyPeople
-            });
-
-            document.getElementById('firmDetailsModal').style.display = 'none';
-            renderTracker();
-            alert("New round successfully added and priority bumped!");
-        }
-
-        function rejectActiveFirm(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            if(f) {
-                f.status = 'graveyard';
-                document.getElementById('firmDetailsModal').style.display = 'none';
-                renderTracker();
-                alert(`${f.name} application sent to the Graveyard.`);
-            }
-        }
-
-        // --- GRAVEYARD & REVIVE ---
-        function openGraveyardModal() {
-            const modal = document.getElementById('graveyardModal');
-            modal.style.display = 'flex';
-            const container = document.getElementById('graveyardListContainer');
-            container.innerHTML = '';
-
-            let graveyardFirms = state.firms.filter(f => f.status === 'graveyard');
-            if(graveyardFirms.length === 0) {
-                container.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted);">The graveyard is empty.</p>`;
+            // Master List Rendering
+            const masterListEl = document.getElementById('masterTodoList');
+            const sortedTasks = [...appState.tasks].sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
+            
+            if (sortedTasks.length === 0) {
+                masterListEl.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">No tasks added yet.</p>`;
                 return;
             }
 
-            graveyardFirms.forEach(f => {
-                container.innerHTML += `
-                    <div style="background:#f8fafc; border:1px solid var(--card-border); padding:14px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <strong>${f.name}</strong>${f.revived ? '(Previously Revived)' : ''}
+            masterListEl.innerHTML = sortedTasks.map(t => {
+                const daysLeft = Math.ceil((new Date(t.deadline) - today) / (1000 * 60 * 60 * 24));
+                let countdownBadge = '';
+                if (daysLeft < 0) countdownBadge = `<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded text-[10px] font-bold">${Math.abs(daysLeft)} days overdue</span>`;
+                else if (daysLeft === 0) countdownBadge = `<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold">TODAY</span>`;
+                else countdownBadge = `<span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] font-bold">${daysLeft} days left</span>`;
+
+                const badgeColor = t.type === 'general' ? 'bg-blue-100 text-blue-700' : t.type === 'lawschool' ? 'bg-purple-100 text-purple-700' : t.type === 'vstc' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
+
+                return `
+                    <div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" ${t.completed ? 'checked' : ''} onclick="toggleTaskComplete('${t.id}')" class="w-4 h-4 text-indigo-600 rounded">
+                            <div>
+                                <h4 class="text-sm font-semibold ${t.completed ? 'line-through text-slate-400' : 'text-slate-800'}">${t.title}</h4>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${badgeColor}">${t.type}</span>
+                                    ${countdownBadge}
+                                </div>
+                            </div>
                         </div>
-                        <div style="display:flex; gap:8px;">
-                            <button class="secondary" onclick="openFullHistoryLog(${f.id})" style="font-size:0.75rem;">View History</button>
-                            <button onclick="reviveFirm(${f.id})" style="font-size:0.75rem; background:var(--accent);">💧 Revive for Next Cycle</button>
-                            <button class="secondary" onclick="deleteFirmApplication(${f.id}); openGraveyardModal();" style="font-size:0.75rem; background:#fee2e2; color:#991b1b;">Delete</button>
+                        <div class="flex items-center gap-2">
+                            <button onclick="editTask('${t.id}')" class="text-slate-400 hover:text-indigo-600 text-xs"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteTask('${t.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
-            });
+            }).join('');
         }
-        function closeGraveyardModal() { document.getElementById('graveyardModal').style.display = 'none'; }
 
-        function reviveFirm(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            if(f) {
-                f.revived = true;
-                f.status = 'active';
-                if(!f.historyYears) f.historyYears = [];
-                f.historyYears.push({ stages: [...f.stages] });
-                
-                f.stages = [
-                    { date: new Date().toISOString().split('T')[0], roundName: "Revived Application Round", eventDetails: "Re-applying for next cycle", prepNotes: [], reflections: [], keyPeople: [] }
-                ];
-                closeGraveyardModal();
-                renderTracker();
-                alert(`✨ ${f.name} successfully revived and moved to Active Applications with a revived tag!`);
+        // Calendar View
+        let currentCalendarView = 'monthly';
+        function setCalendarView(v) {
+            currentCalendarView = v;
+            document.getElementById('calViewMonthly').className = v === 'monthly' ? "px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white" : "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 text-slate-600";
+            document.getElementById('calViewWeekly').className = v === 'weekly' ? "px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white" : "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 text-slate-600";
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const container = document.getElementById('calendarContainer');
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+
+            if (currentCalendarView === 'monthly') {
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+                let html = `<h3 class="text-base font-bold text-slate-800 mb-4">${monthNames[month]} ${year}</h3>`;
+                html += `<div class="grid grid-cols-7 gap-2 text-center text-xs font-semibold text-slate-400 mb-2"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>`;
+                html += `<div class="grid grid-cols-7 gap-2">`;
+
+                for (let i = 0; i < firstDay; i++) {
+                    html += `<div class="bg-slate-50 rounded-xl h-24 p-2 opacity-40"></div>`;
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${day.toString().padStart(2,'0')}`;
+                    const dayTasks = appState.tasks.filter(t => t.deadline === dateStr);
+                    const dayExams = appState.exams.filter(e => e.date === dateStr);
+
+                    html += `<div class="bg-slate-50 border border-slate-100 rounded-xl h-24 p-2 overflow-y-auto">
+                        <span class="text-xs font-bold text-slate-700">${day}</span>
+                        <div class="space-y-1 mt-1">
+                            ${dayTasks.map(t => `<div class="text-[10px] bg-indigo-50 text-indigo-700 px-1 rounded truncate">${t.title}</div>`).join('')}
+                            ${dayExams.map(e => `<div class="text-[10px] bg-rose-50 text-rose-700 px-1 rounded truncate">Exam: ${e.name}</div>`).join('')}
+                        </div>
+                    </div>`;
+                }
+                html += `</div>`;
+                container.innerHTML = html;
+            } else {
+                // Weekly view
+                let html = `<h3 class="text-base font-bold text-slate-800 mb-4">This Week Agenda</h3>`;
+                html += `<div class="space-y-2">`;
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date();
+                    d.setDate(now.getDate() + i);
+                    const dateStr = d.toISOString().split('T')[0];
+                    const dayTasks = appState.tasks.filter(t => t.deadline === dateStr);
+
+                    html += `<div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-700 w-28">${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+                        <div class="flex-1 flex gap-2 overflow-x-auto px-4">
+                            ${dayTasks.length === 0 ? '<span class="text-xs text-slate-400 italic">No tasks</span>' : dayTasks.map(t => `<span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">${t.title}</span>`).join('')}
+                        </div>
+                    </div>`;
+                }
+                html += `</div>`;
+                container.innerHTML = html;
             }
         }
 
-        // --- FULL HISTORY LOG MODAL (Chronological Timeline with Clear Sections) ---
-        function openFullHistoryLog(firmId) {
-            let f = state.firms.find(x => x.id === firmId);
-            if(!f) return;
-            const modal = document.getElementById('historyLogModal');
-            modal.style.display = 'flex';
-            renderHistoryLogContent(f);
+        // VS / TC Tracker Logic
+        function openAddAppModal() {
+            document.getElementById('appId').value = '';
+            document.getElementById('appForm').reset();
+            document.getElementById('appModalTitle').innerText = 'Add Application';
+            document.getElementById('appInitialStatus').disabled = false;
+            document.getElementById('appModal').classList.remove('hidden');
+            toggleAppStatusFields();
         }
 
-        function renderHistoryLogContent(f) {
-            let historyHtml = ``;
+        function toggleAppStatusFields() {
+            const status = document.getElementById('appInitialStatus').value;
+            const label = document.getElementById('appDateLabel');
+            label.innerText = status === 'pending' ? 'Application Deadline' : 'Day of Submission';
+        }
 
-            if(f.historyYears && f.historyYears.length > 0) {
-                f.historyYears.forEach((hy, hyIdx) => {
-                    historyHtml += `<h4 style="color:var(--warning); margin:20px 0 10px 0;">--- Previous Cycle (${hyIdx+1}) ---</h4>`;
-                    let sortedHyStages = [...hy.stages].sort((a,b) => new Date(a.date || '2026-01-01') - new Date(b.date || '2026-01-01'));
-                    historyHtml += `<div class="timeline-container">`;
-                    sortedHyStages.forEach((st, sIdx) => {
-                        historyHtml += renderTimelineNode(f.id, sIdx, st, true, hyIdx);
-                    });
-                    historyHtml += `</div>`;
-                });
-                historyHtml += `<h4 style="color:var(--accent); margin:25px 0 10px 0;">--- Current Cycle ---</h4>`;
+        function saveApplication(e) {
+            e.preventDefault();
+            const id = document.getElementById('appId').value || 'app_' + Date.now();
+            const name = document.getElementById('appName').value;
+            const details = document.getElementById('appDetails').value;
+            const initialStatus = document.getElementById('appInitialStatus').value;
+            const dateVal = document.getElementById('appDate').value;
+
+            const existingIndex = appState.applications.findIndex(a => a.id === id);
+            if (existingIndex >= 0) {
+                appState.applications[existingIndex] = {
+                    ...appState.applications[existingIndex],
+                    name, details
+                };
+            } else {
+                const newApp = {
+                    id,
+                    name,
+                    details,
+                    status: initialStatus === 'pending' ? 'pending' : 'active',
+                    deadline: initialStatus === 'pending' ? dateVal : null,
+                    submittedDate: initialStatus === 'submitted' ? dateVal : null,
+                    currentStage: initialStatus === 'submitted' ? 'Application Submitted' : null,
+                    crowned: false,
+                    rejected: false,
+                    history: initialStatus === 'submitted' ? [{ stage: 'Application Submitted', date: dateVal, notes: details, reflections: [], people: [] }] : [],
+                    events: [],
+                    cycles: []
+                };
+                appState.applications.push(newApp);
             }
+            closeModal('appModal');
+            saveState();
+        }
 
-            let sortedCurrentStages = [...f.stages].sort((a,b) => new Date(a.date || '2026-01-01') - new Date(b.date || '2026-01-01'));
-            historyHtml += `<div class="timeline-container">`;
-            sortedCurrentStages.forEach((st, sIdx) => {
-                historyHtml += renderTimelineNode(f.id, sIdx, st, false, 0);
-            });
-            historyHtml += `</div>`;
+        function editApplication(id) {
+            const app = appState.applications.find(a => a.id === id);
+            if (!app) return;
+            document.getElementById('appId').value = app.id;
+            document.getElementById('appName').value = app.name;
+            document.getElementById('appDetails').value = app.details;
+            document.getElementById('appInitialStatus').value = app.status === 'pending' ? 'pending' : 'submitted';
+            document.getElementById('appInitialStatus').disabled = true;
+            document.getElementById('appDateLabel').innerText = app.status === 'pending' ? 'Application Deadline' : 'Day of Submission';
+            document.getElementById('appDate').value = app.status === 'pending' ? app.deadline : app.submittedDate;
+            document.getElementById('appModalTitle').innerText = 'Edit Application';
+            document.getElementById('appModal').classList.remove('hidden');
+        }
 
-            document.getElementById('historyLogModalContent').innerHTML = `
-                <button class="close-btn" onclick="document.getElementById('historyLogModal').style.display='none'">✕</button>
-                <h3>📜 Chronological History Log & Timeline: ${f.name} ${f.revived ? '(Revived 😇)' : ''}</h3>
-                <div style="max-height:65vh; overflow-y:auto; margin-top:15px; padding-right:5px;">
-                    ${historyHtml}
+        function deleteApplication(id) {
+            if (!confirm('Are you sure you want to delete this application?')) return;
+            appState.applications = appState.applications.filter(a => a.id !== id);
+            saveState();
+        }
+
+        function promptSubmitApp(id) {
+            document.getElementById('submitAppTargetId').value = id;
+            document.getElementById('submitDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('submitNotes').value = '';
+            document.getElementById('submitAppModal').classList.remove('hidden');
+        }
+
+        function confirmSubmitApp(e) {
+            e.preventDefault();
+            const id = document.getElementById('submitAppTargetId').value;
+            const date = document.getElementById('submitDate').value;
+            const notes = document.getElementById('submitNotes').value;
+
+            const app = appState.applications.find(a => a.id === id);
+            if (app) {
+                app.status = 'active';
+                app.submittedDate = date;
+                app.currentStage = 'Application Submitted';
+                app.history.push({ stage: 'Application Submitted', date, notes, reflections: [], people: [] });
+                appState.tokens += 50;
+            }
+            closeModal('submitAppModal');
+            saveState();
+        }
+
+        // App Event Modal
+        function openAppEventModal(id) {
+            document.getElementById('eventAppId').value = id;
+            document.getElementById('appEventDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('reflectionsList').innerHTML = `<input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm reflection-input">`;
+            document.getElementById('peopleList').innerHTML = `
+                <div class="grid grid-cols-2 gap-2 person-group">
+                    <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-name">
+                    <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-pos">
+                    <input type="text" placeholder="Practice Area" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-pa">
+                    <input type="text" placeholder="Commonalities" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-com">
+                    <input type="text" placeholder="Key Insights" class="col-span-2 border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-ins">
                 </div>
             `;
+            document.getElementById('appEventModal').classList.remove('hidden');
         }
 
-        function renderTimelineNode(firmId, stageIdx, st, isHistoryYear, historyYearIdx) {
-            let kpListHtml = '';
-            if(st.keyPeople && st.keyPeople.length > 0) {
-                kpHtml = st.keyPeople.map(p => `
-                    <div style="background:#ffffff; border:1px solid var(--card-border); border-radius:6px; padding:8px; margin-top:6px; font-size:0.8rem;">
-                        <strong>👤 ${p.name || 'Unnamed'}</strong> — <em>${p.position || 'Position N/A'} (${p.practiceArea || 'Practice Area N/A'})</em><br>
-                        <strong>Commonalities:</strong> ${p.commonalities || 'None'} | <strong>Insights:</strong> ${p.insights || 'None'}
+        function addReflectionField() {
+            const div = document.createElement('div');
+            div.innerHTML = `<input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm reflection-input mt-2">`;
+            document.getElementById('reflectionsList').appendChild(div);
+        }
+
+        function addPersonField() {
+            const div = document.createElement('div');
+            div.className = "grid grid-cols-2 gap-2 person-group mt-2 pt-2 border-t border-slate-200";
+            div.innerHTML = `
+                <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-name">
+                <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-pos">
+                <input type="text" placeholder="Practice Area" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-pa">
+                <input type="text" placeholder="Commonalities" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-com">
+                <input type="text" placeholder="Key Insights" class="col-span-2 border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-ins">
+            `;
+            document.getElementById('peopleList').appendChild(div);
+        }
+
+        function saveAppEvent(e) {
+            e.preventDefault();
+            const id = document.getElementById('eventAppId').value;
+            const type = document.getElementById('appEventType').value;
+            const date = document.getElementById('appEventDate').value;
+            
+            const reflections = Array.from(document.querySelectorAll('.reflection-input')).map(i => i.value).filter(v => v.trim() !== '');
+            const people = Array.from(document.querySelectorAll('.person-group')).map(g => ({
+                name: g.querySelector('.p-name').value,
+                position: g.querySelector('.p-pos').value,
+                practiceArea: g.querySelector('.p-pa').value,
+                commonalities: g.querySelector('.p-com').value,
+                insights: g.querySelector('.p-ins').value,
+                date: date
+            })).filter(p => p.name.trim() !== '');
+
+            const app = appState.applications.find(a => a.id === id);
+            if (app) {
+                app.events.push({ type, date, reflections, people });
+            }
+            closeModal('appEventModal');
+            saveState();
+        }
+
+        // Next Round Modal
+        function openNextRoundModal(id) {
+            document.getElementById('roundAppId').value = id;
+            document.getElementById('roundStageName').value = '';
+            document.getElementById('roundDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('roundReflectionsList').innerHTML = `<input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm round-reflection-input">`;
+            document.getElementById('roundPeopleList').innerHTML = `
+                <div class="grid grid-cols-2 gap-2 round-person-group">
+                    <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-name">
+                    <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-pos">
+                    <input type="text" placeholder="Practice Area" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-pa">
+                    <input type="text" placeholder="Commonalities" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-com">
+                    <input type="text" placeholder="Key Insights" class="col-span-2 border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-ins">
+                </div>
+            `;
+            document.getElementById('nextRoundModal').classList.remove('hidden');
+        }
+
+        function addRoundReflectionField() {
+            const div = document.createElement('div');
+            div.innerHTML = `<input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm round-reflection-input mt-2">`;
+            document.getElementById('roundReflectionsList').appendChild(div);
+        }
+
+        function addRoundPersonField() {
+            const div = document.createElement('div');
+            div.className = "grid grid-cols-2 gap-2 round-person-group mt-2 pt-2 border-t border-slate-200";
+            div.innerHTML = `
+                <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-name">
+                <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-pos">
+                <input type="text" placeholder="Practice Area" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-pa">
+                <input type="text" placeholder="Commonalities" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-com">
+                <input type="text" placeholder="Key Insights" class="col-span-2 border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-ins">
+            `;
+            document.getElementById('roundPeopleList').appendChild(div);
+        }
+
+        function saveNextRound(e) {
+            e.preventDefault();
+            const id = document.getElementById('roundAppId').value;
+            const stage = document.getElementById('roundStageName').value;
+            const date = document.getElementById('roundDate').value;
+
+            const reflections = Array.from(document.querySelectorAll('.round-reflection-input')).map(i => i.value).filter(v => v.trim() !== '');
+            const people = Array.from(document.querySelectorAll('.round-person-group')).map(g => ({
+                name: g.querySelector('.rp-name').value,
+                position: g.querySelector('.rp-pos').value,
+                practiceArea: g.querySelector('.rp-pa').value,
+                commonalities: g.querySelector('.rp-com').value,
+                insights: g.querySelector('.rp-ins').value,
+                date: date
+            })).filter(p => p.name.trim() !== '');
+
+            const app = appState.applications.find(a => a.id === id);
+            if (app) {
+                // Keep history updated
+                app.currentStage = stage;
+                app.history.push({ stage, date, notes: '', reflections, people });
+            }
+            closeModal('nextRoundModal');
+            saveState();
+        }
+
+        function receiveOffer(id) {
+            const app = appState.applications.find(a => a.id === id);
+            if (app) {
+                app.crowned = true;
+                appState.tokens += 100;
+                saveState();
+            }
+        }
+
+        function rejectApplication(id) {
+            const app = appState.applications.find(a => a.id === id);
+            if (app) {
+                app.status = 'graveyard';
+                app.rejected = true;
+                saveState();
+            }
+        }
+
+        function openGraveyardModal() {
+            const list = document.getElementById('graveyardAppsList');
+            const rejectedApps = appState.applications.filter(a => a.status === 'graveyard');
+
+            if (rejectedApps.length === 0) {
+                list.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">No rejected applications in the graveyard.</p>`;
+            } else {
+                list.innerHTML = rejectedApps.map(a => `
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-800">${a.name}</h4>
+                            <p class="text-xs text-slate-500">Furthest Stage: <strong class="text-rose-600">${a.currentStage || 'Application Submitted'}</strong></p>
+                        </div>
+                        <button onclick="openReviveModal('${a.id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow">Revive App</button>
                     </div>
                 `).join('');
-                kpListHtml = `<div style="margin-top:10px;"><strong>Key People Met:</strong>${kpHtml}</div>`;
+            }
+            document.getElementById('graveyardModal').classList.remove('hidden');
+        }
+
+        function openReviveModal(id) {
+            const app = appState.applications.find(a => a.id === id);
+            if (!app) return;
+            document.getElementById('reviveAppId').value = id;
+            document.getElementById('reviveFirmSubtitle').innerText = `Reviving ${app.name} for the next cycle. Furthest stage previously: ${app.currentStage || 'N/A'}`;
+            document.getElementById('reviveDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('reviveModal').classList.remove('hidden');
+        }
+
+        function confirmReviveApp() {
+            const id = document.getElementById('reviveAppId').value;
+            const action = document.getElementById('reviveActionType').value;
+            const date = document.getElementById('reviveDate').value;
+            const notes = document.getElementById('reviveNotes').value;
+
+            const app = appState.applications.find(a => a.id === id);
+            if (app) {
+                // Save old cycle into cycles array
+                app.cycles.push({
+                    furthestStage: app.currentStage,
+                    history: [...app.history],
+                    events: [...app.events]
+                });
+
+                // Reset for new cycle
+                app.status = action === 'pending' ? 'pending' : 'active';
+                app.deadline = action === 'pending' ? date : null;
+                app.submittedDate = action === 'submitted' ? date : null;
+                app.currentStage = action === 'submitted' ? 'Application Submitted (Revived)' : null;
+                app.rejected = false;
+                app.crowned = false;
+                app.history = action === 'submitted' ? [{ stage: 'Application Submitted (Revived)', date, notes, reflections: [], people: [] }] : [];
+                app.events = [];
+            }
+            closeModal('reviveModal');
+            closeModal('graveyardModal');
+            saveState();
+        }
+
+        // History Log Modal
+        function openHistoryModal(id) {
+            const app = appState.applications.find(a => a.id === id);
+            if (!app) return;
+            document.getElementById('historyModalTitle').innerText = `${app.name} - Complete Timeline Log`;
+            
+            let html = `<div class="space-y-4">`;
+            
+            if (app.cycles && app.cycles.length > 0) {
+                app.cycles.forEach((cyc, idx) => {
+                    html += `<div class="p-3 bg-slate-100 rounded-xl border border-slate-200 mb-2">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase">Previous Cycle (Furthest: ${cyc.furthestStage})</h4>
+                    </div>`;
+                });
             }
 
-            let refListHtml = '';
-            if(st.reflections && st.reflections.length > 0 && st.reflections[0]) {
-                refListHtml = `<div style="margin-top:8px; font-size:0.85rem; background:#f1f5f9; padding:8px; border-radius:6px;"><strong>Reflections & Takeaways:</strong> ${st.reflections.join('; ')}</div>`;
+            html += `<h4 class="text-sm font-bold text-indigo-600 border-b pb-1">Current Cycle</h4>`;
+            app.history.forEach(h => {
+                html += `<div class="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
+                    <div class="flex justify-between text-xs font-bold text-slate-700">
+                        <span>${h.stage}</span>
+                        <span class="text-slate-400">${h.date}</span>
+                    </div>
+                    ${h.notes ? `<p class="text-xs text-slate-600">${h.notes}</p>` : ''}
+                    ${h.reflections && h.reflections.length > 0 ? `<div class="text-xs text-slate-500 italic">Reflections: ${h.reflections.join(', ')}</div>` : ''}
+                </div>`;
+            });
+
+            if (app.events.length > 0) {
+                html += `<h4 class="text-sm font-bold text-indigo-600 border-b pb-1 pt-2">Firm Events</h4>`;
+                app.events.forEach(ev => {
+                    html += `<div class="p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 space-y-1">
+                        <div class="flex justify-between text-xs font-bold text-indigo-900">
+                            <span>${ev.type}</span>
+                            <span class="text-indigo-400">${ev.date}</span>
+                        </div>
+                        ${ev.reflections && ev.reflections.length > 0 ? `<div class="text-xs text-indigo-700 italic">Reflections: ${ev.reflections.join(', ')}</div>` : ''}
+                    </div>`;
+                });
             }
 
-            return `
-                <div class="timeline-node">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:10px;">
-                        <input type="text" id="edit-round-${isHistoryYear}-${historyYearIdx}-${stageIdx}" value="${st.roundName || ''}" style="font-weight:700; font-size:0.95rem; margin-bottom:0; flex:1;">
-                        <input type="date" id="edit-date-${isHistoryYear}-${historyYearIdx}-${stageIdx}" value="${st.date || new Date().toISOString().split('T')[0]}" style="width:140px; margin-bottom:0; font-size:0.8rem;">
-                        <div style="display:flex; gap:6px;">
-                            <button class="secondary" onclick="saveHistoryEdit(${firmId}, ${stageIdx}, ${isHistoryYear}, ${historyYearIdx})" style="font-size:0.75rem; padding:6px 10px;">Save</button>
-                            <button class="secondary" onclick="deleteHistoryStage(${firmId}, ${stageIdx}, ${isHistoryYear}, ${historyYearIdx})" style="font-size:0.75rem; padding:6px 10px; background:#fee2e2; color:#991b1b;">Delete</button>
+            html += `</div>`;
+            document.getElementById('historyModalContent').innerHTML = html;
+            document.getElementById('historyModal').classList.remove('hidden');
+        }
+
+        // Networking Directory
+        function openNetworkingDirectory() {
+            renderNetworkingDirectory();
+            document.getElementById('networkingModal').classList.remove('hidden');
+        }
+
+        function renderNetworkingDirectory() {
+            const sortBy = document.getElementById('netSortBy').value;
+            let allPeople = [];
+
+            appState.applications.forEach(a => {
+                a.history.forEach(h => {
+                    if (h.people) h.people.forEach(p => allPeople.push({ ...p, firm: a.name }));
+                });
+                a.events.forEach(ev => {
+                    if (ev.people) ev.people.forEach(p => allPeople.push({ ...p, firm: a.name }));
+                });
+            });
+
+            if (sortBy === 'date') {
+                allPeople.sort((a,b) => new Date(b.date) - new Date(a.date));
+            } else if (sortBy === 'pa') {
+                allPeople.sort((a,b) => (a.practiceArea || '').localeCompare(b.practiceArea || ''));
+            } else if (sortBy === 'pos') {
+                allPeople.sort((a,b) => (a.position || '').localeCompare(b.position || ''));
+            }
+
+            const listEl = document.getElementById('networkingDirectoryList');
+            if (allPeople.length === 0) {
+                listEl.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">No contacts logged yet.</p>`;
+                return;
+            }
+
+            listEl.innerHTML = allPeople.map(p => `
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800">${p.name} <span class="text-xs font-normal text-slate-500">(${p.firm})</span></h4>
+                        <p class="text-xs text-slate-500">Position: <strong>${p.position || 'N/A'}</strong> | Practice Area: <strong>${p.practiceArea || 'N/A'}</strong></p>
+                        ${p.commonalities ? `<p class="text-xs text-indigo-600 mt-1">Commonalities: ${p.commonalities}</p>` : ''}
+                        ${p.insights ? `<p class="text-xs text-slate-600">Insights: ${p.insights}</p>` : ''}
+                    </div>
+                    <span class="text-xs font-semibold text-slate-400">${p.date || ''}</span>
+                </div>
+            `).join('');
+        }
+
+        // Render Applications
+        function renderApplications() {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            // 1. Pending Apps (sorted by deadline)
+            const pendingEl = document.getElementById('pendingAppsList');
+            const pendingApps = appState.applications.filter(a => a.status === 'pending').sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
+            
+            if (pendingApps.length === 0) {
+                pendingEl.innerHTML = `<p class="text-xs text-slate-400 italic col-span-2 text-center py-4">No pending applications.</p>`;
+            } else {
+                pendingEl.innerHTML = pendingApps.map(a => {
+                    const daysLeft = Math.ceil((new Date(a.deadline) - today) / (1000 * 60 * 60 * 24));
+                    return `
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-start">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">${a.name}</h4>
+                                <p class="text-xs text-slate-500 mb-2">${a.details || ''}</p>
+                                <span class="text-xs font-semibold bg-amber-100 text-amber-700 px-2 py-0.5 rounded">Deadline: ${a.deadline} (${daysLeft} days left)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="promptSubmitApp('${a.id}')" title="Submit App" class="bg-emerald-600 text-white w-7 h-7 rounded-lg text-xs flex items-center justify-center"><i class="fa-solid fa-check"></i></button>
+                                <button onclick="openAppEventModal('${a.id}')" title="Add Event" class="bg-indigo-600 text-white w-7 h-7 rounded-lg text-xs flex items-center justify-center"><i class="fa-solid fa-calendar-plus"></i></button>
+                                <button onclick="editApplication('${a.id}')" class="text-slate-400 hover:text-indigo-600 text-xs"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteApplication('${a.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 2. Active Apps (sorted by furthest stage - simulated by history length)
+            const activeEl = document.getElementById('activeAppsList');
+            const activeApps = appState.applications.filter(a => a.status === 'active').sort((a,b) => b.history.length - a.history.length);
+
+            if (activeApps.length === 0) {
+                activeEl.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">No active applications.</p>`;
+            } else {
+                activeEl.innerHTML = activeApps.map(a => `
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center ${a.crowned ? 'border-amber-400 bg-amber-50/20' : ''}">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-sm font-bold text-slate-800">${a.name}</h4>
+                                ${a.crowned ? '<i class="fa-solid fa-crown text-amber-500"></i>' : ''}
+                            </div>
+                            <p class="text-xs text-slate-500">Current Stage: <strong class="text-indigo-600">${a.currentStage || 'Submitted'}</strong></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openNextRoundModal('${a.id}')" class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-xs font-semibold">Next Round</button>
+                            <button onclick="openAppEventModal('${a.id}')" class="bg-slate-700 text-white px-3 py-1 rounded-lg text-xs font-semibold">Add Event</button>
+                            <button onclick="receiveOffer('${a.id}')" class="bg-amber-500 text-slate-950 px-3 py-1 rounded-lg text-xs font-bold">Offer</button>
+                            <button onclick="rejectApplication('${a.id}')" class="bg-rose-600 text-white px-3 py-1 rounded-lg text-xs font-semibold">Reject</button>
+                            <button onclick="editApplication('${a.id}')" class="text-slate-400 hover:text-indigo-600 text-xs"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteApplication('${a.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
-                    <div style="margin-bottom:8px;">
-                        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">Details / Description</label>
-                        <input type="text" id="edit-details-${isHistoryYear}-${historyYearIdx}-${stageIdx}" value="${st.eventDetails || ''}" style="font-size:0.85rem; margin-bottom:0;">
-                    </div>
-                    ${refListHtml}
-                    ${kpListHtml}
-                </div>
-            `;
-        }
+                `).join('');
+            }
 
-        function saveHistoryEdit(firmId, stageIdx, isHistoryYear, historyYearIdx) {
-            let f = state.firms.find(x => x.id === firmId);
-            if(!f) return;
+            // 3. History Log Files
+            const historyEl = document.getElementById('historyAppsList');
+            const historyApps = appState.applications.filter(a => a.history.length > 0 || a.events.length > 0);
 
-            let targetStage;
-            if(isHistoryYear) {
-                targetStage = f.historyYears[historyYearIdx].stages[stageIdx];
+            if (historyApps.length === 0) {
+                historyEl.innerHTML = `<p class="text-xs text-slate-400 italic col-span-3 text-center py-4">No history records yet.</p>`;
             } else {
-                targetStage = f.stages[stageIdx];
-            }
-
-            if(targetStage) {
-                targetStage.roundName = document.getElementById(`edit-round-${isHistoryYear}-${historyYearIdx}-${stageIdx}`).value.trim();
-                targetStage.date = document.getElementById(`edit-date-${isHistoryYear}-${historyYearIdx}-${stageIdx}`).value;
-                targetStage.eventDetails = document.getElementById(`edit-details-${isHistoryYear}-${historyYearIdx}-${stageIdx}`).value.trim();
-                
-                renderHistoryLogContent(f);
-                renderTracker();
-                alert("History log entry updated successfully!");
+                historyEl.innerHTML = historyApps.map(a => `
+                    <div onclick="openHistoryModal('${a.id}')" class="p-4 bg-white rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-indigo-500 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-indigo-50 text-indigo-600 p-3 rounded-xl"><i class="fa-solid fa-folder-closed text-lg"></i></div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">${a.name}</h4>
+                                <p class="text-xs text-slate-400">${a.history.length} stages/events recorded</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
             }
         }
 
-        function deleteHistoryStage(firmId, stageIdx, isHistoryYear, historyYearIdx) {
-            let f = state.firms.find(x => x.id === firmId);
-            if(!f) return;
+        // Law School Logic
+        function openAddClassModal() {
+            document.getElementById('classNameInput').value = '';
+            document.getElementById('classModal').classList.remove('hidden');
+        }
 
-            if(confirm("Are you sure you want to delete this history log stage?")) {
-                if(isHistoryYear) {
-                    f.historyYears[historyYearIdx].stages.splice(stageIdx, 1);
-                } else {
-                    f.stages.splice(stageIdx, 1);
+        function saveClass(e) {
+            e.preventDefault();
+            const name = document.getElementById('classNameInput').value;
+            appState.classes.push({ id: 'c_' + Date.now(), name, tasks: [] });
+            closeModal('classModal');
+            saveState();
+        }
+
+        function deleteClass(id) {
+            if (!confirm('Delete this class?')) return;
+            appState.classes = appState.classes.filter(c => c.id !== id);
+            saveState();
+        }
+
+        function addClassTask(classId) {
+            const title = prompt('Enter task for this class:');
+            const deadline = prompt('Enter deadline (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
+            if (!title || !deadline) return;
+
+            const cls = appState.classes.find(c => c.id === classId);
+            if (cls) {
+                const taskId = 't_' + Date.now();
+                cls.tasks.push({ id: taskId, title, deadline, completed: false });
+                // Also add to global tasks so it syncs to calendar/master list
+                appState.tasks.push({ id: taskId, title, type: 'lawschool', deadline, completed: false });
+                saveState();
+            }
+        }
+
+        function toggleClassTask(classId, taskId) {
+            const cls = appState.classes.find(c => c.id === classId);
+            if (cls) {
+                const t = cls.tasks.find(x => x.id === taskId);
+                if (t) {
+                    t.completed = !t.completed;
+                    // Sync with global task
+                    const gt = appState.tasks.find(x => x.id === taskId);
+                    if (gt) {
+                        gt.completed = t.completed;
+                        if (t.completed) appState.tokens += 20;
+                    }
+                    saveState();
                 }
-                renderHistoryLogContent(f);
-                renderTracker();
             }
         }
 
-        // Initialize
-        addTokens(0);
-        switchMasterSubView('calendar');
-        renderLawSchoolHub();
-        renderTracker();
+        function deleteClassTask(classId, taskId) {
+            const cls = appState.classes.find(c => c.id === classId);
+            if (cls) {
+                cls.tasks = cls.tasks.filter(t => t.id !== taskId);
+                appState.tasks = appState.tasks.filter(t => t.id !== taskId);
+                saveState();
+            }
+        }
+
+        function openAddExamModal() {
+            document.getElementById('examName').value = '';
+            document.getElementById('examDate').value = '';
+            document.getElementById('examModal').classList.remove('hidden');
+        }
+
+        function saveExam(e) {
+            e.preventDefault();
+            const name = document.getElementById('examName').value;
+            const date = document.getElementById('examDate').value;
+            appState.exams.push({ id: 'ex_' + Date.now(), name, date, grade: null });
+            closeModal('examModal');
+            saveState();
+        }
+
+        function updateExamGrade(id, grade) {
+            const ex = appState.exams.find(e => e.id === id);
+            if (ex) {
+                ex.grade = grade;
+                saveState();
+            }
+        }
+
+        function renderClasses() {
+            const container = document.getElementById('classesColumnsContainer');
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            container.innerHTML = appState.classes.map(cls => `
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+                            <h4 class="text-base font-bold text-slate-800">${cls.name}</h4>
+                            <button onclick="deleteClass('${cls.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div class="space-y-2 mb-4">
+                            ${cls.tasks.length === 0 ? '<p class="text-xs text-slate-400 italic">No tasks for this class.</p>' : cls.tasks.map(t => {
+                                const daysLeft = Math.ceil((new Date(t.deadline) - today) / (1000 * 60 * 60 * 24));
+                                let badge = daysLeft < 0 ? `<span class="text-[10px] text-rose-600 font-bold">${Math.abs(daysLeft)}d overdue</span>` : daysLeft === 0 ? `<span class="text-[10px] text-amber-600 font-bold">TODAY</span>` : `<span class="text-[10px] text-slate-400">${daysLeft}d left</span>`;
+                                return `
+                                    <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl">
+                                        <div class="flex items-center gap-2">
+                                            <input type="checkbox" ${t.completed ? 'checked' : ''} onclick="toggleClassTask('${cls.id}', '${t.id}')" class="w-3.5 h-3.5 text-indigo-600 rounded">
+                                            <span class="text-xs ${t.completed ? 'line-through text-slate-400' : 'text-slate-700'}">${t.title}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            ${badge}
+                                            <button onclick="deleteClassTask('${cls.id}', '${t.id}')" class="text-slate-400 hover:text-rose-600 text-[10px]"><i class="fa-solid fa-xmark"></i></button>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    <button onclick="addClassTask('${cls.id}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> Add Task
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderExams() {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            const upcomingList = document.getElementById('examsList');
+            const completedList = document.getElementById('completedExamsList');
+
+            const upcoming = [];
+            const completed = [];
+
+            appState.exams.forEach(ex => {
+                const exDate = new Date(ex.date);
+                if (exDate < today) completed.push(ex);
+                else upcoming.push(ex);
+            });
+
+            upcomingList.innerHTML = upcoming.length === 0 ? `<p class="text-xs text-slate-400 italic">No upcoming exams.</p>` : upcoming.map(ex => {
+                const daysLeft = Math.ceil((new Date(ex.date) - today) / (1000 * 60 * 60 * 24));
+                return `
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-800">${ex.name}</h4>
+                            <p class="text-xs text-slate-500">Date: ${ex.date}</p>
+                        </div>
+                        <span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-lg text-xs font-bold">${daysLeft === 0 ? 'TODAY' : daysLeft + ' days left'}</span>
+                    </div>
+                `;
+            }).join('');
+
+            completedList.innerHTML = completed.length === 0 ? `<p class="text-xs text-slate-400 italic">No completed exams yet.</p>` : completed.map(ex => `
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800">${ex.name}</h4>
+                        <p class="text-xs text-slate-500">Passed on ${ex.date}</p>
+                    </div>
+                    <div>
+                        <input type="text" placeholder="Add Grade..." value="${ex.grade || ''}" onchange="updateExamGrade('${ex.id}', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-28">
+                    </div>
+                </div>
+            `).join('');
+        }
     </script>
 </body>
 </html>
