@@ -206,6 +206,7 @@
                 <div class="guide-tooltip">
                     <strong>Token Earning Guide:</strong>
                     <ul>
+                        <li>Daily login/visit: +1 Token</li>
                         <li>General Task: +5 Tokens</li>
                         <li>Law School Exam Entry: +15 Tokens</li>
                         <li>Vac Scheme / TC Task: +30 Tokens</li>
@@ -223,19 +224,20 @@
 
         <!-- Navigation Tabs -->
         <div class="nav-tabs">
-            <button class="nav-tab active" onclick="switchTab('master')">🗓️ Schedule</button>
-            <button class="nav-tab" onclick="switchTab('lawschool')">📚 Law School</button>
+            <button class="nav-tab active" onclick="switchTab('master')">🗓️ Master Schedule</button>
+            <button class="nav-tab" onclick="switchTab('lawschool')">📚 Law School Hub</button>
             <button class="nav-tab" onclick="switchTab('tracker')">💼 Vac Scheme & TC Tracker</button>
         </div>
 
-        <!-- TAB 1: SCHEDULE -->
+        <!-- TAB 1: MASTER SCHEDULE -->
         <div id="tab-master" class="tab-content active">
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
                     <div>
-                        <h2></h2>Schedule & To-Do List</h2>
+                        <h2>Master Schedule & To-Do List</h2>
+                        <p>All deadlines, law school classes, exam dates, and firm schedules synced automatically.</p>
                     </div>
-                    <button onclick="openAddTaskModal()">+ Add Task/Event</button>
+                    <button onclick="openAddTaskModal()">+ Add Task or Event</button>
                 </div>
 
                 <div style="display:flex; gap:10px; margin-bottom:20px;">
@@ -252,8 +254,8 @@
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
                     <div>
-                        <h2>Law School </h2>
-                        <p>Track your assignments and exams.</p>
+                        <h2>Law School Hub</h2>
+                        <p>Track your modules, assignments, and exam countdowns.</p>
                     </div>
                     <button onclick="addLawClassInputRow()">+ Add Module / Exam</button>
                 </div>
@@ -268,7 +270,7 @@
             <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <div>
                     <h2>Vacation Scheme & Training Contract Tracker</h2>
-                    <p>Manage pending and active applications, add networking events, and log reflections.</p>
+                    <p>Manage pending and active applications, add networking events, log reflections, and access the Graveyard.</p>
                 </div>
                 <div style="display:flex; gap:10px;">
                     <button class="secondary" onclick="openGraveyardModal()">💀 Graveyard (<span id="graveyardCount">0</span>)</button>
@@ -289,10 +291,10 @@
                 </div>
             </div>
 
-            <!--History Log -->
+            <!-- Unified History Log -->
             <div class="card" style="margin-top:20px;">
-                <h3>📜 History Log</h3>
-                <p style="font-size:0.8rem;">Click any firm name below to view every event attended, person met, and notes taken.</p>
+                <h3>📜 Unified History Log</h3>
+                <p style="font-size:0.8rem;">Click any firm name below to review, edit, or delete every event, person, note, and stage ever entered.</p>
                 <div id="unifiedHistoryContainer" style="margin-top:15px; display:flex; flex-wrap:wrap; gap:10px;"></div>
             </div>
         </div>
@@ -325,7 +327,7 @@
                 <option value="general">General Task (+5 Tokens)</option>
                 <option value="lawschool">Law School Exam/Assignment (+15 Tokens)</option>
                 <option value="vacscheme">Vac Scheme / TC Task (+30 Tokens)</option>
-                <option value="event">Event</option>
+                <option value="event">Event (Calendar Only)</option>
             </select>
 
             <button id="taskModalSaveBtn" onclick="saveTaskModal()" style="width:100%; margin-top:15px;">Save Task / Event</button>
@@ -343,8 +345,8 @@
             
             <label>Status</label>
             <select id="newFirmStatusSelect" onchange="toggleFirmDateInputType()">
-                <option value="pending">Looking to Apply</option>
-                <option value="active">Already Applied</option>
+                <option value="pending">Looking to Apply (Pending)</option>
+                <option value="active">Already Applied (Active)</option>
             </select>
 
             <div id="firmDateContainer">
@@ -353,7 +355,7 @@
             </div>
 
             <div id="firmNotesContainer" style="display:none;">
-                <label>Submission Notes</label>
+                <label>Submission Notes / Comments</label>
                 <textarea id="newFirmNotesInput"></textarea>
             </div>
             
@@ -395,6 +397,7 @@
         <div class="modal">
             <button class="close-btn" onclick="document.getElementById('submitPendingModal').style.display='none'">✕</button>
             <h3 id="submitPendingTitle">Submit Application</h3>
+            <p>Log your application submission date and custom notes.</p>
             
             <label>Submission Date</label>
             <input type="date" id="pendingSubDateInput">
@@ -420,13 +423,13 @@
     <div class="modal-overlay" id="graveyardModal">
         <div class="modal" style="max-width: 700px;">
             <button class="close-btn" onclick="closeGraveyardModal()">✕</button>
-            <h3>💀 Graveyard</h3>
-            <p>Review rejected or archived applications. You can revive any firm for next cycle or delete them permanently.</p>
+            <h3>💀 Application Graveyard & Archive</h3>
+            <p>Review rejected or archived applications. You can revive any firm for next cycle or delete them permanently!</p>
             <div id="graveyardListContainer" style="margin-top:15px;"></div>
         </div>
     </div>
 
-    <!-- Full Firm History -->
+    <!-- Full Firm History Log Modal -->
     <div class="modal-overlay" id="historyLogModal">
         <div class="modal" id="historyLogModalContent" style="max-width: 800px;"></div>
     </div>
@@ -467,8 +470,8 @@
                     name: "Freshfields",
                     status: "active",
                     deadline: null,
-                    submissionDate:
-                    notes: 
+                    submissionDate: "2026-09-20",
+                    notes: "Submitted tailored CV and cover letter.",
                     priority: 2,
                     revived: false,
                     historyYears: [],
