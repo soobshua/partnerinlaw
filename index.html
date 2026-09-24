@@ -462,7 +462,7 @@
                     historyYears: [],
                     events: [],
                     stages: [
-                        { date: "2026-09-01", roundName: "Pending Application", eventDetails: "Initial tracking", prepNotes: [], reflections: [], keyPeople: [], isStage: true }
+                        { date: "2026-09-01", roundName: "Pending Application", eventDetails: "Initial tracking", prepNotes: [], reflections: [], keyPeople: [] }
                     ]
                 },
                 {
@@ -477,8 +477,8 @@
                     historyYears: [],
                     events: [],
                     stages: [
-                        { date: "2026-09-15", roundName: "Open House Event", eventDetails: "Attended firm open day presentation.", prepNotes: [], reflections: ["Impressive global footprint and training structure."], keyPeople: [{ name: "Alice Smith", position: "Associate", practiceArea: "Banking", commonalities: "LSE alumni", insights: "Advised keeping commercial answers concise." }], isStage: false },
-                        { date: "2026-09-20", roundName: "Initial Application", eventDetails: "Submitted online application form.", prepNotes: ["Researched corporate practice."], reflections: ["Strong tailored answers."], keyPeople: [], isStage: true }
+                        { date: "2026-09-15", roundName: "Open House Event", eventDetails: "Attended firm open day presentation.", prepNotes: [], reflections: ["Impressive global footprint and training structure."], keyPeople: [{ name: "Alice Smith", position: "Associate", practiceArea: "Banking", commonalities: "LSE alumni", insights: "Advised keeping commercial answers concise." }] },
+                        { date: "2026-09-20", roundName: "Initial Application", eventDetails: "Submitted online application form.", prepNotes: ["Researched corporate practice."], reflections: ["Strong tailored answers."], keyPeople: [] }
                     ]
                 }
             ]
@@ -894,8 +894,7 @@
                         eventDetails: status === 'pending' ? "Looking to apply" : "Submitted application: " + (notes || "No notes"), 
                         prepNotes: [], 
                         reflections: [status === 'active' && notes ? `Submission notes: ${notes}` : ""], 
-                        keyPeople: [],
-                        isStage: true 
+                        keyPeople: [] 
                     }
                 ]
             };
@@ -1021,8 +1020,7 @@
             } else {
                 activeFirms.forEach(f => {
                     let halo = f.revived ? '<span style="font-size:1rem; margin-left:4px;" title="Revived">😇</span>' : '';
-                    let actualStages = f.stages.filter(st => st.isStage !== false);
-                    let sortedStages = [...actualStages].sort((a,b) => new Date(a.date || '2026-01-01') - new Date(b.date || '2026-01-01'));
+                    let sortedStages = [...f.stages].sort((a,b) => new Date(a.date || '2026-01-01') - new Date(b.date || '2026-01-01'));
                     let currentRoundName = sortedStages.length > 0 ? sortedStages[sortedStages.length - 1].roundName : "Initial Application";
 
                     activeContainer.innerHTML += `
@@ -1073,8 +1071,7 @@
                     eventDetails: `Submitted on ${subDate}`, 
                     prepNotes: [], 
                     reflections: [subNotes ? `Submission notes: ${subNotes}` : "Application successfully submitted."], 
-                    keyPeople: [],
-                    isStage: true 
+                    keyPeople: [] 
                 });
                 addTokens(30);
                 document.getElementById('submitPendingModal').style.display = 'none';
@@ -1161,8 +1158,7 @@
                 eventDetails: `Event date: ${date}`,
                 prepNotes: [],
                 reflections: reflections ? [reflections] : [],
-                keyPeople,
-                isStage: false
+                keyPeople
             });
 
             document.getElementById('firmEventModal').style.display = 'none';
@@ -1190,12 +1186,11 @@
                 }
 
                 let refHtml = st.reflections && st.reflections.length > 0 && st.reflections[0] ? `<div style="margin-top:6px; font-size:0.85rem;"><strong>Reflections:</strong> ${st.reflections.join('; ')}</div>` : '';
-                let typeBadge = st.isStage === false ? `<span style="font-size:0.7rem; background:#fef3c7; color:#d97706; padding:2px 6px; border-radius:4px; margin-left:6px;">Event</span>` : `<span style="font-size:0.7rem; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; margin-left:6px;">Stage</span>`;
 
                 stagesHtml += `
                     <div style="background:#f8fafc; border:1px solid var(--card-border); padding:16px; border-radius:10px; margin-bottom:12px;">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div><strong>${st.roundName}</strong>${typeBadge}</div>
+                            <strong>${st.roundName}</strong>
                             <span style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">📅 ${st.date || 'No Date'}</span>
                         </div>
                         <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">${st.eventDetails}</div>
@@ -1306,8 +1301,7 @@
                 eventDetails,
                 prepNotes: [],
                 reflections: reflection ? [reflection] : [],
-                keyPeople,
-                isStage: true
+                keyPeople
             });
 
             document.getElementById('firmDetailsModal').style.display = 'none';
@@ -1364,7 +1358,7 @@
                 f.historyYears.push({ stages: [...f.stages] });
                 
                 f.stages = [
-                    { date: new Date().toISOString().split('T')[0], roundName: "Revived Application Round", eventDetails: "Re-applying for next cycle", prepNotes: [], reflections: [], keyPeople: [], isStage: true }
+                    { date: new Date().toISOString().split('T')[0], roundName: "Revived Application Round", eventDetails: "Re-applying for next cycle", prepNotes: [], reflections: [], keyPeople: [] }
                 ];
                 closeGraveyardModal();
                 renderTracker();
@@ -1416,7 +1410,7 @@
         function renderTimelineNode(firmId, stageIdx, st, isHistoryYear, historyYearIdx) {
             let kpListHtml = '';
             if(st.keyPeople && st.keyPeople.length > 0) {
-                let kpHtml = st.keyPeople.map(p => `
+                kpHtml = st.keyPeople.map(p => `
                     <div style="background:#ffffff; border:1px solid var(--card-border); border-radius:6px; padding:8px; margin-top:6px; font-size:0.8rem;">
                         <strong>👤 ${p.name || 'Unnamed'}</strong> — <em>${p.position || 'Position N/A'} (${p.practiceArea || 'Practice Area N/A'})</em><br>
                         <strong>Commonalities:</strong> ${p.commonalities || 'None'} | <strong>Insights:</strong> ${p.insights || 'None'}
@@ -1430,15 +1424,10 @@
                 refListHtml = `<div style="margin-top:8px; font-size:0.85rem; background:#f1f5f9; padding:8px; border-radius:6px;"><strong>Reflections & Takeaways:</strong> ${st.reflections.join('; ')}</div>`;
             }
 
-            let typeBadge = st.isStage === false ? `<span style="font-size:0.7rem; background:#fef3c7; color:#d97706; padding:2px 6px; border-radius:4px;">Event</span>` : `<span style="font-size:0.7rem; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">Stage</span>`;
-
             return `
                 <div class="timeline-node">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:10px;">
-                        <div style="display:flex; align-items:center; gap:8px; flex:1;">
-                            <input type="text" id="edit-round-${isHistoryYear}-${historyYearIdx}-${stageIdx}" value="${st.roundName || ''}" style="font-weight:700; font-size:0.95rem; margin-bottom:0; flex:1;">
-                            ${typeBadge}
-                        </div>
+                        <input type="text" id="edit-round-${isHistoryYear}-${historyYearIdx}-${stageIdx}" value="${st.roundName || ''}" style="font-weight:700; font-size:0.95rem; margin-bottom:0; flex:1;">
                         <input type="date" id="edit-date-${isHistoryYear}-${historyYearIdx}-${stageIdx}" value="${st.date || new Date().toISOString().split('T')[0]}" style="width:140px; margin-bottom:0; font-size:0.8rem;">
                         <div style="display:flex; gap:6px;">
                             <button class="secondary" onclick="saveHistoryEdit(${firmId}, ${stageIdx}, ${isHistoryYear}, ${historyYearIdx})" style="font-size:0.75rem; padding:6px 10px;">Save</button>
