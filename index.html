@@ -3,1705 +3,634 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partner in Law - Law School & Career Command Center</title>
+    <title>Partner in Law - Tracker & Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            border: '#334155',
+                            text: '#f8fafc',
+                            muted: '#94a3b8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-white text-slate-800 min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 dark:bg-dark-bg dark:text-dark-text min-h-screen flex flex-col transition-colors duration-200">
 
-    <!-- WEEKLY BACKUP BANNER -->
-    <div id="backupBanner" class="bg-indigo-600 text-white px-4 py-2 text-xs flex justify-between items-center hidden">
-        <span><i class="fa-solid fa-triangle-exclamation mr-1"></i> Weekly reminder: Export your JSON data backup to keep your records safe!</span>
-        <div class="flex gap-2">
-            <button onclick="exportJSONBackup()" class="bg-white text-indigo-700 font-bold px-2.5 py-1 rounded text-[10px]">Export Backup</button>
-            <button onclick="dismissBackupBanner()" class="text-indigo-200 hover:text-white px-1 font-bold">✕</button>
-        </div>
-    </div>
-
-    <!-- TOP HEADER -->
-    <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-0 z-40 shadow-sm">
-        <div class="flex items-center gap-3">
-            <div class="bg-slate-900 text-white p-2.5 rounded-xl">
-                <i class="fa-solid fa-scale-balanced text-xl"></i>
+    <!-- Header -->
+    <header class="bg-white dark:bg-dark-card border-b border-slate-200 dark:border-dark-border sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+                    <i class="fa-solid fa-scale-balanced text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">Partner in Law</h1>
+                </div>
             </div>
-            <div>
-                <h1 class="text-xl font-bold tracking-tight text-slate-900">Partner in Law</h1>
-                <p class="text-xs text-slate-500">Law School & Career Command Center</p>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-4">
-            <!-- Notification Center -->
-            <div class="relative">
-                <button onclick="toggleNotificationDropdown()" class="relative p-2 text-slate-600 hover:text-indigo-600 transition">
-                    <i class="fa-solid fa-bell text-lg"></i>
-                    <span id="notifBadge" class="absolute top-1 right-1 bg-rose-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+            
+            <div class="flex items-center space-x-4">
+                <div class="flex bg-slate-100 dark:bg-dark-border p-1 rounded-lg">
+                    <button onclick="switchTab('tracker')" id="btn-tracker" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all bg-white dark:bg-dark-card shadow-sm">Tracker</button>
+                    <button onclick="switchTab('calendar')" id="btn-calendar" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all text-slate-600 dark:text-dark-muted">Calendar</button>
+                    <button onclick="switchTab('history')" id="btn-history" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all text-slate-600 dark:text-dark-muted">History Files</button>
+                </div>
+                <button onclick="toggleDarkMode()" class="p-2 rounded-lg text-slate-600 dark:text-dark-muted hover:bg-slate-100 dark:hover:bg-dark-border transition-colors">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:inline"></i>
                 </button>
-                <div id="notifDropdown" class="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 hidden z-50">
-                    <h4 class="font-bold text-xs text-slate-900 mb-2 border-b pb-1">Due Reminders</h4>
-                    <div id="notifList" class="space-y-2 max-h-48 overflow-y-auto"></div>
-                </div>
             </div>
-
-            <!-- Daily Check-in Button -->
-            <button onclick="dailyCheckIn()" id="checkInBtn" class="bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs font-semibold shadow transition flex items-center gap-1.5">
-                <i class="fa-solid fa-calendar-check"></i> <span id="checkInText">Daily Check-In (+1)</span>
-            </button>
-
-            <!-- Token Counter & Info -->
-            <div class="relative group flex items-center bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
-                <i class="fa-solid fa-coins text-amber-500 mr-2"></i>
-                <span class="text-sm font-medium">Tokens: <strong id="tokenCount" class="text-slate-900">0</strong></span>
-                <i class="fa-solid fa-circle-info text-slate-400 ml-2.5 cursor-pointer text-xs"></i>
-
-                <div class="absolute right-0 top-full mt-2 w-64 bg-white text-slate-700 rounded-2xl shadow-2xl p-4 text-xs hidden group-hover:block z-50 border border-slate-200">
-                    <p class="font-bold text-slate-900 mb-2 border-b pb-1">Token Rewards Guide:</p>
-                    <ul class="space-y-1.5">
-                        <li class="flex justify-between"><span>Check-in:</span> <strong class="text-emerald-600">+1 token</strong></li>
-                        <li class="flex justify-between"><span>General Task:</span> <strong class="text-emerald-600">+10 tokens</strong></li>
-                        <li class="flex justify-between"><span>Law School Task:</span> <strong class="text-emerald-600">+20 tokens</strong></li>
-                        <li class="flex justify-between"><span>VS/TC Task:</span> <strong class="text-emerald-600">+50 tokens</strong></li>
-                        <li class="flex justify-between"><span>VS/TC Offer:</span> <strong class="text-amber-600">+100 tokens</strong></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Buy Break Button -->
-            <button onclick="openBreakModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm shadow transition flex items-center gap-2">
-                <i class="fa-solid fa-mug-hot"></i> Buy Break
-            </button>
         </div>
     </header>
 
-    <!-- NAVIGATION TABS -->
-    <nav class="bg-white border-b border-slate-200 px-6 flex gap-8">
-        <button onclick="switchTab(0)" class="tab-btn py-4 font-semibold text-sm border-b-2 border-slate-900 text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-house"></i> Dashboard & Schedule
-        </button>
-        <button onclick="switchTab(1)" class="tab-btn py-4 font-medium text-sm text-slate-500 hover:text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-briefcase"></i> VS / TC Tracker
-        </button>
-        <button onclick="switchTab(2)" class="tab-btn py-4 font-medium text-sm text-slate-500 hover:text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-graduation-cap"></i> Law School
-        </button>
-    </nav>
-
-    <!-- MAIN CONTAINER -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-8">
-
-        <!-- ================= TAB 0: DASHBOARD & SCHEDULE ================= -->
-        <div id="tab-0" class="space-y-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tasks to be Completed</p>
-                        <h3 id="dashPendingCount" class="text-3xl font-bold text-slate-900 mt-1">0</h3>
-                    </div>
-                    <div class="bg-slate-100 text-slate-900 p-4 rounded-xl text-xl"><i class="fa-solid fa-list-check"></i></div>
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- TRACKER TAB -->
+        <div id="tab-tracker" class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold">Recruitment Tracker</h2>
+                    <p class="text-sm text-slate-500 dark:text-dark-muted">Manage your firm applications, tasks, and offers.</p>
                 </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Upcoming Key Events</p>
-                        <h3 id="dashEventsCount" class="text-3xl font-bold text-slate-900 mt-1">0</h3>
-                        <p class="text-xs text-slate-400 mt-0.5">Within next 10 days</p>
-                    </div>
-                    <div class="bg-slate-100 text-slate-900 p-4 rounded-xl text-xl"><i class="fa-solid fa-calendar-days"></i></div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active VS/TC Apps</p>
-                        <h3 id="dashActiveAppsCount" class="text-3xl font-bold text-slate-900 mt-1">0</h3>
-                    </div>
-                    <div class="bg-slate-100 text-slate-900 p-4 rounded-xl text-xl"><i class="fa-solid fa-rocket"></i></div>
-                </div>
-            </div>
-
-            <!-- Master To-Do & Quick Add -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-circle-check text-slate-900 mr-2"></i> Master To-Do List</h2>
-                    <div class="flex gap-2">
-                        <button onclick="exportJSONBackup()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-semibold transition"><i class="fa-solid fa-download mr-1"></i> Backup JSON</button>
-                        <button onclick="openAddTaskModal()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
-                            <i class="fa-solid fa-plus"></i> Add Task
-                        </button>
-                    </div>
-                </div>
-                <div id="masterTodoList" class="space-y-3"></div>
-            </div>
-
-            <!-- Calendar & Schedule View -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-calendar-alt text-slate-900 mr-2"></i> Schedule & Calendar</h2>
-                    <div class="flex items-center gap-3">
-                        <button onclick="setCalendarView('monthly')" id="calViewMonthly" class="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-900 text-white">Monthly</button>
-                        <button onclick="setCalendarView('weekly')" id="calViewWeekly" class="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600">Weekly</button>
-                    </div>
-                </div>
-                <div id="calendarContainer"></div>
-            </div>
-        </div>
-
-        <!-- ================= TAB 1: VS/TC TRACKER ================= -->
-        <div id="tab-1" class="space-y-8 hidden">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <h2 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-briefcase text-slate-900 mr-2"></i> Vacation Scheme & Training Contract Tracker</h2>
-                <div class="flex flex-wrap items-center gap-3">
-                    <button onclick="exportExcelSpreadsheet()" class="bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
-                        <i class="fa-solid fa-file-excel"></i> Export Excel
+                <div class="flex items-center space-x-3">
+                    <button onclick="openManageColumnsModal()" class="px-4 py-2 bg-slate-200 dark:bg-dark-border hover:bg-slate-300 dark:hover:bg-slate-700 text-sm font-semibold rounded-lg transition-colors flex items-center space-x-2">
+                        <i class="fa-solid fa-columns"></i>
+                        <span>Edit Columns</span>
                     </button>
-                    <button onclick="openNetworkingDirectory()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
-                        <i class="fa-solid fa-address-book"></i> Networking Directory
-                    </button>
-                    <button onclick="openGraveyardModal()" class="bg-rose-900 hover:bg-rose-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
-                        <i class="fa-solid fa-skull"></i> Graveyard
-                    </button>
-                    <button onclick="openAddAppModal()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> Add Application
+                    <button onclick="openAddFirmModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-sm shadow-indigo-600/30 transition-colors flex items-center space-x-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Firm</span>
                     </button>
                 </div>
             </div>
 
             <!-- Kanban Board -->
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                <!-- Column 1: Looking to Apply -->
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3 border-b pb-2">Looking to Apply</h3>
-                    <div id="kanbanPending" class="space-y-3 flex-1 overflow-y-auto min-h-[300px]"></div>
-                </div>
-                <!-- Column 2: Application Submitted -->
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3 border-b pb-2">App Submitted</h3>
-                    <div id="kanbanSubmitted" class="space-y-3 flex-1 overflow-y-auto min-h-[300px]"></div>
-                </div>
-                <!-- Column 3: Online Assessment -->
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3 border-b pb-2">Online Assessment</h3>
-                    <div id="kanbanOA" class="space-y-3 flex-1 overflow-y-auto min-h-[300px]"></div>
-                </div>
-                <!-- Column 4: Video Interview -->
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3 border-b pb-2">Video Interview</h3>
-                    <div id="kanbanVI" class="space-y-3 flex-1 overflow-y-auto min-h-[300px]"></div>
-                </div>
-                <!-- Column 5: In-Person Interview -->
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3 border-b pb-2">In-Person Interview</h3>
-                    <div id="kanbanInPerson" class="space-y-3 flex-1 overflow-y-auto min-h-[300px]"></div>
-                </div>
-            </div>
-
-            <!-- History Log Files Section -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-folder-open text-slate-900"></i> History Log Files (All Recorded Firm Timelines)
-                </h3>
-                <div id="historyAppsList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+            <div id="kanban-board" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 overflow-x-auto pb-4 items-start">
+                <!-- Columns dynamically injected -->
             </div>
         </div>
 
-        <!-- ================= TAB 2: LAW SCHOOL ================= -->
-        <div id="tab-2" class="space-y-8 hidden">
-            <div class="flex justify-between items-center">
+        <!-- CALENDAR TAB -->
+        <div id="tab-calendar" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-graduation-cap text-slate-900 mr-2"></i> Law School Classes & Exams</h2>
-                    <p class="text-xs text-slate-500 mt-1">Cumulative GPA: <strong id="cumulativeGPA" class="text-slate-900 text-sm">0.00</strong> / 4.00</p>
+                    <h2 class="text-2xl font-bold">Interview & Event Calendar</h2>
+                    <p class="text-sm text-slate-500 dark:text-dark-muted">Click any item on the calendar to edit or remove it.</p>
                 </div>
-                <div class="flex gap-3">
-                    <button onclick="openAddClassModal()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> Add Class
-                    </button>
-                    <button onclick="openAddExamModal()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-plus"></i> Add Exam
+                <div class="flex items-center space-x-3">
+                    <button onclick="changeMonth(-1)" class="p-2 border border-slate-200 dark:border-dark-border rounded-lg hover:bg-slate-100 dark:hover:bg-dark-border"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span id="calendar-month-year" class="font-bold text-lg w-40 text-center">Month Year</span>
+                    <button onclick="changeMonth(1)" class="p-2 border border-slate-200 dark:border-dark-border rounded-lg hover:bg-slate-100 dark:hover:bg-dark-border"><i class="fa-solid fa-chevron-right"></i></button>
+                    <button onclick="openAddEventModal()" class="ml-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors flex items-center space-x-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Event</span>
                     </button>
                 </div>
             </div>
+            <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl shadow-sm overflow-hidden">
+                <div class="grid grid-cols-7 bg-slate-50 dark:bg-dark-border text-center text-xs font-semibold uppercase tracking-wider py-3 border-b border-slate-200 dark:border-dark-border">
+                    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+                <div id="calendar-grid" class="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-slate-200 dark:divide-dark-border">
+                    <!-- Calendar days injected -->
+                </div>
+            </div>
+        </div>
 
+        <!-- HISTORY FILES TAB -->
+        <div id="tab-history" class="hidden space-y-6">
             <div>
-                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Semester Classes & To-Dos</h3>
-                <div id="classesColumnsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <h2 class="text-2xl font-bold">Firm History Files</h2>
+                <p class="text-sm text-slate-500 dark:text-dark-muted">Click into any firm file to view logged history, notes, dates, and people.</p>
             </div>
-
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mt-8">
-                <h3 class="text-base font-bold text-slate-900 mb-4"><i class="fa-solid fa-file-lines text-slate-900 mr-2"></i> Upcoming Exams Countdown</h3>
-                <div id="examsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"></div>
-
-                <h3 class="text-base font-bold text-slate-900 mb-4 pt-4 border-t border-slate-200"><i class="fa-solid fa-check-double text-slate-900 mr-2"></i> Completed Exams & Grades</h3>
-                <div id="completedExamsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div id="history-firms-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- History cards injected -->
             </div>
         </div>
 
     </main>
 
-    <!-- ================= ALL MODALS & POP-UPS (WITH CLOSE BUTTONS) ================= -->
-
-    <!-- Break Countdown Modal -->
-    <div id="breakModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('breakModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
-            <h3 class="text-lg font-bold text-slate-900 mb-2"><i class="fa-solid fa-mug-hot text-amber-500 mr-2"></i> Buy Break</h3>
-            <p class="text-xs text-slate-500 mb-4">Cost: 10 tokens per minute. Enter how many minutes you want to take off:</p>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Minutes (Max: <span id="maxBreakMins">0</span>)</label>
-                    <input type="number" id="breakMinutesInput" min="1" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900">
+    <!-- Firm Detail / History Modal -->
+    <div id="modal-firm-history" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-xl overflow-hidden">
+            <div class="p-6 border-b border-slate-200 dark:border-dark-border flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <h3 id="modal-history-title" class="text-xl font-bold">Firm Name History</h3>
                 </div>
-                <button onclick="startBreakTimer()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition">Start Break</button>
+                <button onclick="closeModal('modal-firm-history')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <div id="breakTimerDisplay" class="hidden text-center mt-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                <p class="text-xs text-slate-900 font-bold uppercase tracking-wider mb-1">Go touch grass and don't doomscroll!</p>
-                <h2 id="timerCountdown" class="text-3xl font-black text-slate-900">01:00</h2>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add/Edit Task Modal -->
-    <div id="taskModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('taskModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
-            <h3 id="taskModalTitle" class="text-lg font-bold text-slate-900 mb-4">Add Task or Event</h3>
-            <form id="taskForm" onsubmit="saveTask(event)" class="space-y-4">
-                <input type="hidden" id="taskId">
+            <div class="p-6 overflow-y-auto space-y-6 flex-1">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Title</label>
-                    <input type="text" id="taskTitle" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-900">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Type & Color</label>
-                        <select id="taskType" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                            <option value="general">Apply to Firm (+10)</option>
-                            <option value="reading">Class Reading (+20)</option>
-                            <option value="lawschool">Law School Task (+20)</option>
-                            <option value="vstc">VS/TC Task (+50)</option>
-                            <option value="event">Event (No tokens)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Deadline / Date</label>
-                        <input type="date" id="taskDeadline" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                    <h4 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Logged Notes & Interactions</h4>
+                    <div id="modal-history-logs" class="space-y-3">
+                        <!-- Logs injected -->
                     </div>
                 </div>
-                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Item</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Add/Edit Application Modal -->
-    <div id="appModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('appModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
-            <h3 id="appModalTitle" class="text-lg font-bold text-slate-900 mb-4">Add Application</h3>
-            <form id="appForm" onsubmit="saveApplication(event)" class="space-y-4">
-                <input type="hidden" id="appId">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Firm Name</label>
-                    <input type="text" id="appName" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Firm Details / Notes</label>
-                    <textarea id="appDetails" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm"></textarea>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Cover Letter Link / Text (Optional)</label>
-                    <input type="text" id="appCoverLetter" placeholder="Paste link or notes here..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Initial Choice</label>
-                        <select id="appInitialStatus" onchange="toggleAppStatusFields()" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                            <option value="pending">Looking to Apply</option>
-                            <option value="submitted">Submitted Application</option>
-                        </select>
-                    </div>
-                    <div id="appDateContainer">
-                        <label id="appDateLabel" class="block text-xs font-semibold text-slate-600 mb-1">Application Deadline</label>
-                        <input type="date" id="appDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                    </div>
-                </div>
-                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Application</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Submit Pending Application Modal -->
-    <div id="submitAppModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('submitAppModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
-            <h3 class="text-lg font-bold text-slate-900 mb-4">Submit Application</h3>
-            <form onsubmit="confirmSubmitApp(event)" class="space-y-4">
-                <input type="hidden" id="submitAppTargetId">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Date of Submission</label>
-                    <input type="date" id="submitDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Notes (Optional)</label>
-                    <textarea id="submitNotes" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm"></textarea>
-                </div>
-                <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-sm transition">Confirm Submission (+50 Tokens)</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Add Event Modal (For Pending & Active Apps) -->
-    <div id="appEventModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('appEventModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
-            <h3 class="text-lg font-bold text-slate-900 mb-4">Add Firm Event</h3>
-            <form onsubmit="saveAppEvent(event)" class="space-y-4">
-                <input type="hidden" id="eventAppId">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Event Type</label>
-                        <select id="appEventType" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                            <option value="Open House">Open House</option>
-                            <option value="Career Talk">Career Talk</option>
-                            <option value="Law Fair">Law Fair</option>
-                            <option value="Coffee Chat">Coffee Chat</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Event Date</label>
-                        <input type="date" id="appEventDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="text-xs font-semibold text-slate-600">Reflections</label>
-                        <button type="button" onclick="addReflectionField()" class="text-xs text-slate-900 font-bold hover:underline">+ Add Reflection</button>
-                    </div>
-                    <div id="reflectionsList" class="space-y-2">
-                        <input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm reflection-input">
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="text-xs font-semibold text-slate-600">People Met</label>
-                        <button type="button" onclick="addPersonField()" class="text-xs text-slate-900 font-bold hover:underline">+ Add Person</button>
-                    </div>
-                    <div id="peopleList" class="space-y-3 border border-slate-200 p-3 rounded-xl bg-slate-50">
-                        <div class="grid grid-cols-2 gap-2 person-group">
-                            <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-name">
-                            <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-pos">
-                            <input type="text" placeholder="Practice Area" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-pa">
-                            <input type="text" placeholder="Commonalities" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-com">
-                            <input type="text" placeholder="Key Insights" class="col-span-2 border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-ins">
+                <div class="border-t border-slate-200 dark:border-dark-border pt-4">
+                    <h4 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Add New Log</h4>
+                    <form onsubmit="addHistoryLog(event)" class="space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input type="date" id="log-date" required class="px-3 py-2 bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg text-sm">
+                            <input type="text" id="log-people" placeholder="People involved (e.g. John Doe, HR)" class="px-3 py-2 bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg text-sm">
                         </div>
-                    </div>
+                        <textarea id="log-notes" rows="2" placeholder="Note details..." required class="w-full px-3 py-2 bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg text-sm"></textarea>
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors">Add Log Entry</button>
+                    </form>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Event</button>
+    <!-- Add Firm Modal -->
+    <div id="modal-add-firm" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold">Add New Firm</h3>
+                <button onclick="closeModal('modal-add-firm')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleCreateFirm(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Firm Name</label>
+                    <input type="text" id="new-firm-name" required class="w-full px-3 py-2 bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Initial Column</label>
+                    <select id="new-firm-column" class="w-full px-3 py-2 bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg text-sm">
+                        <!-- Options injected -->
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeModal('modal-add-firm')" class="px-4 py-2 bg-slate-200 dark:bg-dark-border text-sm font-semibold rounded-lg">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg shadow-sm">Create Firm</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- Next Round Modal -->
-    <div id="nextRoundModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('nextRoundModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
-            <h3 class="text-lg font-bold text-slate-900 mb-4">Move to Next Round</h3>
-            <form onsubmit="saveNextRound(event)" class="space-y-4">
-                <input type="hidden" id="roundAppId">
+    <!-- Offer Prompt Modal -->
+    <div id="modal-offer" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold">Record Offer</h3>
+                <button onclick="closeModal('modal-offer')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-sm text-slate-500 dark:text-dark-muted">Please specify which month and year this offer is for.</p>
+            <form onsubmit="submitOffer(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Stage Name / Kanban Column</label>
-                    <select id="roundStageName" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                        <option value="Application Submitted">Application Submitted</option>
-                        <option value="Online Assessment">Online Assessment</option>
-                        <option value="Video Interview">Video Interview</option>
-                        <option value="In-Person Interview">In-Person Interview</option>
-                    </select>
+                    <input type="month" id="offer-month-year" required class="w-full px-3 py-2 bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg text-sm">
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Date</label>
-                    <input type="date" id="roundDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeModal('modal-offer')" class="px-4 py-2 bg-slate-200 dark:bg-dark-border text-sm font-semibold rounded-lg">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg shadow-sm">Save Offer</button>
                 </div>
-
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="text-xs font-semibold text-slate-600">Reflections</label>
-                        <button type="button" onclick="addRoundReflectionField()" class="text-xs text-slate-900 font-bold hover:underline">+ Add Reflection</button>
-                    </div>
-                    <div id="roundReflectionsList" class="space-y-2">
-                        <input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm round-reflection-input">
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="text-xs font-semibold text-slate-600">People Met</label>
-                        <button type="button" onclick="addRoundPersonField()" class="text-xs text-slate-900 font-bold hover:underline">+ Add Person</button>
-                    </div>
-                    <div id="roundPeopleList" class="space-y-3 border border-slate-200 p-3 rounded-xl bg-slate-50">
-                        <div class="grid grid-cols-2 gap-2 round-person-group">
-                            <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-name">
-                            <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-pos">
-                            <input type="text" placeholder="Practice Area" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-pa">
-                            <input type="text" placeholder="Commonalities" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-com">
-                            <input type="text" placeholder="Key Insights" class="col-span-2 border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-ins">
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Round</button>
             </form>
         </div>
     </div>
 
-    <!-- Graveyard Modal -->
-    <div id="graveyardModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('graveyardModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
-            <h3 class="text-lg font-bold text-slate-900 mb-4"><i class="fa-solid fa-skull text-rose-900 mr-2"></i> Application Graveyard</h3>
-            <div id="graveyardAppsList" class="space-y-3"></div>
-        </div>
-    </div>
-
-    <!-- Revive Application Modal -->
-    <div id="reviveModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('reviveModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
-            <h3 class="text-lg font-bold text-slate-900 mb-2">Revive Application for Next Cycle</h3>
-            <p id="reviveFirmSubtitle" class="text-xs text-slate-500 mb-4">Choose how you want to revive this firm:</p>
-            <input type="hidden" id="reviveAppId">
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Revive Action</label>
-                    <select id="reviveActionType" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                        <option value="pending">Looking to apply again</option>
-                        <option value="submitted">Application submitted again</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Date</label>
-                    <input type="date" id="reviveDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Notes (Optional)</label>
-                    <textarea id="reviveNotes" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm"></textarea>
-                </div>
-                <button onclick="confirmReviveApp()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Revive Application</button>
+    <!-- Manage Columns Modal -->
+    <div id="modal-columns" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold">Edit Kanban Columns</h3>
+                <button onclick="closeModal('modal-columns')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="columns-edit-list" class="space-y-3 max-h-60 overflow-y-auto pr-1">
+                <!-- Column inputs injected -->
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-dark-border">
+                <button onclick="addColumnField()" class="text-sm text-indigo-600 dark:text-indigo-400 font-semibold hover:underline flex items-center space-x-1">
+                    <i class="fa-solid fa-plus text-xs"></i><span>Add Column</span>
+                </button>
+                <button onclick="saveColumns(event)" class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg shadow-sm">Save Changes</button>
             </div>
         </div>
     </div>
 
-    <!-- Networking Directory Modal -->
-    <div id="networkingModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-4xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('networkingModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-                <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-address-book text-slate-900 mr-2"></i> Global Networking Directory</h3>
-                <div class="flex flex-wrap gap-2">
-                    <select id="netFirmFilter" onchange="renderNetworkingDirectory()" class="border border-slate-200 rounded-xl px-3 py-1.5 text-xs">
-                        <option value="">All Firms</option>
-                    </select>
-                    <select id="netSortBy" onchange="renderNetworkingDirectory()" class="border border-slate-200 rounded-xl px-3 py-1.5 text-xs">
-                        <option value="date">Sort Chronologically</option>
-                        <option value="pa">Sort by Practice Area</option>
-                        <option value="pos">Sort by Position</option>
-                    </select>
-                </div>
+    <!-- Add/Edit Event Modal -->
+    <div id="modal-event" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 id="event-modal-title" class="text-lg font-bold">Add Calendar Event</h3>
+                <button onclick="closeModal('modal-event')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="networkingDirectoryList" class="space-y-3"></div>
-        </div>
-    </div>
-
-    <!-- History Log Detail Modal (Editable) -->
-    <div id="historyModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('historyModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
-            <h3 id="historyModalTitle" class="text-lg font-bold text-slate-900 mb-4">Firm Timeline Log</h3>
-            <div id="historyModalContent" class="space-y-6"></div>
-        </div>
-    </div>
-
-    <!-- Add Class Modal -->
-    <div id="classModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('classModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
-            <h3 class="text-lg font-bold text-slate-900 mb-4">Add Law School Class</h3>
-            <form onsubmit="saveClass(event)" class="space-y-4">
+            <form onsubmit="saveCalendarEvent(event)" class="space-y-4">
+                <input type="hidden" id="event-id">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Class Name</label>
-                    <input type="text" id="classNameInput" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Event Title</label>
+                    <input type="text" id="event-title" required class="w-full px-3 py-2 bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg text-sm">
                 </div>
-                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Add Class</button>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Date</label>
+                    <input type="date" id="event-date" required class="w-full px-3 py-2 bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg text-sm">
+                </div>
+                <div class="flex justify-between pt-2 border-t border-slate-200 dark:border-dark-border">
+                    <button type="button" id="btn-delete-event" onclick="deleteCalendarEvent()" class="px-3 py-2 bg-rose-100 text-rose-700 text-sm font-semibold rounded-lg hidden">Delete</button>
+                    <div class="flex space-x-2 ml-auto">
+                        <button type="button" onclick="closeModal('modal-event')" class="px-4 py-2 bg-slate-200 dark:bg-dark-border text-sm font-semibold rounded-lg">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg shadow-sm">Save</button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- Add Exam Modal -->
-    <div id="examModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('examModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
-            <h3 class="text-lg font-bold text-slate-900 mb-4">Add Exam</h3>
-            <form onsubmit="saveExam(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Exam Name / Subject</label>
-                    <input type="text" id="examName" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Exam Date</label>
-                    <input type="date" id="examDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                </div>
-                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Exam</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- Application Script -->
     <script>
-        let appState = JSON.parse(localStorage.getItem('partnerInLawState')) || {
-            tokens: 0,
-            lastCheckInDate: null,
-            lastBackupReminder: null,
-            tasks: [],
-            applications: [],
-            classes: [
-                { id: 'c1', name: 'Contract Law', tasks: [] },
-                { id: 'c2', name: 'Tort Law', tasks: [] },
-                { id: 'c3', name: 'Equity & Trusts', tasks: [] },
-                { id: 'c4', name: 'Criminal Law', tasks: [] },
-                { id: 'c5', name: 'Public Law', tasks: [] }
+        // State Management
+        let state = {
+            columns: ['Wishlist', 'Applied', 'Screening', 'Interview', 'Offer'],
+            firms: [
+                { id: '1', name: 'LexCorp Legal', column: 'Interview', hasOffer: false, offerMonthYear: '', todos: [{id: 't1', text: 'Prepare skeleton arguments', done: false, classTag: 'Interview'}], history: [{date: '2026-03-01', people: 'HR Recruiter', notes: 'Initial phone screen completed.'}] },
+                { id: '2', name: 'Baker & McKenzie', column: 'Applied', hasOffer: false, offerMonthYear: '', todos: [{id: 't2', text: 'Follow up on application status', done: true, classTag: 'Applied'}], history: [] }
             ],
-            exams: []
+            events: [
+                { id: 'e1', title: 'LexCorp Interview', date: '2026-03-28' }
+            ],
+            currentMonth: new Date().getMonth(),
+            currentYear: new Date().getFullYear(),
+            activeFirmIdForOffer: null,
+            activeFirmIdForHistory: null
         };
 
-        function saveState() {
-            localStorage.setItem('partnerInLawState', JSON.stringify(appState));
-            renderAll();
+        function saveToLocalStorage() {
+            localStorage.setItem('partner_in_law_state', JSON.stringify(state));
         }
 
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('partner_in_law_state');
+            if (saved) {
+                try { state = JSON.parse(saved); } catch(e) {}
+            }
+        }
+
+        // Initialization
         document.addEventListener('DOMContentLoaded', () => {
-            checkBackupReminder();
-            renderAll();
-            setInterval(checkAutoCleanTasks, 60000);
+            loadFromLocalStorage();
+            renderTracker();
+            renderCalendar();
+            renderHistoryFiles();
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
         });
 
-        function renderAll() {
-            document.getElementById('tokenCount').innerText = appState.tokens;
-            renderNotifications();
-            renderDashboard();
-            renderTasks();
-            renderCalendar();
-            renderApplications();
-            renderClasses();
-            renderExams();
-        }
-
-        function switchTab(index) {
-            document.querySelectorAll('#tab-0, #tab-1, #tab-2').forEach((el, i) => {
-                el.classList.toggle('hidden', i !== index);
+        function switchTab(tab) {
+            ['tracker', 'calendar', 'history'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`btn-${t}`).className = 'px-4 py-1.5 rounded-md text-sm font-medium transition-all text-slate-600 dark:text-dark-muted';
             });
-            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-                if (i === index) {
-                    btn.className = "tab-btn py-4 font-semibold text-sm border-b-2 border-slate-900 text-slate-900 flex items-center gap-2";
-                } else {
-                    btn.className = "tab-btn py-4 font-medium text-sm text-slate-500 hover:text-slate-900 flex items-center gap-2";
-                }
-            });
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`btn-${tab}`).className = 'px-4 py-1.5 rounded-md text-sm font-medium transition-all bg-white dark:bg-dark-card shadow-sm';
+            if(tab === 'calendar') renderCalendar();
+            if(tab === 'history') renderHistoryFiles();
         }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
         }
 
-        // Backup & Reminders
-        function checkBackupReminder() {
-            const now = new Date().getTime();
-            const last = appState.lastBackupReminder || 0;
-            if (now - last > 7 * 24 * 60 * 60 * 1000) {
-                document.getElementById('backupBanner').classList.remove('hidden');
-            }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
         }
 
-        function dismissBackupBanner() {
-            appState.lastBackupReminder = new Date().getTime();
-            saveState();
-            document.getElementById('backupBanner').classList.add('hidden');
-        }
+        // --- TRACKER & KANBAN ---
+        function renderTracker() {
+            const board = document.getElementById('kanban-board');
+            board.style.gridTemplateColumns = `repeat(${state.columns.length}, minmax(260px, 1fr))`;
+            board.innerHTML = '';
 
-        function exportJSONBackup() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", `partner_in_law_backup_${new Date().toISOString().split('T')[0]}.json`);
-            document.body.appendChild(dlAnchor);
-            dlAnchor.click();
-            dlAnchor.remove();
-        }
-
-        // Daily Check-In
-        function dailyCheckIn() {
-            const today = new Date().toDateString();
-            if (appState.lastCheckInDate === today) {
-                alert('You have already completed your daily check-in today!');
-                return;
-            }
-            appState.lastCheckInDate = today;
-            appState.tokens += 1;
-            saveState();
-            alert('Daily check-in successful! +1 token earned.');
-        }
-
-        // Token Break Timer
-        function openBreakModal() {
-            document.getElementById('maxBreakMins').innerText = Math.floor(appState.tokens / 10);
-            document.getElementById('breakModal').classList.remove('hidden');
-        }
-
-        let breakTimerInterval = null;
-        function startBreakTimer() {
-            const mins = parseInt(document.getElementById('breakMinutesInput').value);
-            const maxMins = Math.floor(appState.tokens / 10);
-            if (!mins || mins <= 0 || mins > maxMins) {
-                alert('Invalid minutes or exceeds available tokens!');
-                return;
-            }
-            appState.tokens -= mins * 10;
-            saveState();
-
-            document.getElementById('breakTimerDisplay').classList.remove('hidden');
-            let totalSeconds = mins * 60;
-            
-            clearInterval(breakTimerInterval);
-            breakTimerInterval = setInterval(() => {
-                if (totalSeconds <= 0) {
-                    clearInterval(breakTimerInterval);
-                    alert('Break over! Time to get back to work!');
-                    closeModal('breakModal');
-                    return;
-                }
-                totalSeconds--;
-                let m = Math.floor(totalSeconds / 60);
-                let s = totalSeconds % 60;
-                document.getElementById('timerCountdown').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            }, 1000);
-        }
-
-        // Notifications
-        function toggleNotificationDropdown() {
-            const dropdown = document.getElementById('notifDropdown');
-            dropdown.classList.toggle('hidden');
-        }
-
-        function renderNotifications() {
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const dueList = [];
-
-            appState.tasks.forEach(t => {
-                if (!t.completed) {
-                    const d = new Date(t.deadline);
-                    const diff = Math.ceil((d - today)/(1000*60*60*24));
-                    if (diff <= 3) dueList.push({ title: t.title, date: t.deadline, type: 'Task' });
-                }
-            });
-            appState.exams.forEach(e => {
-                const d = new Date(e.date);
-                if (d >= today) {
-                    const diff = Math.ceil((d - today)/(1000*60*60*24));
-                    if (diff <= 5) dueList.push({ title: e.name, date: e.date, type: 'Exam' });
-                }
-            });
-            appState.applications.forEach(a => {
-                if (a.status === 'pending' && a.deadline) {
-                    const d = new Date(a.deadline);
-                    const diff = Math.ceil((d - today)/(1000*60*60*24));
-                    if (diff <= 5) dueList.push({ title: `App Deadline: ${a.name}`, date: a.deadline, type: 'Deadline' });
-                }
+            // Sort firms: pinned offers first
+            let sortedFirms = [...state.firms].sort((a, b) => {
+                if (a.hasOffer && !b.hasOffer) return -1;
+                if (!a.hasOffer && b.hasOffer) return 1;
+                return 0;
             });
 
-            const badge = document.getElementById('notifBadge');
-            const listEl = document.getElementById('notifList');
-            if (dueList.length > 0) {
-                badge.innerText = dueList.length;
-                badge.classList.remove('hidden');
-                listEl.innerHTML = dueList.map(item => `
-                    <div class="p-2 bg-slate-50 rounded-xl text-xs border border-slate-100 flex justify-between">
-                        <span class="font-bold text-slate-800">${item.title}</span>
-                        <span class="text-slate-500">${item.date}</span>
+            state.columns.forEach(col => {
+                const colFirms = sortedFirms.filter(f => f.column === col);
+                const colDiv = document.createElement('div');
+                colDiv.className = 'bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl p-4 flex flex-col min-h-[500px] shadow-sm';
+                
+                colDiv.innerHTML = `
+                    <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-dark-border">
+                        <h3 class="font-bold text-sm tracking-wide text-slate-700 dark:text-slate-200">${col}</h3>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-dark-border text-slate-500">${colFirms.length}</span>
                     </div>
-                `).join('');
-            } else {
-                badge.classList.add('hidden');
-                listEl.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-2">No urgent reminders.</p>`;
-            }
-        }
-
-        // Task & Event Logic
-        function openAddTaskModal(defaultDate = null) {
-            document.getElementById('taskId').value = '';
-            document.getElementById('taskForm').reset();
-            if (defaultDate) document.getElementById('taskDeadline').value = defaultDate;
-            document.getElementById('taskModalTitle').innerText = 'Add Task or Event';
-            document.getElementById('taskModal').classList.remove('hidden');
-        }
-
-        function saveTask(e) {
-            e.preventDefault();
-            const id = document.getElementById('taskId').value || 't_' + Date.now();
-            const title = document.getElementById('taskTitle').value;
-            const type = document.getElementById('taskType').value;
-            const deadline = document.getElementById('taskDeadline').value;
-
-            const existingIndex = appState.tasks.findIndex(t => t.id === id);
-            if (existingIndex >= 0) {
-                appState.tasks[existingIndex] = { ...appState.tasks[existingIndex], title, type, deadline };
-            } else {
-                appState.tasks.push({ id, title, type, deadline, completed: false, completedAt: null });
-            }
-            closeModal('taskModal');
-            saveState();
-        }
-
-        function toggleTaskComplete(id) {
-            const task = appState.tasks.find(t => t.id === id);
-            if (!task) return;
-            task.completed = !task.completed;
-            task.completedAt = task.completed ? new Date().toISOString() : null;
-
-            if (task.completed) {
-                if (task.type === 'general') appState.tokens += 10;
-                if (task.type === 'reading' || task.type === 'lawschool') appState.tokens += 20;
-                if (task.type === 'vstc') appState.tokens += 50;
-            }
-            saveState();
-        }
-
-        function deleteTask(id) {
-            if (!confirm('Are you sure you want to delete this task?')) return;
-            appState.tasks = appState.tasks.filter(t => t.id !== id);
-            saveState();
-        }
-
-        function editTask(id) {
-            const task = appState.tasks.find(t => t.id === id);
-            if (!task) return;
-            document.getElementById('taskId').value = task.id;
-            document.getElementById('taskTitle').value = task.title;
-            document.getElementById('taskType').value = task.type;
-            document.getElementById('taskDeadline').value = task.deadline;
-            document.getElementById('taskModalTitle').innerText = 'Edit Task';
-            document.getElementById('taskModal').classList.remove('hidden');
-        }
-
-        function checkAutoCleanTasks() {
-            const now = new Date();
-            let changed = false;
-            appState.tasks = appState.tasks.filter(t => {
-                if (t.completed && t.completedAt) {
-                    const diffHours = (now - new Date(t.completedAt)) / (1000 * 60 * 60);
-                    if (diffHours >= 24) { changed = true; return false; }
-                }
-                return true;
-            });
-            if (changed) saveState();
-        }
-
-        function renderDashboard() {
-            const pendingTasks = appState.tasks.filter(t => !t.completed);
-            document.getElementById('dashPendingCount').innerText = pendingTasks.length;
-
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const tenDaysOut = new Date(today.getTime() + 10 * 24 * 60 * 60 * 1000);
-
-            let keyEventsCount = 0;
-            appState.exams.forEach(e => {
-                const d = new Date(e.date);
-                if (d >= today && d <= tenDaysOut) keyEventsCount++;
-            });
-            appState.applications.forEach(a => {
-                if (a.status === 'pending' && a.deadline) {
-                    const d = new Date(a.deadline);
-                    if (d >= today && d <= tenDaysOut) keyEventsCount++;
-                }
-            });
-            document.getElementById('dashEventsCount').innerText = keyEventsCount;
-            document.getElementById('dashActiveAppsCount').innerText = appState.applications.filter(a => a.status === 'active').length;
-        }
-
-        function renderTasks() {
-            const masterListEl = document.getElementById('masterTodoList');
-            const sortedTasks = [...appState.tasks].sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            
-            if (sortedTasks.length === 0) {
-                masterListEl.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">No tasks added yet.</p>`;
-                return;
-            }
-
-            masterListEl.innerHTML = sortedTasks.map(t => {
-                const daysLeft = Math.ceil((new Date(t.deadline) - today) / (1000 * 60 * 60 * 24));
-                let countdownBadge = '';
-                if (daysLeft < 0) countdownBadge = `<span class="bg-rose-50 text-rose-700 px-2 py-0.5 rounded text-[10px] font-bold">${Math.abs(daysLeft)} days overdue</span>`;
-                else if (daysLeft === 0) countdownBadge = `<span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold">TODAY</span>`;
-                else countdownBadge = `<span class="bg-slate-50 text-slate-600 px-2 py-0.5 rounded text-[10px] font-bold">${daysLeft} days left</span>`;
-
-                const badgeColor = t.type === 'general' ? 'bg-blue-50 text-blue-700 border border-blue-200' : t.type === 'reading' ? 'bg-purple-50 text-purple-700 border border-purple-200' : t.type === 'lawschool' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : t.type === 'vstc' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200';
-
-                return `
-                    <div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition">
-                        <div class="flex items-center gap-3">
-                            <input type="checkbox" ${t.completed ? 'checked' : ''} onclick="toggleTaskComplete('${t.id}')" class="w-4 h-4 text-slate-900 rounded">
-                            <div>
-                                <h4 class="text-sm font-semibold ${t.completed ? 'line-through text-slate-400' : 'text-slate-900'}">${t.title}</h4>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${badgeColor}">${t.type}</span>
-                                    ${countdownBadge}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="editTask('${t.id}')" class="text-slate-400 hover:text-slate-900 text-xs"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteTask('${t.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Calendar View
-        let currentCalendarView = 'monthly';
-        function setCalendarView(v) {
-            currentCalendarView = v;
-            document.getElementById('calViewMonthly').className = v === 'monthly' ? "px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-900 text-white" : "px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600";
-            document.getElementById('calViewWeekly').className = v === 'weekly' ? "px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-900 text-white" : "px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600";
-            renderCalendar();
-        }
-
-        function renderCalendar() {
-            const container = document.getElementById('calendarContainer');
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = now.getMonth();
-
-            if (currentCalendarView === 'monthly') {
-                const firstDay = new Date(year, month, 1).getDay();
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-                let html = `<h3 class="text-base font-bold text-slate-900 mb-4">${monthNames[month]} ${year}</h3>`;
-                html += `<div class="grid grid-cols-7 gap-2 text-center text-xs font-semibold text-slate-400 mb-2"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>`;
-                html += `<div class="grid grid-cols-7 gap-2">`;
-
-                for (let i = 0; i < firstDay; i++) {
-                    html += `<div class="bg-slate-50 rounded-xl h-24 p-2 opacity-40"></div>`;
-                }
-
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${day.toString().padStart(2,'0')}`;
-                    const dayTasks = appState.tasks.filter(t => t.deadline === dateStr);
-                    const dayExams = appState.exams.filter(e => e.date === dateStr);
-
-                    html += `<div onclick="openAddTaskModal('${dateStr}')" class="bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-100 rounded-xl h-24 p-2 overflow-y-auto transition">
-                        <span class="text-xs font-bold text-slate-700">${day}</span>
-                        <div class="space-y-1 mt-1">
-                            ${dayTasks.map(t => `<div class="text-[10px] bg-slate-200 text-slate-900 px-1 rounded truncate">${t.title}</div>`).join('')}
-                            ${dayExams.map(e => `<div class="text-[10px] bg-rose-100 text-rose-800 px-1 rounded truncate">Exam: ${e.name}</div>`).join('')}
-                        </div>
-                    </div>`;
-                }
-                html += `</div>`;
-                container.innerHTML = html;
-            } else {
-                let html = `<h3 class="text-base font-bold text-slate-900 mb-4">This Week Agenda</h3>`;
-                html += `<div class="space-y-2">`;
-                for (let i = 0; i < 7; i++) {
-                    const d = new Date();
-                    d.setDate(now.getDate() + i);
-                    const dateStr = d.toISOString().split('T')[0];
-                    const dayTasks = appState.tasks.filter(t => t.deadline === dateStr);
-
-                    html += `<div onclick="openAddTaskModal('${dateStr}')" class="p-3 bg-slate-50 hover:bg-slate-100 cursor-pointer rounded-xl border border-slate-100 flex justify-between items-center transition">
-                        <span class="text-xs font-bold text-slate-700 w-28">${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
-                        <div class="flex-1 flex gap-2 overflow-x-auto px-4">
-                            ${dayTasks.length === 0 ? '<span class="text-xs text-slate-400 italic">No tasks</span>' : dayTasks.map(t => `<span class="text-xs bg-slate-200 text-slate-900 px-2 py-0.5 rounded">${t.title}</span>`).join('')}
-                        </div>
-                    </div>`;
-                }
-                html += `</div>`;
-                container.innerHTML = html;
-            }
-        }
-
-        // VS / TC Tracker Logic
-        function openAddAppModal() {
-            document.getElementById('appId').value = '';
-            document.getElementById('appForm').reset();
-            document.getElementById('appModalTitle').innerText = 'Add Application';
-            document.getElementById('appInitialStatus').disabled = false;
-            document.getElementById('appModal').classList.remove('hidden');
-            toggleAppStatusFields();
-        }
-
-        function toggleAppStatusFields() {
-            const status = document.getElementById('appInitialStatus').value;
-            const label = document.getElementById('appDateLabel');
-            label.innerText = status === 'pending' ? 'Application Deadline' : 'Day of Submission';
-        }
-
-        function saveApplication(e) {
-            e.preventDefault();
-            const id = document.getElementById('appId').value || 'app_' + Date.now();
-            const name = document.getElementById('appName').value;
-            const details = document.getElementById('appDetails').value;
-            const coverLetter = document.getElementById('appCoverLetter').value;
-            const initialStatus = document.getElementById('appInitialStatus').value;
-            const dateVal = document.getElementById('appDate').value;
-
-            const existingIndex = appState.applications.findIndex(a => a.id === id);
-            if (existingIndex >= 0) {
-                appState.applications[existingIndex] = {
-                    ...appState.applications[existingIndex],
-                    name, details, coverLetter
-                };
-            } else {
-                const newApp = {
-                    id,
-                    name,
-                    details,
-                    coverLetter,
-                    status: initialStatus === 'pending' ? 'pending' : 'active',
-                    deadline: initialStatus === 'pending' ? dateVal : null,
-                    submittedDate: initialStatus === 'submitted' ? dateVal : null,
-                    currentStage: initialStatus === 'submitted' ? 'Application Submitted' : null,
-                    crowned: false,
-                    rejected: false,
-                    history: initialStatus === 'submitted' ? [{ stage: 'Application Submitted', date: dateVal, notes: details, reflections: [], people: [] }] : [],
-                    events: [],
-                    cycles: []
-                };
-                appState.applications.push(newApp);
-            }
-            closeModal('appModal');
-            saveState();
-        }
-
-        function editApplication(id) {
-            const app = appState.applications.find(a => a.id === id);
-            if (!app) return;
-            document.getElementById('appId').value = app.id;
-            document.getElementById('appName').value = app.name;
-            document.getElementById('appDetails').value = app.details || '';
-            document.getElementById('appCoverLetter').value = app.coverLetter || '';
-            document.getElementById('appInitialStatus').value = app.status === 'pending' ? 'pending' : 'submitted';
-            document.getElementById('appInitialStatus').disabled = true;
-            document.getElementById('appDateLabel').innerText = app.status === 'pending' ? 'Application Deadline' : 'Day of Submission';
-            document.getElementById('appDate').value = app.status === 'pending' ? app.deadline : app.submittedDate;
-            document.getElementById('appModalTitle').innerText = 'Edit Application';
-            document.getElementById('appModal').classList.remove('hidden');
-        }
-
-        function deleteApplication(id) {
-            if (!confirm('Are you sure you want to delete this application?')) return;
-            appState.applications = appState.applications.filter(a => a.id !== id);
-            saveState();
-        }
-
-        function promptSubmitApp(id) {
-            document.getElementById('submitAppTargetId').value = id;
-            document.getElementById('submitDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('submitNotes').value = '';
-            document.getElementById('submitAppModal').classList.remove('hidden');
-        }
-
-        function confirmSubmitApp(e) {
-            e.preventDefault();
-            const id = document.getElementById('submitAppTargetId').value;
-            const date = document.getElementById('submitDate').value;
-            const notes = document.getElementById('submitNotes').value;
-
-            const app = appState.applications.find(a => a.id === id);
-            if (app) {
-                app.status = 'active';
-                app.submittedDate = date;
-                app.currentStage = 'Application Submitted';
-                app.history.push({ stage: 'Application Submitted', date, notes, reflections: [], people: [] });
-                appState.tokens += 50;
-            }
-            closeModal('submitAppModal');
-            saveState();
-        }
-
-        // App Event Modal
-        function openAppEventModal(id) {
-            document.getElementById('eventAppId').value = id;
-            document.getElementById('appEventDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('reflectionsList').innerHTML = `<input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm reflection-input">`;
-            document.getElementById('peopleList').innerHTML = `
-                <div class="grid grid-cols-2 gap-2 person-group">
-                    <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-name">
-                    <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-pos">
-                    <input type="text" placeholder="Practice Area" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-pa">
-                    <input type="text" placeholder="Commonalities" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-com">
-                    <input type="text" placeholder="Key Insights" class="col-span-2 border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-ins">
-                </div>
-            `;
-            document.getElementById('appEventModal').classList.remove('hidden');
-        }
-
-        function addReflectionField() {
-            const div = document.createElement('div');
-            div.innerHTML = `<input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm reflection-input mt-2">`;
-            document.getElementById('reflectionsList').appendChild(div);
-        }
-
-        function addPersonField() {
-            const div = document.createElement('div');
-            div.className = "grid grid-cols-2 gap-2 person-group mt-2 pt-2 border-t border-slate-200";
-            div.innerHTML = `
-                <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-name">
-                <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-pos">
-                <input type="text" placeholder="Practice Area" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-pa">
-                <input type="text" placeholder="Commonalities" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-com">
-                <input type="text" placeholder="Key Insights" class="col-span-2 border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-ins">
-            `;
-            document.getElementById('peopleList').appendChild(div);
-        }
-
-        function saveAppEvent(e) {
-            e.preventDefault();
-            const id = document.getElementById('eventAppId').value;
-            const type = document.getElementById('appEventType').value;
-            const date = document.getElementById('appEventDate').value;
-            
-            const reflections = Array.from(document.querySelectorAll('.reflection-input')).map(i => i.value).filter(v => v.trim() !== '');
-            const people = Array.from(document.querySelectorAll('.person-group')).map(g => ({
-                name: g.querySelector('.p-name').value,
-                position: g.querySelector('.p-pos').value,
-                practiceArea: g.querySelector('.p-pa').value,
-                commonalities: g.querySelector('.p-com').value,
-                insights: g.querySelector('.p-ins').value,
-                date: date
-            })).filter(p => p.name.trim() !== '');
-
-            const app = appState.applications.find(a => a.id === id);
-            if (app) {
-                app.events.push({ type, date, reflections, people });
-            }
-            closeModal('appEventModal');
-            saveState();
-        }
-
-        // Next Round Modal
-        function openNextRoundModal(id) {
-            document.getElementById('roundAppId').value = id;
-            document.getElementById('roundStageName').value = 'Online Assessment';
-            document.getElementById('roundDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('roundReflectionsList').innerHTML = `<input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm round-reflection-input">`;
-            document.getElementById('roundPeopleList').innerHTML = `
-                <div class="grid grid-cols-2 gap-2 round-person-group">
-                    <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-name">
-                    <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-pos">
-                    <input type="text" placeholder="Practice Area" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-pa">
-                    <input type="text" placeholder="Commonalities" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-com">
-                    <input type="text" placeholder="Key Insights" class="col-span-2 border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-ins">
-                </div>
-            `;
-            document.getElementById('nextRoundModal').classList.remove('hidden');
-        }
-
-        function addRoundReflectionField() {
-            const div = document.createElement('div');
-            div.innerHTML = `<input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm round-reflection-input mt-2">`;
-            document.getElementById('roundReflectionsList').appendChild(div);
-        }
-
-        function addRoundPersonField() {
-            const div = document.createElement('div');
-            div.className = "grid grid-cols-2 gap-2 round-person-group mt-2 pt-2 border-t border-slate-200";
-            div.innerHTML = `
-                <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-name">
-                <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-pos">
-                <input type="text" placeholder="Practice Area" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-pa">
-                <input type="text" placeholder="Commonalities" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-com">
-                <input type="text" placeholder="Key Insights" class="col-span-2 border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-ins">
-            `;
-            document.getElementById('roundPeopleList').appendChild(div);
-        }
-
-        function saveNextRound(e) {
-            e.preventDefault();
-            const id = document.getElementById('roundAppId').value;
-            const stage = document.getElementById('roundStageName').value;
-            const date = document.getElementById('roundDate').value;
-
-            const reflections = Array.from(document.querySelectorAll('.round-reflection-input')).map(i => i.value).filter(v => v.trim() !== '');
-            const people = Array.from(document.querySelectorAll('.round-person-group')).map(g => ({
-                name: g.querySelector('.rp-name').value,
-                position: g.querySelector('.rp-pos').value,
-                practiceArea: g.querySelector('.rp-pa').value,
-                commonalities: g.querySelector('.rp-com').value,
-                insights: g.querySelector('.rp-ins').value,
-                date: date
-            })).filter(p => p.name.trim() !== '');
-
-            const app = appState.applications.find(a => a.id === id);
-            if (app) {
-                app.currentStage = stage;
-                app.history.push({ stage, date, notes: '', reflections, people });
-            }
-            closeModal('nextRoundModal');
-            saveState();
-        }
-
-        function receiveOffer(id) {
-            const app = appState.applications.find(a => a.id === id);
-            if (app) {
-                app.crowned = true;
-                appState.tokens += 100;
-                saveState();
-            }
-        }
-
-        function rejectApplication(id) {
-            const app = appState.applications.find(a => a.id === id);
-            if (app) {
-                app.status = 'graveyard';
-                app.rejected = true;
-                saveState();
-            }
-        }
-
-        function openGraveyardModal() {
-            const list = document.getElementById('graveyardAppsList');
-            const rejectedApps = appState.applications.filter(a => a.status === 'graveyard');
-
-            if (rejectedApps.length === 0) {
-                list.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">No rejected applications in the graveyard.</p>`;
-            } else {
-                list.innerHTML = rejectedApps.map(a => `
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
-                        <div>
-                            <h4 class="text-sm font-bold text-slate-900">${a.name}</h4>
-                            <p class="text-xs text-slate-500">Furthest Stage: <strong class="text-rose-900">${a.currentStage || 'Application Submitted'}</strong></p>
-                        </div>
-                        <button onclick="openReviveModal('${a.id}')" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-xl text-xs font-semibold shadow">Revive App</button>
-                    </div>
-                `).join('');
-            }
-            document.getElementById('graveyardModal').classList.remove('hidden');
-        }
-
-        function openReviveModal(id) {
-            const app = appState.applications.find(a => a.id === id);
-            if (!app) return;
-            document.getElementById('reviveAppId').value = id;
-            document.getElementById('reviveFirmSubtitle').innerText = `Reviving ${app.name} for next cycle. Furthest stage previously: ${app.currentStage || 'N/A'}`;
-            document.getElementById('reviveDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('reviveModal').classList.remove('hidden');
-        }
-
-        function confirmReviveApp() {
-            const id = document.getElementById('reviveAppId').value;
-            const action = document.getElementById('reviveActionType').value;
-            const date = document.getElementById('reviveDate').value;
-            const notes = document.getElementById('reviveNotes').value;
-
-            const app = appState.applications.find(a => a.id === id);
-            if (app) {
-                app.cycles.push({
-                    furthestStage: app.currentStage,
-                    history: [...app.history],
-                    events: [...app.events]
-                });
-
-                app.status = action === 'pending' ? 'pending' : 'active';
-                app.deadline = action === 'pending' ? date : null;
-                app.submittedDate = action === 'submitted' ? date : null;
-                app.currentStage = action === 'submitted' ? 'Application Submitted (Revived)' : null;
-                app.rejected = false;
-                app.crowned = false;
-                app.history = action === 'submitted' ? [{ stage: 'Application Submitted (Revived)', date, notes, reflections: [], people: [] }] : [];
-                app.events = [];
-            }
-            closeModal('reviveModal');
-            closeModal('graveyardModal');
-            saveState();
-        }
-
-        // History Log Modal (Editable & Separated)
-        function openHistoryModal(id) {
-            const app = appState.applications.find(a => a.id === id);
-            if (!app) return;
-            document.getElementById('historyModalTitle').innerText = `${app.name} - Complete Timeline Log`;
-            
-            let html = `<div class="space-y-6">`;
-            
-            // Section 1: Firm Name & Details
-            html += `<div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">1. Firm Information</h4>
-                <div class="space-y-2">
-                    <div>
-                        <label class="block text-[10px] text-slate-500 font-semibold">Firm Name</label>
-                        <input type="text" id="histFirmName" value="${app.name}" onchange="updateHistoryFirmName('${app.id}', this.value)" class="w-full border border-slate-200 rounded-lg px-2 py-1 text-xs bg-white font-bold">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-slate-500 font-semibold">Details & Cover Letter</label>
-                        <textarea id="histFirmDetails" onchange="updateHistoryFirmDetails('${app.id}', this.value)" rows="2" class="w-full border border-slate-200 rounded-lg px-2 py-1 text-xs bg-white">${app.details || ''}</textarea>
-                    </div>
-                </div>
-            </div>`;
-
-            // Section 2: Stages and Dates & Notes/Reflections
-            html += `<div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">2. Stage Names, Dates & Reflections</h4>
-                <div class="space-y-3">`;
-            
-            app.history.forEach((h, hIdx) => {
-                html += `<div class="p-3 bg-white rounded-xl border border-slate-200 space-y-2">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] text-slate-400 font-semibold">Stage Name</label>
-                            <input type="text" value="${h.stage}" onchange="updateHistoryStage('${app.id}', ${hIdx}, 'stage', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-full">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-400 font-semibold">Date</label>
-                            <input type="date" value="${h.date}" onchange="updateHistoryStage('${app.id}', ${hIdx}, 'date', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-full">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-slate-400 font-semibold">Notes / Reflections</label>
-                        <input type="text" value="${h.notes || (h.reflections ? h.reflections.join(', ') : '')}" onchange="updateHistoryStage('${app.id}', ${hIdx}, 'notes', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-full">
-                    </div>
-                </div>`;
-            });
-
-            app.events.forEach((ev, eIdx) => {
-                html += `<div class="p-3 bg-white rounded-xl border border-slate-200 space-y-2">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] text-indigo-500 font-semibold">Event: ${ev.type}</label>
-                            <input type="text" value="${ev.type}" onchange="updateHistoryEvent('${app.id}', ${eIdx}, 'type', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-full">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-indigo-500 font-semibold">Date</label>
-                            <input type="date" value="${ev.date}" onchange="updateHistoryEvent('${app.id}', ${eIdx}, 'date', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-full">
-                        </div>
-                    </div>
-                </div>`;
-            });
-            html += `</div></div>`;
-
-            // Section 3: Compiled People Directory
-            html += `<div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">3. Compiled People Met</h4>
-                <div class="space-y-2">`;
-            
-            let firmPeople = [];
-            app.history.forEach(h => { if(h.people) h.people.forEach(p => firmPeople.push(p)); });
-            app.events.forEach(ev => { if(ev.people) ev.events.forEach(p => firmPeople.push(p)); });
-
-            if(firmPeople.length === 0) {
-                html += `<p class="text-xs text-slate-400 italic">No people logged for this firm.</p>`;
-            } else {
-                firmPeople.forEach(p => {
-                    html += `<div class="p-2 bg-white rounded-lg border border-slate-200 text-xs flex justify-between items-center">
-                        <div>
-                            <strong>${p.name}</strong> (${p.position || 'N/A'}) - <span class="text-slate-500">${p.practiceArea || 'N/A'}</span>
-                            ${p.commonalities ? `<div class="text-indigo-600 text-[10px]">Commonalities: ${p.commonalities}</div>` : ''}
-                        </div>
-                        <span class="text-[10px] text-slate-400">${p.date || ''}</span>
-                    </div>`;
-                });
-            }
-            html += `</div></div>`;
-
-            html += `</div>`;
-            document.getElementById('historyModalContent').innerHTML = html;
-            document.getElementById('historyModal').classList.remove('hidden');
-        }
-
-        function updateHistoryFirmName(id, val) {
-            const app = appState.applications.find(a => a.id === id);
-            if (app) { app.name = val; saveState(); }
-        }
-        function updateHistoryFirmDetails(id, val) {
-            const app = appState.applications.find(a => a.id === id);
-            if (app) { app.details = val; saveState(); }
-        }
-        function updateHistoryStage(id, idx, field, val) {
-            const app = appState.applications.find(a => a.id === id);
-            if (app && app.history[idx]) {
-                app.history[idx][field] = val;
-                saveState();
-            }
-        }
-        function updateHistoryEvent(id, idx, field, val) {
-            const app = appState.applications.find(a => a.id === id);
-            if (app && app.events[idx]) {
-                app.events[idx][field] = val;
-                saveState();
-            }
-        }
-
-        // Global Networking Directory
-        function openNetworkingDirectory() {
-            const firmSelect = document.getElementById('netFirmFilter');
-            firmSelect.innerHTML = `<option value="">All Firms</option>` + appState.applications.map(a => `<option value="${a.name}">${a.name}</option>`).join('');
-            renderNetworkingDirectory();
-            document.getElementById('networkingModal').classList.remove('hidden');
-        }
-
-        function renderNetworkingDirectory() {
-            const sortBy = document.getElementById('netSortBy').value;
-            const firmFilter = document.getElementById('netFirmFilter').value;
-            let allPeople = [];
-
-            appState.applications.forEach(a => {
-                if (!firmFilter || a.name === firmFilter) {
-                    a.history.forEach(h => { if (h.people) h.people.forEach(p => allPeople.push({ ...p, firm: a.name })); });
-                    a.events.forEach(ev => { if (ev.people) ev.people.forEach(p => allPeople.push({ ...p, firm: a.name })); });
-                }
-            });
-
-            if (sortBy === 'date') allPeople.sort((a,b) => new Date(b.date) - new Date(a.date));
-            else if (sortBy === 'pa') allPeople.sort((a,b) => (a.practiceArea || '').localeCompare(b.practiceArea || ''));
-            else if (sortBy === 'pos') allPeople.sort((a,b) => (a.position || '').localeCompare(b.position || ''));
-
-            const listEl = document.getElementById('networkingDirectoryList');
-            if (allPeople.length === 0) {
-                listEl.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">No contacts logged yet.</p>`;
-                return;
-            }
-
-            listEl.innerHTML = allPeople.map(p => `
-                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-900">${p.name} <span class="text-xs font-normal text-slate-500">(${p.firm})</span></h4>
-                        <p class="text-xs text-slate-500">Position: <strong>${p.position || 'N/A'}</strong> | Practice Area: <strong>${p.practiceArea || 'N/A'}</strong></p>
-                        ${p.commonalities ? `<p class="text-xs text-slate-900 mt-1">Commonalities: ${p.commonalities}</p>` : ''}
-                        ${p.insights ? `<p class="text-xs text-slate-600">Insights: ${p.insights}</p>` : ''}
-                    </div>
-                    <span class="text-xs font-semibold text-slate-400">${p.date || ''}</span>
-                </div>
-            `).join('');
-        }
-
-        // Excel Export (Single spreadsheet formatted layout)
-        function exportExcelSpreadsheet() {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "SECTION,FIRM NAME,STAGE / TYPE,DATE,DETAILS / NOTES / REFLECTIONS,PEOPLE MET\n";
-
-            appState.applications.forEach(a => {
-                csvContent += `Application,${a.name},${a.currentStage || a.status},${a.deadline || a.submittedDate || ''},"${a.details || ''}",""\n`;
-                a.history.forEach(h => {
-                    const peopleStr = h.people ? h.people.map(p => `${p.name} (${p.position})`).join('; ') : '';
-                    csvContent += `History Stage,${a.name},${h.stage},${h.date},"${h.notes || ''}","${peopleStr}"\n`;
-                });
-                a.events.forEach(ev => {
-                    const peopleStr = ev.people ? ev.people.map(p => `${p.name} (${p.position})`).join('; ') : '';
-                    csvContent += `Event,${a.name},${ev.type},${ev.date},"${ev.reflections ? ev.reflections.join(' | ') : ''}","${peopleStr}"\n`;
-                });
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `partner_in_law_export_${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-        }
-
-        // Render Kanban Board & Applications
-        function renderApplications() {
-            const today = new Date();
-            today.setHours(0,0,0,0);
-
-            // Sort active and pending apps by furthest stage / deadline
-            const pendingApps = appState.applications.filter(a => a.status === 'pending').sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
-            const activeApps = appState.applications.filter(a => a.status === 'active').sort((a,b) => b.history.length - a.history.length);
-
-            // Kanban columns assignment
-            const colPending = [];
-            const colSubmitted = [];
-            const colOA = [];
-            const colVI = [];
-            const colInPerson = [];
-
-            pendingApps.forEach(a => colPending.push(a));
-            activeApps.forEach(a => {
-                const stage = (a.currentStage || '').toLowerCase();
-                if (stage.includes('assessment')) colOA.push(a);
-                else if (stage.includes('video')) colVI.push(a);
-                else if (stage.includes('in-person') || stage.includes('interview')) colInPerson.push(a);
-                else colSubmitted.push(a);
-            });
-
-            document.getElementById('kanbanPending').innerHTML = renderKanbanCards(colPending, 'pending');
-            document.getElementById('kanbanSubmitted').innerHTML = renderKanbanCards(colSubmitted, 'active');
-            document.getElementById('kanbanOA').innerHTML = renderKanbanCards(colOA, 'active');
-            document.getElementById('kanbanVI').innerHTML = renderKanbanCards(colVI, 'active');
-            document.getElementById('kanbanInPerson').innerHTML = renderKanbanCards(colInPerson, 'active');
-
-            // History Log Files
-            const historyEl = document.getElementById('historyAppsList');
-            const historyApps = appState.applications.filter(a => a.history.length > 0 || a.events.length > 0);
-
-            if (historyApps.length === 0) {
-                historyEl.innerHTML = `<p class="text-xs text-slate-400 italic col-span-3 text-center py-4">No history records yet.</p>`;
-            } else {
-                historyEl.innerHTML = historyApps.map(a => `
-                    <div onclick="openHistoryModal('${a.id}')" class="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-slate-900 transition">
-                        <div class="flex items-center gap-3">
-                            <div class="bg-slate-100 text-slate-900 p-3 rounded-xl"><i class="fa-solid fa-folder-closed text-lg"></i></div>
-                            <div>
-                                <h4 class="text-sm font-bold text-slate-900">${a.name}</h4>
-                                <p class="text-xs text-slate-400">${a.history.length} stages/events recorded</p>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function renderKanbanCards(apps, type) {
-            if (apps.length === 0) return `<p class="text-[11px] text-slate-400 italic text-center py-6">No applications</p>`;
-            const today = new Date();
-            today.setHours(0,0,0,0);
-
-            return apps.map(a => {
-                if (type === 'pending') {
-                    const daysLeft = Math.ceil((new Date(a.deadline) - today) / (1000 * 60 * 60 * 24));
-                    return `
-                        <div class="p-3 bg-white rounded-xl border border-slate-200 shadow-sm space-y-2">
-                            <div class="flex justify-between items-start">
-                                <h4 class="text-xs font-bold text-slate-900">${a.name}</h4>
-                                <div class="flex gap-1">
-                                    <button onclick="editApplication('${a.id}')" class="text-slate-400 hover:text-slate-900 text-[10px]"><i class="fa-solid fa-pen"></i></button>
-                                    <button onclick="deleteApplication('${a.id}')" class="text-slate-400 hover:text-rose-600 text-[10px]"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                            </div>
-                            <p class="text-[10px] text-slate-500">Deadline: ${a.deadline} (${daysLeft}d left)</p>
-                            <div class="flex gap-1 pt-1 border-t border-slate-100">
-                                <button onclick="promptSubmitApp('${a.id}')" class="flex-1 bg-emerald-700 text-white py-1 rounded text-[10px] font-semibold">Submit (+50)</button>
-                                <button onclick="openAppEventModal('${a.id}')" class="bg-slate-900 text-white px-2 py-1 rounded text-[10px]" title="Add Event"><i class="fa-solid fa-calendar-plus"></i></button>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    return `
-                        <div class="p-3 bg-white rounded-xl border border-slate-200 shadow-sm space-y-2 ${a.crowned ? 'border-amber-400 bg-amber-50/20' : ''}">
-                            <div class="flex justify-between items-start">
-                                <div class="flex items-center gap-1.5">
-                                    <h4 class="text-xs font-bold text-slate-900">${a.name}</h4>
-                                    ${a.crowned ? '<i class="fa-solid fa-crown text-amber-500 text-[10px]"></i>' : ''}
-                                </div>
-                                <div class="flex gap-1">
-                                    <button onclick="editApplication('${a.id}')" class="text-slate-400 hover:text-slate-900 text-[10px]"><i class="fa-solid fa-pen"></i></button>
-                                    <button onclick="deleteApplication('${a.id}')" class="text-slate-400 hover:text-rose-600 text-[10px]"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                            </div>
-                            <p class="text-[10px] text-slate-500">Stage: <strong class="text-slate-900">${a.currentStage || 'Submitted'}</strong></p>
-                            <div class="grid grid-cols-2 gap-1 pt-1 border-t border-slate-100">
-                                <button onclick="openNextRoundModal('${a.id}')" class="bg-slate-900 text-white py-1 rounded text-[10px] font-semibold">Next Round</button>
-                                <button onclick="openAppEventModal('${a.id}')" class="bg-slate-200 text-slate-800 py-1 rounded text-[10px] font-semibold">Add Event</button>
-                                <button onclick="receiveOffer('${a.id}')" class="bg-amber-400 text-slate-950 py-1 rounded text-[10px] font-bold">Offer (+100)</button>
-                                <button onclick="rejectApplication('${a.id}')" class="bg-rose-800 text-white py-1 rounded text-[10px] font-semibold">Reject</button>
-                            </div>
-                        </div>
-                    `;
-                }
-            }).join('');
-        }
-
-        // Law School Logic
-        function openAddClassModal() {
-            document.getElementById('classNameInput').value = '';
-            document.getElementById('classModal').classList.remove('hidden');
-        }
-
-        function saveClass(e) {
-            e.preventDefault();
-            const name = document.getElementById('classNameInput').value;
-            appState.classes.push({ id: 'c_' + Date.now(), name, tasks: [] });
-            closeModal('classModal');
-            saveState();
-        }
-
-        function deleteClass(id) {
-            if (!confirm('Delete this class?')) return;
-            appState.classes = appState.classes.filter(c => c.id !== id);
-            saveState();
-        }
-
-        function addClassTask(classId) {
-            const title = prompt('Enter task/reading for this class:');
-            const deadline = prompt('Enter deadline (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
-            if (!title || !deadline) return;
-
-            const cls = appState.classes.find(c => c.id === classId);
-            if (cls) {
-                const taskId = 't_' + Date.now();
-                cls.tasks.push({ id: taskId, title, deadline, completed: false });
-                appState.tasks.push({ id: taskId, title, type: 'reading', deadline, completed: false });
-                saveState();
-            }
-        }
-
-        function toggleClassTask(classId, taskId) {
-            const cls = appState.classes.find(c => c.id === classId);
-            if (cls) {
-                const t = cls.tasks.find(x => x.id === taskId);
-                if (t) {
-                    t.completed = !t.completed;
-                    const gt = appState.tasks.find(x => x.id === taskId);
-                    if (gt) {
-                        gt.completed = t.completed;
-                        if (t.completed) appState.tokens += 20;
-                    }
-                    saveState();
-                }
-            }
-        }
-
-        function deleteClassTask(classId, taskId) {
-            const cls = appState.classes.find(c => c.id === classId);
-            if (cls) {
-                cls.tasks = cls.tasks.filter(t => t.id !== taskId);
-                appState.tasks = appState.tasks.filter(t => t.id !== taskId);
-                saveState();
-            }
-        }
-
-        function openAddExamModal() {
-            document.getElementById('examName').value = '';
-            document.getElementById('examDate').value = '';
-            document.getElementById('examModal').classList.remove('hidden');
-        }
-
-        function saveExam(e) {
-            e.preventDefault();
-            const name = document.getElementById('examName').value;
-            const date = document.getElementById('examDate').value;
-            appState.exams.push({ id: 'ex_' + Date.now(), name, date, grade: null });
-            closeModal('examModal');
-            saveState();
-        }
-
-        function updateExamGrade(id, grade) {
-            const ex = appState.exams.find(e => e.id === id);
-            if (ex) {
-                ex.grade = grade;
-                saveState();
-            }
-        }
-
-        function deleteExam(id) {
-            if (!confirm('Delete this exam?')) return;
-            appState.exams = appState.exams.filter(e => e.id !== id);
-            saveState();
-        }
-
-        function calculateCumulativeGPA() {
-            const gradePoints = { 'A+': 4.0, 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'D': 1.0, 'F': 0.0 };
-            let totalPts = 0;
-            let count = 0;
-            appState.exams.forEach(ex => {
-                if (ex.grade && gradePoints[ex.grade.toUpperCase()] !== undefined) {
-                    totalPts += gradePoints[ex.grade.toUpperCase()];
-                    count++;
-                }
-            });
-            const gpa = count > 0 ? (totalPts / count).toFixed(2) : '0.00';
-            document.getElementById('cumulativeGPA').innerText = gpa;
-        }
-
-        function renderClasses() {
-            const container = document.getElementById('classesColumnsContainer');
-            const today = new Date();
-            today.setHours(0,0,0,0);
-
-            container.innerHTML = appState.classes.map(cls => `
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
-                            <h4 class="text-base font-bold text-slate-900">${cls.name}</h4>
-                            <button onclick="deleteClass('${cls.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                        <div class="space-y-2 mb-4">
-                            ${cls.tasks.length === 0 ? '<p class="text-xs text-slate-400 italic">No tasks/readings for this class.</p>' : cls.tasks.map(t => {
-                                const daysLeft = Math.ceil((new Date(t.deadline) - today) / (1000 * 60 * 60 * 24));
-                                let badge = daysLeft < 0 ? `<span class="text-[10px] text-rose-600 font-bold">${Math.abs(daysLeft)}d overdue</span>` : daysLeft === 0 ? `<span class="text-[10px] text-amber-600 font-bold">TODAY</span>` : `<span class="text-[10px] text-slate-400">${daysLeft}d left</span>`;
-                                return `
-                                    <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl">
-                                        <div class="flex items-center gap-2">
-                                            <input type="checkbox" ${t.completed ? 'checked' : ''} onclick="toggleClassTask('${cls.id}', '${t.id}')" class="w-3.5 h-3.5 text-slate-900 rounded">
-                                            <span class="text-xs ${t.completed ? 'line-through text-slate-400' : 'text-slate-800'}">${t.title}</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            ${badge}
-                                            <button onclick="deleteClassTask('${cls.id}', '${t.id}')" class="text-slate-400 hover:text-rose-600 text-[10px]"><i class="fa-solid fa-xmark"></i></button>
-                                        </div>
+                    <div class="flex-1 space-y-3 overflow-y-auto" ondragover="event.preventDefault()" ondrop="dropFirm(event, '${col}')">
+                        ${colFirms.map(firm => `
+                            <div draggable="true" ondragstart="dragFirm(event, '${firm.id}')" class="bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg p-3 space-y-3 shadow-sm hover:shadow transition-all relative">
+                                ${firm.hasOffer ? `<div class="absolute -top-2.5 -right-2 w-7 h-7 bg-amber-400 text-white rounded-full flex items-center justify-center shadow-md text-xs" title="Offer for ${firm.offerMonthYear}"><i class="fa-solid fa-crown"></i></div>` : ''}
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-sm cursor-pointer hover:text-indigo-600" onclick="openFirmHistory('${firm.id}')">${firm.name}</span>
+                                    <div class="flex items-center space-x-1">
+                                        <button onclick="promptOffer('${firm.id}')" class="p-1 text-slate-400 hover:text-amber-500 text-xs" title="Record Offer"><i class="fa-solid fa-award"></i></button>
+                                        <button onclick="deleteFirm('${firm.id}')" class="p-1 text-slate-400 hover:text-rose-500 text-xs" title="Delete Firm"><i class="fa-solid fa-trash"></i></button>
                                     </div>
-                                `;
-                            }).join('')}
-                        </div>
+                                </div>
+                                
+                                <!-- To-do list format under each firm -->
+                                <div class="space-y-1.5 pt-2 border-t border-slate-200 dark:border-dark-border">
+                                    <div class="text-xs font-semibold text-slate-400 uppercase">Tasks</div>
+                                    <div class="space-y-1">
+                                        ${firm.todos.map(todo => `
+                                            <div class="flex items-center justify-between text-xs bg-white dark:bg-dark-card p-1.5 rounded border border-slate-100 dark:border-dark-border">
+                                                <div class="flex items-center space-x-2 overflow-hidden">
+                                                    <input type="checkbox" ${todo.done ? 'checked' : ''} onchange="toggleTodo('${firm.id}', '${todo.id}')" class="rounded border-slate-300">
+                                                    <span class="${todo.done ? 'line-through text-slate-400' : ''} truncate">${todo.text}</span>
+                                                </div>
+                                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 shrink-0 ml-1">${todo.classTag || col}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    <div class="flex mt-2">
+                                        <input type="text" id="new-todo-${firm.id}" placeholder="Add task..." class="w-full px-2 py-1 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-l text-xs" onkeydown="if(event.key==='Enter') addTodo('${firm.id}')">
+                                        <button onclick="addTodo('${firm.id}')" class="px-2.5 bg-indigo-600 text-white rounded-r text-xs"><i class="fa-solid fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
                     </div>
-                    <button onclick="addClassTask('${cls.id}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-plus"></i> Add Reading / Task
-                    </button>
+                `;
+                board.appendChild(colDiv);
+            });
+        }
+
+        function dragFirm(e, firmId) { e.dataTransfer.setData('text/plain', firmId); }
+        function dropFirm(e, newColumn) {
+            const firmId = e.dataTransfer.getData('text/plain');
+            const firm = state.firms.find(f => f.id === firmId);
+            if(firm) {
+                firm.column = newColumn;
+                saveToLocalStorage();
+                renderTracker();
+            }
+        }
+
+        function openAddFirmModal() {
+            const select = document.getElementById('new-firm-column');
+            select.innerHTML = state.columns.map(c => `<option value="${c}">${c}</option>`).join('');
+            document.getElementById('new-firm-name').value = '';
+            document.getElementById('modal-add-firm').classList.remove('hidden');
+        }
+
+        function handleCreateFirm(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-firm-name').value;
+            const column = document.getElementById('new-firm-column').value;
+            state.firms.push({ id: Date.now().toString(), name, column, hasOffer: false, offerMonthYear: '', todos: [], history: [] });
+            saveToLocalStorage();
+            renderTracker();
+            closeModal('modal-add-firm');
+        }
+
+        function deleteFirm(id) {
+            if(confirm('Are you sure you want to delete this firm?')) {
+                state.firms = state.firms.filter(f => f.id !== id);
+                saveToLocalStorage();
+                renderTracker();
+            }
+        }
+
+        function promptOffer(firmId) {
+            const firm = state.firms.find(f => f.id === firmId);
+            if (firm.hasOffer) {
+                alert('Offer can only be clicked once per firm!');
+                return;
+            }
+            state.activeFirmIdForOffer = firmId;
+            document.getElementById('offer-month-year').value = '';
+            document.getElementById('modal-offer').classList.remove('hidden');
+        }
+
+        function submitOffer(e) {
+            e.preventDefault();
+            const monthYear = document.getElementById('offer-month-year').value;
+            const firm = state.firms.find(f => f.id === state.activeFirmIdForOffer);
+            if (firm) {
+                firm.hasOffer = true;
+                firm.offerMonthYear = monthYear;
+                saveToLocalStorage();
+                renderTracker();
+            }
+            closeModal('modal-offer');
+        }
+
+        // Todos
+        function addTodo(firmId) {
+            const input = document.getElementById(`new-todo-${firmId}`);
+            const text = input.value.trim();
+            if(!text) return;
+            const firm = state.firms.find(f => f.id === firmId);
+            firm.todos.push({ id: Date.now().toString(), text, done: false, classTag: firm.column });
+            saveToLocalStorage();
+            renderTracker();
+        }
+
+        function toggleTodo(firmId, todoId) {
+            const firm = state.firms.find(f => f.id === firmId);
+            const todo = firm.todos.find(t => t.id === todoId);
+            if(todo) {
+                todo.done = !todo.done;
+                saveToLocalStorage();
+                renderTracker();
+            }
+        }
+
+        // Manage Columns
+        function openManageColumnsModal() {
+            const list = document.getElementById('columns-edit-list');
+            list.innerHTML = state.columns.map((col, idx) => `
+                <div class="flex items-center space-x-2">
+                    <input type="text" value="${col}" class="col-input w-full px-3 py-2 bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg text-sm" data-index="${idx}">
+                    <button type="button" onclick="this.parentElement.remove()" class="p-2 text-rose-500 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+            document.getElementById('modal-columns').classList.remove('hidden');
+        }
+
+        function addColumnField() {
+            const list = document.getElementById('columns-edit-list');
+            const div = document.createElement('div');
+            div.className = 'flex items-center space-x-2';
+            div.innerHTML = `
+                <input type="text" value="New Column" class="col-input w-full px-3 py-2 bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg text-sm">
+                <button type="button" onclick="this.parentElement.remove()" class="p-2 text-rose-500 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash"></i></button>
+            `;
+            list.appendChild(div);
+        }
+
+        function saveColumns(e) {
+            e.preventDefault();
+            const inputs = document.querySelectorAll('.col-input');
+            const newCols = Array.from(inputs).map(inp => inp.value.trim()).filter(Boolean);
+            if(newCols.length === 0) { alert('You need at least one column.'); return; }
+            state.columns = newCols;
+            saveToLocalStorage();
+            renderTracker();
+            closeModal('modal-columns');
+        }
+
+        // --- HISTORY FILES ---
+        function renderHistoryFiles() {
+            const grid = document.getElementById('history-firms-grid');
+            grid.innerHTML = state.firms.map(firm => `
+                <div onclick="openFirmHistory('${firm.id}')" class="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl p-6 shadow-sm hover:shadow-md transition-all cursor-pointer space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-lg">${firm.name}</h3>
+                        <i class="fa-solid fa-folder-open text-indigo-600 text-xl"></i>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-dark-muted">Status: <span class="font-semibold text-slate-700 dark:text-slate-200">${firm.column}</span></p>
+                    <div class="text-xs pt-3 border-t border-slate-100 dark:border-dark-border flex justify-between text-slate-400">
+                        <span>${firm.history.length} Logged Entries</span>
+                        <span>Click to view file &rarr;</span>
+                    </div>
                 </div>
             `).join('');
         }
 
-        function renderExams() {
-            const today = new Date();
-            today.setHours(0,0,0,0);
+        function openFirmHistory(firmId) {
+            state.activeFirmIdForHistory = firmId;
+            const firm = state.firms.find(f => f.id === firmId);
+            document.getElementById('modal-history-title').innerText = `${firm.name} - History File`;
+            renderHistoryLogs(firm);
+            document.getElementById('modal-firm-history').classList.remove('hidden');
+        }
 
-            const upcomingList = document.getElementById('examsList');
-            const completedList = document.getElementById('completedExamsList');
-
-            const upcoming = [];
-            const completed = [];
-
-            appState.exams.forEach(ex => {
-                const exDate = new Date(ex.date);
-                if (exDate < today) completed.push(ex);
-                else upcoming.push(ex);
-            });
-
-            upcomingList.innerHTML = upcoming.length === 0 ? `<p class="text-xs text-slate-400 italic">No upcoming exams.</p>` : upcoming.map(ex => {
-                const daysLeft = Math.ceil((new Date(ex.date) - today) / (1000 * 60 * 60 * 24));
-                return `
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
-                        <div>
-                            <h4 class="text-sm font-bold text-slate-900">${ex.name}</h4>
-                            <p class="text-xs text-slate-500">Date: ${ex.date}</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="bg-slate-200 text-slate-800 px-2.5 py-1 rounded-lg text-xs font-bold">${daysLeft === 0 ? 'TODAY' : daysLeft + ' days left'}</span>
-                            <button onclick="deleteExam('${ex.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
-                        </div>
+        function renderHistoryLogs(firm) {
+            const container = document.getElementById('modal-history-logs');
+            if(firm.history.length === 0) {
+                container.innerHTML = `<p class="text-sm text-slate-400 italic">No history logged yet.</p>`;
+                return;
+            }
+            container.innerHTML = firm.history.map(h => `
+                <div class="bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg p-3 space-y-1 text-sm">
+                    <div class="flex justify-between font-semibold text-xs text-slate-400">
+                        <span>${h.date}</span>
+                        <span>${h.people || 'N/A'}</span>
                     </div>
-                `;
-            }).join('');
-
-            completedList.innerHTML = completed.length === 0 ? `<p class="text-xs text-slate-400 italic">No completed exams yet.</p>` : completed.map(ex => `
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-900">${ex.name}</h4>
-                        <p class="text-xs text-slate-500">Passed on ${ex.date}</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <input type="text" placeholder="Grade (e.g. A)" value="${ex.grade || ''}" onchange="updateExamGrade('${ex.id}', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-28 uppercase text-center font-bold">
-                        <button onclick="deleteExam('${ex.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
-                    </div>
+                    <p class="text-slate-700 dark:text-slate-200">${h.notes}</p>
                 </div>
             `).join('');
+        }
 
-            calculateCumulativeGPA();
+        function addHistoryLog(e) {
+            e.preventDefault();
+            const date = document.getElementById('log-date').value;
+            const people = document.getElementById('log-people').value;
+            const notes = document.getElementById('log-notes').value;
+            
+            const firm = state.firms.find(f => f.id === state.activeFirmIdForHistory);
+            if(firm) {
+                firm.history.unshift({ date, people, notes });
+                saveToLocalStorage();
+                renderHistoryLogs(firm);
+                renderHistoryFiles();
+                e.target.reset();
+            }
+        }
+
+        // --- CALENDAR ---
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('calendar-month-year').innerText = `${monthNames[state.currentMonth]} ${state.currentYear}`;
+
+            grid.innerHTML = '';
+            const firstDay = new Date(state.currentYear, state.currentMonth, 1).getDay();
+            const daysInMonth = new Date(state.currentYear, state.currentMonth + 1, 0).getDate();
+
+            // Blank slots for previous month
+            for(let i=0; i<firstDay; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'bg-slate-50/50 dark:bg-dark-bg/50 min-h-[100px] p-2';
+                grid.appendChild(cell);
+            }
+
+            // Days of current month
+            for(let day=1; day<=daysInMonth; day++) {
+                const dateStr = `${state.currentYear}-${String(state.currentMonth+1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const cell = document.createElement('div');
+                cell.className = 'bg-white dark:bg-dark-card min-h-[100px] p-2 flex flex-col space-y-1 overflow-hidden';
+                
+                const dayEvents = state.events.filter(e => e.date === dateStr);
+
+                cell.innerHTML = `
+                    <div class="text-xs font-semibold text-slate-400">${day}</div>
+                    <div class="flex-1 space-y-1 overflow-y-auto">
+                        ${dayEvents.map(ev => `
+                            <div onclick="openEditEventModal('${ev.id}')" class="bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-xs px-2 py-1 rounded truncate cursor-pointer hover:bg-indigo-100 transition-colors" title="${ev.title}">
+                                ${ev.title}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                grid.appendChild(cell);
+            }
+        }
+
+        function changeMonth(dir) {
+            state.currentMonth += dir;
+            if(state.currentMonth > 11) { state.currentMonth = 0; state.currentYear++; }
+            if(state.currentMonth < 0) { state.currentMonth = 11; state.currentYear--; }
+            renderCalendar();
+        }
+
+        function openAddEventModal() {
+            document.getElementById('event-modal-title').innerText = 'Add Calendar Event';
+            document.getElementById('event-id').value = '';
+            document.getElementById('event-title').value = '';
+            document.getElementById('event-date').value = '';
+            document.getElementById('btn-delete-event').classList.add('hidden');
+            document.getElementById('modal-event').classList.remove('hidden');
+        }
+
+        function openEditEventModal(eventId) {
+            const ev = state.events.find(e => e.id === eventId);
+            if(!ev) return;
+            document.getElementById('event-modal-title').innerText = 'Edit Calendar Event';
+            document.getElementById('event-id').value = ev.id;
+            document.getElementById('event-title').value = ev.title;
+            document.getElementById('event-date').value = ev.date;
+            document.getElementById('btn-delete-event').classList.remove('hidden');
+            document.getElementById('modal-event').classList.remove('hidden');
+        }
+
+        function saveCalendarEvent(e) {
+            e.preventDefault();
+            const id = document.getElementById('event-id').value;
+            const title = document.getElementById('event-title').value;
+            const date = document.getElementById('event-date').value;
+
+            if(id) {
+                const ev = state.events.find(e => e.id === id);
+                if(ev) { ev.title = title; ev.date = date; }
+            } else {
+                state.events.push({ id: Date.now().toString(), title, date });
+            }
+            saveToLocalStorage();
+            renderCalendar();
+            closeModal('modal-event');
+        }
+
+        function deleteCalendarEvent() {
+            const id = document.getElementById('event-id').value;
+            if(id && confirm('Remove this calendar event?')) {
+                state.events = state.events.filter(e => e.id !== id);
+                saveToLocalStorage();
+                renderCalendar();
+                closeModal('modal-event');
+            }
         }
     </script>
 </body>
