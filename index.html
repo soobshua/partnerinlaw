@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partner in Law - Law School & Career Tracker</title>
+    <title>Partner in Law - Law School & Career Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -11,35 +11,54 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-white text-slate-800 min-h-screen flex flex-col">
+
+    <!-- WEEKLY BACKUP BANNER -->
+    <div id="backupBanner" class="bg-indigo-600 text-white px-4 py-2 text-xs flex justify-between items-center hidden">
+        <span><i class="fa-solid fa-triangle-exclamation mr-1"></i> Weekly reminder: Export your JSON data backup to keep your records safe!</span>
+        <div class="flex gap-2">
+            <button onclick="exportJSONBackup()" class="bg-white text-indigo-700 font-bold px-2.5 py-1 rounded text-[10px]">Export Backup</button>
+            <button onclick="dismissBackupBanner()" class="text-indigo-200 hover:text-white px-1 font-bold">✕</button>
+        </div>
+    </div>
 
     <!-- TOP HEADER -->
-    <header class="bg-indigo-900 text-white shadow-md px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-0 z-40">
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-0 z-40 shadow-sm">
         <div class="flex items-center gap-3">
-            <div class="bg-indigo-700 p-2.5 rounded-xl shadow-inner">
-                <i class="fa-solid fa-scale-balanced text-xl text-indigo-200"></i>
+            <div class="bg-slate-900 text-white p-2.5 rounded-xl">
+                <i class="fa-solid fa-scale-balanced text-xl"></i>
             </div>
             <div>
-                <h1 class="text-xl font-bold tracking-tight">Partner in Law</h1>
-                <p class="text-xs text-indigo-300">Law School & Career Command Center</p>
+                <h1 class="text-xl font-bold tracking-tight text-slate-900">Partner in Law</h1>
+                <p class="text-xs text-slate-500">Law School & Career Command Center</p>
             </div>
         </div>
 
-        <!-- TOKEN & BREAK SYSTEM & DAILY CHECK-IN -->
         <div class="flex items-center gap-4">
+            <!-- Notification Center -->
+            <div class="relative">
+                <button onclick="toggleNotificationDropdown()" class="relative p-2 text-slate-600 hover:text-indigo-600 transition">
+                    <i class="fa-solid fa-bell text-lg"></i>
+                    <span id="notifBadge" class="absolute top-1 right-1 bg-rose-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+                </button>
+                <div id="notifDropdown" class="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 hidden z-50">
+                    <h4 class="font-bold text-xs text-slate-900 mb-2 border-b pb-1">Due Reminders</h4>
+                    <div id="notifList" class="space-y-2 max-h-48 overflow-y-auto"></div>
+                </div>
+            </div>
+
             <!-- Daily Check-in Button -->
-            <button onclick="dailyCheckIn()" id="checkInBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow transition flex items-center gap-1.5">
+            <button onclick="dailyCheckIn()" id="checkInBtn" class="bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs font-semibold shadow transition flex items-center gap-1.5">
                 <i class="fa-solid fa-calendar-check"></i> <span id="checkInText">Daily Check-In (+1)</span>
             </button>
 
             <!-- Token Counter & Info -->
-            <div class="relative group flex items-center bg-indigo-950 px-4 py-2 rounded-xl border border-indigo-800">
-                <i class="fa-solid fa-coins text-amber-400 mr-2"></i>
-                <span class="text-sm font-medium">Tokens: <strong id="tokenCount" class="text-amber-300">0</strong></span>
-                <i class="fa-solid fa-circle-info text-indigo-400 ml-2.5 cursor-pointer text-xs"></i>
+            <div class="relative group flex items-center bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+                <i class="fa-solid fa-coins text-amber-500 mr-2"></i>
+                <span class="text-sm font-medium">Tokens: <strong id="tokenCount" class="text-slate-900">0</strong></span>
+                <i class="fa-solid fa-circle-info text-slate-400 ml-2.5 cursor-pointer text-xs"></i>
 
-                <!-- Hover Token Breakdown List -->
-                <div class="absolute right-0 top-full mt-2 w-64 bg-white text-slate-700 rounded-xl shadow-2xl p-4 text-xs hidden group-hover:block z-50 border border-slate-200">
+                <div class="absolute right-0 top-full mt-2 w-64 bg-white text-slate-700 rounded-2xl shadow-2xl p-4 text-xs hidden group-hover:block z-50 border border-slate-200">
                     <p class="font-bold text-slate-900 mb-2 border-b pb-1">Token Rewards Guide:</p>
                     <ul class="space-y-1.5">
                         <li class="flex justify-between"><span>Check-in:</span> <strong class="text-emerald-600">+1 token</strong></li>
@@ -59,116 +78,128 @@
     </header>
 
     <!-- NAVIGATION TABS -->
-    <nav class="bg-white border-b border-slate-200 px-6 flex gap-8 shadow-sm">
-        <button onclick="switchTab(0)" class="tab-btn py-4 font-semibold text-sm border-b-2 border-indigo-600 text-indigo-600 flex items-center gap-2">
+    <nav class="bg-white border-b border-slate-200 px-6 flex gap-8">
+        <button onclick="switchTab(0)" class="tab-btn py-4 font-semibold text-sm border-b-2 border-slate-900 text-slate-900 flex items-center gap-2">
             <i class="fa-solid fa-house"></i> Dashboard & Schedule
         </button>
-        <button onclick="switchTab(1)" class="tab-btn py-4 font-medium text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-2">
+        <button onclick="switchTab(1)" class="tab-btn py-4 font-medium text-sm text-slate-500 hover:text-slate-900 flex items-center gap-2">
             <i class="fa-solid fa-briefcase"></i> VS / TC Tracker
         </button>
-        <button onclick="switchTab(2)" class="tab-btn py-4 font-medium text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-2">
+        <button onclick="switchTab(2)" class="tab-btn py-4 font-medium text-sm text-slate-500 hover:text-slate-900 flex items-center gap-2">
             <i class="fa-solid fa-graduation-cap"></i> Law School
         </button>
     </nav>
 
     <!-- MAIN CONTAINER -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-8">
 
         <!-- ================= TAB 0: DASHBOARD & SCHEDULE ================= -->
         <div id="tab-0" class="space-y-8">
-            <!-- Top Dashboard Stats -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tasks to be Completed</p>
-                        <h3 id="dashPendingCount" class="text-3xl font-bold text-slate-800 mt-1">0</h3>
+                        <h3 id="dashPendingCount" class="text-3xl font-bold text-slate-900 mt-1">0</h3>
                     </div>
-                    <div class="bg-blue-50 text-blue-600 p-4 rounded-xl text-xl"><i class="fa-solid fa-list-check"></i></div>
+                    <div class="bg-slate-100 text-slate-900 p-4 rounded-xl text-xl"><i class="fa-solid fa-list-check"></i></div>
                 </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Upcoming Key Events</p>
-                        <h3 id="dashEventsCount" class="text-3xl font-bold text-indigo-600 mt-1">0</h3>
+                        <h3 id="dashEventsCount" class="text-3xl font-bold text-slate-900 mt-1">0</h3>
                         <p class="text-xs text-slate-400 mt-0.5">Within next 10 days</p>
                     </div>
-                    <div class="bg-indigo-50 text-indigo-600 p-4 rounded-xl text-xl"><i class="fa-solid fa-calendar-days"></i></div>
+                    <div class="bg-slate-100 text-slate-900 p-4 rounded-xl text-xl"><i class="fa-solid fa-calendar-days"></i></div>
                 </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active VS/TC Apps</p>
-                        <h3 id="dashActiveAppsCount" class="text-3xl font-bold text-emerald-600 mt-1">0</h3>
+                        <h3 id="dashActiveAppsCount" class="text-3xl font-bold text-slate-900 mt-1">0</h3>
                     </div>
-                    <div class="bg-emerald-50 text-emerald-600 p-4 rounded-xl text-xl"><i class="fa-solid fa-rocket"></i></div>
+                    <div class="bg-slate-100 text-slate-900 p-4 rounded-xl text-xl"><i class="fa-solid fa-rocket"></i></div>
                 </div>
             </div>
 
             <!-- Master To-Do & Quick Add -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-circle-check text-indigo-600 mr-2"></i> Global To-Do Master List</h2>
-                    <button onclick="openAddTaskModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> Add Task / Event
-                    </button>
+                    <h2 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-circle-check text-slate-900 mr-2"></i> Master To-Do List</h2>
+                    <div class="flex gap-2">
+                        <button onclick="exportJSONBackup()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-semibold transition"><i class="fa-solid fa-download mr-1"></i> Backup JSON</button>
+                        <button onclick="openAddTaskModal()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Add Task
+                        </button>
+                    </div>
                 </div>
-                <div id="masterTodoList" class="space-y-3">
-                    <!-- Populated dynamically -->
-                </div>
+                <div id="masterTodoList" class="space-y-3"></div>
             </div>
 
             <!-- Calendar & Schedule View -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-calendar-alt text-indigo-600 mr-2"></i> Schedule & Calendar</h2>
+                    <h2 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-calendar-alt text-slate-900 mr-2"></i> Schedule & Calendar</h2>
                     <div class="flex items-center gap-3">
-                        <button onclick="setCalendarView('monthly')" id="calViewMonthly" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white">Monthly</button>
-                        <button onclick="setCalendarView('weekly')" id="calViewWeekly" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 text-slate-600">Weekly</button>
+                        <button onclick="setCalendarView('monthly')" id="calViewMonthly" class="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-900 text-white">Monthly</button>
+                        <button onclick="setCalendarView('weekly')" id="calViewWeekly" class="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600">Weekly</button>
                     </div>
                 </div>
-                <div id="calendarContainer">
-                    <!-- Calendar Rendered Here -->
-                </div>
+                <div id="calendarContainer"></div>
             </div>
         </div>
 
         <!-- ================= TAB 1: VS/TC TRACKER ================= -->
         <div id="tab-1" class="space-y-8 hidden">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                    <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-briefcase text-indigo-600 mr-2"></i> Vacation Scheme & Training Contract Tracker</h2>
-                </div>
-                <div class="flex items-center gap-3">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <h2 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-briefcase text-slate-900 mr-2"></i> Vacation Scheme & Training Contract Tracker</h2>
+                <div class="flex flex-wrap items-center gap-3">
+                    <button onclick="exportExcelSpreadsheet()" class="bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-file-excel"></i> Export Excel
+                    </button>
                     <button onclick="openNetworkingDirectory()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
                         <i class="fa-solid fa-address-book"></i> Networking Directory
                     </button>
                     <button onclick="openGraveyardModal()" class="bg-rose-900 hover:bg-rose-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
                         <i class="fa-solid fa-skull"></i> Graveyard
                     </button>
-                    <button onclick="openAddAppModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
+                    <button onclick="openAddAppModal()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Add Application
                     </button>
                 </div>
             </div>
 
-            <!-- 1. Pending Applications -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-                <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-hourglass-half text-amber-500"></i> Pending Applications (Sorted by Deadline)
-                </h3>
-                <div id="pendingAppsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            <!-- Kanban Board -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <!-- Column 1: Looking to Apply -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3 border-b pb-2">Looking to Apply</h3>
+                    <div id="kanbanPending" class="space-y-3 flex-1 overflow-y-auto min-h-[300px]"></div>
+                </div>
+                <!-- Column 2: Application Submitted -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3 border-b pb-2">App Submitted</h3>
+                    <div id="kanbanSubmitted" class="space-y-3 flex-1 overflow-y-auto min-h-[300px]"></div>
+                </div>
+                <!-- Column 3: Online Assessment -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3 border-b pb-2">Online Assessment</h3>
+                    <div id="kanbanOA" class="space-y-3 flex-1 overflow-y-auto min-h-[300px]"></div>
+                </div>
+                <!-- Column 4: Video Interview -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3 border-b pb-2">Video Interview</h3>
+                    <div id="kanbanVI" class="space-y-3 flex-1 overflow-y-auto min-h-[300px]"></div>
+                </div>
+                <!-- Column 5: In-Person Interview -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3 border-b pb-2">In-Person Interview</h3>
+                    <div id="kanbanInPerson" class="space-y-3 flex-1 overflow-y-auto min-h-[300px]"></div>
+                </div>
             </div>
 
-            <!-- 2. Active Applications -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-                <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-rocket text-emerald-500"></i> Active Applications (Sorted by Furthest Stage)
-                </h3>
-                <div id="activeAppsList" class="space-y-4"></div>
-            </div>
-
-            <!-- 3. History Log Files -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-                <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-folder-open text-indigo-500"></i> History Log Files (All Recorded Firm Timelines)
+            <!-- History Log Files Section -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-folder-open text-slate-900"></i> History Log Files (All Recorded Firm Timelines)
                 </h3>
                 <div id="historyAppsList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
             </div>
@@ -177,9 +208,12 @@
         <!-- ================= TAB 2: LAW SCHOOL ================= -->
         <div id="tab-2" class="space-y-8 hidden">
             <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-graduation-cap text-indigo-600 mr-2"></i> Law School Classes & Exams</h2>
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-graduation-cap text-slate-900 mr-2"></i> Law School Classes & Exams</h2>
+                    <p class="text-xs text-slate-500 mt-1">Cumulative GPA: <strong id="cumulativeGPA" class="text-slate-900 text-sm">0.00</strong> / 4.00</p>
+                </div>
                 <div class="flex gap-3">
-                    <button onclick="openAddClassModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
+                    <button onclick="openAddClassModal()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Add Class
                     </button>
                     <button onclick="openAddExamModal()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center gap-2">
@@ -188,62 +222,61 @@
                 </div>
             </div>
 
-            <!-- Classes Columns -->
             <div>
                 <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Semester Classes & To-Dos</h3>
                 <div id="classesColumnsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
-            <!-- Exams Section -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mt-8">
-                <h3 class="text-base font-bold text-slate-800 mb-4"><i class="fa-solid fa-file-lines text-indigo-600 mr-2"></i> Upcoming Exams Countdown</h3>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mt-8">
+                <h3 class="text-base font-bold text-slate-900 mb-4"><i class="fa-solid fa-file-lines text-slate-900 mr-2"></i> Upcoming Exams Countdown</h3>
                 <div id="examsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"></div>
 
-                <h3 class="text-base font-bold text-slate-800 mb-4 pt-4 border-t border-slate-100"><i class="fa-solid fa-check-double text-emerald-600 mr-2"></i> Completed Exams & Grades</h3>
+                <h3 class="text-base font-bold text-slate-900 mb-4 pt-4 border-t border-slate-200"><i class="fa-solid fa-check-double text-slate-900 mr-2"></i> Completed Exams & Grades</h3>
                 <div id="completedExamsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
         </div>
 
     </main>
 
-    <!-- ================= MODALS & POP-UPS (ALL WITH CLOSE BUTTONS) ================= -->
+    <!-- ================= ALL MODALS & POP-UPS (WITH CLOSE BUTTONS) ================= -->
 
     <!-- Break Countdown Modal -->
     <div id="breakModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('breakModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg font-bold text-slate-800 mb-2"><i class="fa-solid fa-mug-hot text-amber-500 mr-2"></i> Buy Break</h3>
+            <button onclick="closeModal('breakModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+            <h3 class="text-lg font-bold text-slate-900 mb-2"><i class="fa-solid fa-mug-hot text-amber-500 mr-2"></i> Buy Break</h3>
             <p class="text-xs text-slate-500 mb-4">Cost: 10 tokens per minute. Enter how many minutes you want to take off:</p>
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Minutes (Max: <span id="maxBreakMins">0</span>)</label>
-                    <input type="number" id="breakMinutesInput" min="1" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="number" id="breakMinutesInput" min="1" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900">
                 </div>
                 <button onclick="startBreakTimer()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition">Start Break</button>
             </div>
-            <div id="breakTimerDisplay" class="hidden text-center mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
-                <p class="text-xs text-emerald-700 font-bold uppercase tracking-wider mb-1">Go touch grass and don't doomscroll!</p>
-                <h2 id="timerCountdown" class="text-3xl font-black text-emerald-800">01:00</h2>
+            <div id="breakTimerDisplay" class="hidden text-center mt-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <p class="text-xs text-slate-900 font-bold uppercase tracking-wider mb-1">Go touch grass and don't doomscroll!</p>
+                <h2 id="timerCountdown" class="text-3xl font-black text-slate-900">01:00</h2>
             </div>
         </div>
     </div>
 
-    <!-- Add Task/Event Modal -->
+    <!-- Add/Edit Task Modal -->
     <div id="taskModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('taskModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <h3 id="taskModalTitle" class="text-lg font-bold text-slate-800 mb-4">Add Task or Event</h3>
+            <button onclick="closeModal('taskModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+            <h3 id="taskModalTitle" class="text-lg font-bold text-slate-900 mb-4">Add Task or Event</h3>
             <form id="taskForm" onsubmit="saveTask(event)" class="space-y-4">
                 <input type="hidden" id="taskId">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Title</label>
-                    <input type="text" id="taskTitle" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" id="taskTitle" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-900">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Type</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Type & Color</label>
                         <select id="taskType" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                            <option value="general">General Task (+10)</option>
+                            <option value="general">Apply to Firm (+10)</option>
+                            <option value="reading">Class Reading (+20)</option>
                             <option value="lawschool">Law School Task (+20)</option>
                             <option value="vstc">VS/TC Task (+50)</option>
                             <option value="event">Event (No tokens)</option>
@@ -254,7 +287,7 @@
                         <input type="date" id="taskDeadline" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
                     </div>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Item</button>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Item</button>
             </form>
         </div>
     </div>
@@ -262,8 +295,8 @@
     <!-- Add/Edit Application Modal -->
     <div id="appModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('appModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <h3 id="appModalTitle" class="text-lg font-bold text-slate-800 mb-4">Add Application</h3>
+            <button onclick="closeModal('appModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+            <h3 id="appModalTitle" class="text-lg font-bold text-slate-900 mb-4">Add Application</h3>
             <form id="appForm" onsubmit="saveApplication(event)" class="space-y-4">
                 <input type="hidden" id="appId">
                 <div>
@@ -274,9 +307,13 @@
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Firm Details / Notes</label>
                     <textarea id="appDetails" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm"></textarea>
                 </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Cover Letter Link / Text (Optional)</label>
+                    <input type="text" id="appCoverLetter" placeholder="Paste link or notes here..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Status Type</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Initial Choice</label>
                         <select id="appInitialStatus" onchange="toggleAppStatusFields()" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
                             <option value="pending">Looking to Apply</option>
                             <option value="submitted">Submitted Application</option>
@@ -287,7 +324,7 @@
                         <input type="date" id="appDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
                     </div>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Application</button>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Application</button>
             </form>
         </div>
     </div>
@@ -295,8 +332,8 @@
     <!-- Submit Pending Application Modal -->
     <div id="submitAppModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('submitAppModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg font-bold text-slate-800 mb-4">Submit Application</h3>
+            <button onclick="closeModal('submitAppModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+            <h3 class="text-lg font-bold text-slate-900 mb-4">Submit Application</h3>
             <form onsubmit="confirmSubmitApp(event)" class="space-y-4">
                 <input type="hidden" id="submitAppTargetId">
                 <div>
@@ -307,16 +344,16 @@
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Notes (Optional)</label>
                     <textarea id="submitNotes" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm"></textarea>
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Confirm Submission (+50 Tokens)</button>
+                <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-sm transition">Confirm Submission (+50 Tokens)</button>
             </form>
         </div>
     </div>
 
-    <!-- Add Event Modal (for Pending/Active Apps) -->
+    <!-- Add Event Modal (For Pending & Active Apps) -->
     <div id="appEventModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('appEventModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg font-bold text-slate-800 mb-4">Add Firm Event</h3>
+            <button onclick="closeModal('appEventModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+            <h3 class="text-lg font-bold text-slate-900 mb-4">Add Firm Event</h3>
             <form onsubmit="saveAppEvent(event)" class="space-y-4">
                 <input type="hidden" id="eventAppId">
                 <div class="grid grid-cols-2 gap-4">
@@ -335,24 +372,22 @@
                     </div>
                 </div>
 
-                <!-- Reflections Section (Manual Text Fill + Add More) -->
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="text-xs font-semibold text-slate-600">Reflections</label>
-                        <button type="button" onclick="addReflectionField()" class="text-xs text-indigo-600 font-bold hover:underline">+ Add Reflection</button>
+                        <button type="button" onclick="addReflectionField()" class="text-xs text-slate-900 font-bold hover:underline">+ Add Reflection</button>
                     </div>
                     <div id="reflectionsList" class="space-y-2">
                         <input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm reflection-input">
                     </div>
                 </div>
 
-                <!-- People Section (Manual Text Fill + Add More) -->
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="text-xs font-semibold text-slate-600">People Met</label>
-                        <button type="button" onclick="addPersonField()" class="text-xs text-indigo-600 font-bold hover:underline">+ Add Person</button>
+                        <button type="button" onclick="addPersonField()" class="text-xs text-slate-900 font-bold hover:underline">+ Add Person</button>
                     </div>
-                    <div id="peopleList" class="space-y-3 border border-slate-100 p-3 rounded-xl bg-slate-50">
+                    <div id="peopleList" class="space-y-3 border border-slate-200 p-3 rounded-xl bg-slate-50">
                         <div class="grid grid-cols-2 gap-2 person-group">
                             <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-name">
                             <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs p-pos">
@@ -363,7 +398,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Event</button>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Event</button>
             </form>
         </div>
     </div>
@@ -371,13 +406,18 @@
     <!-- Next Round Modal -->
     <div id="nextRoundModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('nextRoundModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg font-bold text-slate-800 mb-4">Move to Next Round</h3>
+            <button onclick="closeModal('nextRoundModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+            <h3 class="text-lg font-bold text-slate-900 mb-4">Move to Next Round</h3>
             <form onsubmit="saveNextRound(event)" class="space-y-4">
                 <input type="hidden" id="roundAppId">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">New Stage Name (e.g., Assessment Centre, Interview)</label>
-                    <input type="text" id="roundStageName" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Stage Name / Kanban Column</label>
+                    <select id="roundStageName" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                        <option value="Application Submitted">Application Submitted</option>
+                        <option value="Online Assessment">Online Assessment</option>
+                        <option value="Video Interview">Video Interview</option>
+                        <option value="In-Person Interview">In-Person Interview</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Date</label>
@@ -387,7 +427,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="text-xs font-semibold text-slate-600">Reflections</label>
-                        <button type="button" onclick="addRoundReflectionField()" class="text-xs text-indigo-600 font-bold hover:underline">+ Add Reflection</button>
+                        <button type="button" onclick="addRoundReflectionField()" class="text-xs text-slate-900 font-bold hover:underline">+ Add Reflection</button>
                     </div>
                     <div id="roundReflectionsList" class="space-y-2">
                         <input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm round-reflection-input">
@@ -397,9 +437,9 @@
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="text-xs font-semibold text-slate-600">People Met</label>
-                        <button type="button" onclick="addRoundPersonField()" class="text-xs text-indigo-600 font-bold hover:underline">+ Add Person</button>
+                        <button type="button" onclick="addRoundPersonField()" class="text-xs text-slate-900 font-bold hover:underline">+ Add Person</button>
                     </div>
-                    <div id="roundPeopleList" class="space-y-3 border border-slate-100 p-3 rounded-xl bg-slate-50">
+                    <div id="roundPeopleList" class="space-y-3 border border-slate-200 p-3 rounded-xl bg-slate-50">
                         <div class="grid grid-cols-2 gap-2 round-person-group">
                             <input type="text" placeholder="Name" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-name">
                             <input type="text" placeholder="Position" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs rp-pos">
@@ -410,7 +450,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Round</button>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Round</button>
             </form>
         </div>
     </div>
@@ -418,8 +458,8 @@
     <!-- Graveyard Modal -->
     <div id="graveyardModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('graveyardModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg font-bold text-slate-800 mb-4"><i class="fa-solid fa-skull text-rose-800 mr-2"></i> Application Graveyard</h3>
+            <button onclick="closeModal('graveyardModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+            <h3 class="text-lg font-bold text-slate-900 mb-4"><i class="fa-solid fa-skull text-rose-900 mr-2"></i> Application Graveyard</h3>
             <div id="graveyardAppsList" class="space-y-3"></div>
         </div>
     </div>
@@ -427,8 +467,8 @@
     <!-- Revive Application Modal -->
     <div id="reviveModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('reviveModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg font-bold text-slate-800 mb-2">Revive Application for Next Cycle</h3>
+            <button onclick="closeModal('reviveModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Revive Application for Next Cycle</h3>
             <p id="reviveFirmSubtitle" class="text-xs text-slate-500 mb-4">Choose how you want to revive this firm:</p>
             <input type="hidden" id="reviveAppId">
             <div class="space-y-4">
@@ -440,14 +480,14 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Date (Deadline or Submission Date)</label>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Date</label>
                     <input type="date" id="reviveDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Notes (Optional)</label>
                     <textarea id="reviveNotes" rows="2" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm"></textarea>
                 </div>
-                <button onclick="confirmReviveApp()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Revive Application</button>
+                <button onclick="confirmReviveApp()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Revive Application</button>
             </div>
         </div>
     </div>
@@ -455,10 +495,13 @@
     <!-- Networking Directory Modal -->
     <div id="networkingModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-4xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('networkingModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-address-book text-indigo-600 mr-2"></i> Global Networking Directory</h3>
-                <div class="flex gap-2">
+            <button onclick="closeModal('networkingModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-address-book text-slate-900 mr-2"></i> Global Networking Directory</h3>
+                <div class="flex flex-wrap gap-2">
+                    <select id="netFirmFilter" onchange="renderNetworkingDirectory()" class="border border-slate-200 rounded-xl px-3 py-1.5 text-xs">
+                        <option value="">All Firms</option>
+                    </select>
                     <select id="netSortBy" onchange="renderNetworkingDirectory()" class="border border-slate-200 rounded-xl px-3 py-1.5 text-xs">
                         <option value="date">Sort Chronologically</option>
                         <option value="pa">Sort by Practice Area</option>
@@ -470,11 +513,11 @@
         </div>
     </div>
 
-    <!-- History Log Detail Modal -->
+    <!-- History Log Detail Modal (Editable) -->
     <div id="historyModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('historyModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <h3 id="historyModalTitle" class="text-lg font-bold text-slate-800 mb-4">Firm Timeline Log</h3>
+            <button onclick="closeModal('historyModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+            <h3 id="historyModalTitle" class="text-lg font-bold text-slate-900 mb-4">Firm Timeline Log</h3>
             <div id="historyModalContent" class="space-y-6"></div>
         </div>
     </div>
@@ -482,14 +525,14 @@
     <!-- Add Class Modal -->
     <div id="classModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('classModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg font-bold text-slate-800 mb-4">Add Law School Class</h3>
+            <button onclick="closeModal('classModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+            <h3 class="text-lg font-bold text-slate-900 mb-4">Add Law School Class</h3>
             <form onsubmit="saveClass(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Class Name</label>
                     <input type="text" id="classNameInput" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Add Class</button>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Add Class</button>
             </form>
         </div>
     </div>
@@ -497,8 +540,8 @@
     <!-- Add Exam Modal -->
     <div id="examModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeModal('examModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg font-bold text-slate-800 mb-4">Add Exam</h3>
+            <button onclick="closeModal('examModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+            <h3 class="text-lg font-bold text-slate-900 mb-4">Add Exam</h3>
             <form onsubmit="saveExam(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Exam Name / Subject</label>
@@ -508,17 +551,17 @@
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Exam Date</label>
                     <input type="date" id="examDate" required class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm">
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Exam</button>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition">Save Exam</button>
             </form>
         </div>
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // State Management
         let appState = JSON.parse(localStorage.getItem('partnerInLawState')) || {
             tokens: 0,
             lastCheckInDate: null,
+            lastBackupReminder: null,
             tasks: [],
             applications: [],
             classes: [
@@ -536,14 +579,15 @@
             renderAll();
         }
 
-        // Initialize App
         document.addEventListener('DOMContentLoaded', () => {
+            checkBackupReminder();
             renderAll();
-            setInterval(checkAutoCleanTasks, 60000); // Check 24-hr completed item clean
+            setInterval(checkAutoCleanTasks, 60000);
         });
 
         function renderAll() {
             document.getElementById('tokenCount').innerText = appState.tokens;
+            renderNotifications();
             renderDashboard();
             renderTasks();
             renderCalendar();
@@ -552,22 +596,46 @@
             renderExams();
         }
 
-        // Tab Switching
         function switchTab(index) {
             document.querySelectorAll('#tab-0, #tab-1, #tab-2').forEach((el, i) => {
                 el.classList.toggle('hidden', i !== index);
             });
             document.querySelectorAll('.tab-btn').forEach((btn, i) => {
                 if (i === index) {
-                    btn.className = "tab-btn py-4 font-semibold text-sm border-b-2 border-indigo-600 text-indigo-600 flex items-center gap-2";
+                    btn.className = "tab-btn py-4 font-semibold text-sm border-b-2 border-slate-900 text-slate-900 flex items-center gap-2";
                 } else {
-                    btn.className = "tab-btn py-4 font-medium text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-2";
+                    btn.className = "tab-btn py-4 font-medium text-sm text-slate-500 hover:text-slate-900 flex items-center gap-2";
                 }
             });
         }
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Backup & Reminders
+        function checkBackupReminder() {
+            const now = new Date().getTime();
+            const last = appState.lastBackupReminder || 0;
+            if (now - last > 7 * 24 * 60 * 60 * 1000) {
+                document.getElementById('backupBanner').classList.remove('hidden');
+            }
+        }
+
+        function dismissBackupBanner() {
+            appState.lastBackupReminder = new Date().getTime();
+            saveState();
+            document.getElementById('backupBanner').classList.add('hidden');
+        }
+
+        function exportJSONBackup() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `partner_in_law_backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
         }
 
         // Daily Check-In
@@ -618,10 +686,61 @@
             }, 1000);
         }
 
+        // Notifications
+        function toggleNotificationDropdown() {
+            const dropdown = document.getElementById('notifDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function renderNotifications() {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const dueList = [];
+
+            appState.tasks.forEach(t => {
+                if (!t.completed) {
+                    const d = new Date(t.deadline);
+                    const diff = Math.ceil((d - today)/(1000*60*60*24));
+                    if (diff <= 3) dueList.push({ title: t.title, date: t.deadline, type: 'Task' });
+                }
+            });
+            appState.exams.forEach(e => {
+                const d = new Date(e.date);
+                if (d >= today) {
+                    const diff = Math.ceil((d - today)/(1000*60*60*24));
+                    if (diff <= 5) dueList.push({ title: e.name, date: e.date, type: 'Exam' });
+                }
+            });
+            appState.applications.forEach(a => {
+                if (a.status === 'pending' && a.deadline) {
+                    const d = new Date(a.deadline);
+                    const diff = Math.ceil((d - today)/(1000*60*60*24));
+                    if (diff <= 5) dueList.push({ title: `App Deadline: ${a.name}`, date: a.deadline, type: 'Deadline' });
+                }
+            });
+
+            const badge = document.getElementById('notifBadge');
+            const listEl = document.getElementById('notifList');
+            if (dueList.length > 0) {
+                badge.innerText = dueList.length;
+                badge.classList.remove('hidden');
+                listEl.innerHTML = dueList.map(item => `
+                    <div class="p-2 bg-slate-50 rounded-xl text-xs border border-slate-100 flex justify-between">
+                        <span class="font-bold text-slate-800">${item.title}</span>
+                        <span class="text-slate-500">${item.date}</span>
+                    </div>
+                `).join('');
+            } else {
+                badge.classList.add('hidden');
+                listEl.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-2">No urgent reminders.</p>`;
+            }
+        }
+
         // Task & Event Logic
-        function openAddTaskModal() {
+        function openAddTaskModal(defaultDate = null) {
             document.getElementById('taskId').value = '';
             document.getElementById('taskForm').reset();
+            if (defaultDate) document.getElementById('taskDeadline').value = defaultDate;
             document.getElementById('taskModalTitle').innerText = 'Add Task or Event';
             document.getElementById('taskModal').classList.remove('hidden');
         }
@@ -651,7 +770,7 @@
 
             if (task.completed) {
                 if (task.type === 'general') appState.tokens += 10;
-                if (task.type === 'lawschool') appState.tokens += 20;
+                if (task.type === 'reading' || task.type === 'lawschool') appState.tokens += 20;
                 if (task.type === 'vstc') appState.tokens += 50;
             }
             saveState();
@@ -680,17 +799,13 @@
             appState.tasks = appState.tasks.filter(t => {
                 if (t.completed && t.completedAt) {
                     const diffHours = (now - new Date(t.completedAt)) / (1000 * 60 * 60);
-                    if (diffHours >= 24) {
-                        changed = true;
-                        return false;
-                    }
+                    if (diffHours >= 24) { changed = true; return false; }
                 }
                 return true;
             });
             if (changed) saveState();
         }
 
-        // Render Dashboard & Master List
         function renderDashboard() {
             const pendingTasks = appState.tasks.filter(t => !t.completed);
             document.getElementById('dashPendingCount').innerText = pendingTasks.length;
@@ -700,12 +815,10 @@
             const tenDaysOut = new Date(today.getTime() + 10 * 24 * 60 * 60 * 1000);
 
             let keyEventsCount = 0;
-            // Check exams within 10 days
             appState.exams.forEach(e => {
                 const d = new Date(e.date);
                 if (d >= today && d <= tenDaysOut) keyEventsCount++;
             });
-            // Check application deadlines within 10 days
             appState.applications.forEach(a => {
                 if (a.status === 'pending' && a.deadline) {
                     const d = new Date(a.deadline);
@@ -713,13 +826,14 @@
                 }
             });
             document.getElementById('dashEventsCount').innerText = keyEventsCount;
+            document.getElementById('dashActiveAppsCount').innerText = appState.applications.filter(a => a.status === 'active').length;
+        }
 
-            const activeApps = appState.applications.filter(a => a.status === 'active');
-            document.getElementById('dashActiveAppsCount').innerText = activeApps.length;
-
-            // Master List Rendering
+        function renderTasks() {
             const masterListEl = document.getElementById('masterTodoList');
             const sortedTasks = [...appState.tasks].sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
+            const today = new Date();
+            today.setHours(0,0,0,0);
             
             if (sortedTasks.length === 0) {
                 masterListEl.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">No tasks added yet.</p>`;
@@ -729,18 +843,18 @@
             masterListEl.innerHTML = sortedTasks.map(t => {
                 const daysLeft = Math.ceil((new Date(t.deadline) - today) / (1000 * 60 * 60 * 24));
                 let countdownBadge = '';
-                if (daysLeft < 0) countdownBadge = `<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded text-[10px] font-bold">${Math.abs(daysLeft)} days overdue</span>`;
-                else if (daysLeft === 0) countdownBadge = `<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold">TODAY</span>`;
-                else countdownBadge = `<span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] font-bold">${daysLeft} days left</span>`;
+                if (daysLeft < 0) countdownBadge = `<span class="bg-rose-50 text-rose-700 px-2 py-0.5 rounded text-[10px] font-bold">${Math.abs(daysLeft)} days overdue</span>`;
+                else if (daysLeft === 0) countdownBadge = `<span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold">TODAY</span>`;
+                else countdownBadge = `<span class="bg-slate-50 text-slate-600 px-2 py-0.5 rounded text-[10px] font-bold">${daysLeft} days left</span>`;
 
-                const badgeColor = t.type === 'general' ? 'bg-blue-100 text-blue-700' : t.type === 'lawschool' ? 'bg-purple-100 text-purple-700' : t.type === 'vstc' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
+                const badgeColor = t.type === 'general' ? 'bg-blue-50 text-blue-700 border border-blue-200' : t.type === 'reading' ? 'bg-purple-50 text-purple-700 border border-purple-200' : t.type === 'lawschool' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : t.type === 'vstc' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200';
 
                 return `
                     <div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition">
                         <div class="flex items-center gap-3">
-                            <input type="checkbox" ${t.completed ? 'checked' : ''} onclick="toggleTaskComplete('${t.id}')" class="w-4 h-4 text-indigo-600 rounded">
+                            <input type="checkbox" ${t.completed ? 'checked' : ''} onclick="toggleTaskComplete('${t.id}')" class="w-4 h-4 text-slate-900 rounded">
                             <div>
-                                <h4 class="text-sm font-semibold ${t.completed ? 'line-through text-slate-400' : 'text-slate-800'}">${t.title}</h4>
+                                <h4 class="text-sm font-semibold ${t.completed ? 'line-through text-slate-400' : 'text-slate-900'}">${t.title}</h4>
                                 <div class="flex items-center gap-2 mt-1">
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${badgeColor}">${t.type}</span>
                                     ${countdownBadge}
@@ -748,7 +862,7 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="editTask('${t.id}')" class="text-slate-400 hover:text-indigo-600 text-xs"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="editTask('${t.id}')" class="text-slate-400 hover:text-slate-900 text-xs"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="deleteTask('${t.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
@@ -760,8 +874,8 @@
         let currentCalendarView = 'monthly';
         function setCalendarView(v) {
             currentCalendarView = v;
-            document.getElementById('calViewMonthly').className = v === 'monthly' ? "px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white" : "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 text-slate-600";
-            document.getElementById('calViewWeekly').className = v === 'weekly' ? "px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white" : "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 text-slate-600";
+            document.getElementById('calViewMonthly').className = v === 'monthly' ? "px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-900 text-white" : "px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600";
+            document.getElementById('calViewWeekly').className = v === 'weekly' ? "px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-900 text-white" : "px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-600";
             renderCalendar();
         }
 
@@ -776,7 +890,7 @@
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
                 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-                let html = `<h3 class="text-base font-bold text-slate-800 mb-4">${monthNames[month]} ${year}</h3>`;
+                let html = `<h3 class="text-base font-bold text-slate-900 mb-4">${monthNames[month]} ${year}</h3>`;
                 html += `<div class="grid grid-cols-7 gap-2 text-center text-xs font-semibold text-slate-400 mb-2"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>`;
                 html += `<div class="grid grid-cols-7 gap-2">`;
 
@@ -789,19 +903,18 @@
                     const dayTasks = appState.tasks.filter(t => t.deadline === dateStr);
                     const dayExams = appState.exams.filter(e => e.date === dateStr);
 
-                    html += `<div class="bg-slate-50 border border-slate-100 rounded-xl h-24 p-2 overflow-y-auto">
+                    html += `<div onclick="openAddTaskModal('${dateStr}')" class="bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-100 rounded-xl h-24 p-2 overflow-y-auto transition">
                         <span class="text-xs font-bold text-slate-700">${day}</span>
                         <div class="space-y-1 mt-1">
-                            ${dayTasks.map(t => `<div class="text-[10px] bg-indigo-50 text-indigo-700 px-1 rounded truncate">${t.title}</div>`).join('')}
-                            ${dayExams.map(e => `<div class="text-[10px] bg-rose-50 text-rose-700 px-1 rounded truncate">Exam: ${e.name}</div>`).join('')}
+                            ${dayTasks.map(t => `<div class="text-[10px] bg-slate-200 text-slate-900 px-1 rounded truncate">${t.title}</div>`).join('')}
+                            ${dayExams.map(e => `<div class="text-[10px] bg-rose-100 text-rose-800 px-1 rounded truncate">Exam: ${e.name}</div>`).join('')}
                         </div>
                     </div>`;
                 }
                 html += `</div>`;
                 container.innerHTML = html;
             } else {
-                // Weekly view
-                let html = `<h3 class="text-base font-bold text-slate-800 mb-4">This Week Agenda</h3>`;
+                let html = `<h3 class="text-base font-bold text-slate-900 mb-4">This Week Agenda</h3>`;
                 html += `<div class="space-y-2">`;
                 for (let i = 0; i < 7; i++) {
                     const d = new Date();
@@ -809,10 +922,10 @@
                     const dateStr = d.toISOString().split('T')[0];
                     const dayTasks = appState.tasks.filter(t => t.deadline === dateStr);
 
-                    html += `<div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
+                    html += `<div onclick="openAddTaskModal('${dateStr}')" class="p-3 bg-slate-50 hover:bg-slate-100 cursor-pointer rounded-xl border border-slate-100 flex justify-between items-center transition">
                         <span class="text-xs font-bold text-slate-700 w-28">${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
                         <div class="flex-1 flex gap-2 overflow-x-auto px-4">
-                            ${dayTasks.length === 0 ? '<span class="text-xs text-slate-400 italic">No tasks</span>' : dayTasks.map(t => `<span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">${t.title}</span>`).join('')}
+                            ${dayTasks.length === 0 ? '<span class="text-xs text-slate-400 italic">No tasks</span>' : dayTasks.map(t => `<span class="text-xs bg-slate-200 text-slate-900 px-2 py-0.5 rounded">${t.title}</span>`).join('')}
                         </div>
                     </div>`;
                 }
@@ -842,6 +955,7 @@
             const id = document.getElementById('appId').value || 'app_' + Date.now();
             const name = document.getElementById('appName').value;
             const details = document.getElementById('appDetails').value;
+            const coverLetter = document.getElementById('appCoverLetter').value;
             const initialStatus = document.getElementById('appInitialStatus').value;
             const dateVal = document.getElementById('appDate').value;
 
@@ -849,13 +963,14 @@
             if (existingIndex >= 0) {
                 appState.applications[existingIndex] = {
                     ...appState.applications[existingIndex],
-                    name, details
+                    name, details, coverLetter
                 };
             } else {
                 const newApp = {
                     id,
                     name,
                     details,
+                    coverLetter,
                     status: initialStatus === 'pending' ? 'pending' : 'active',
                     deadline: initialStatus === 'pending' ? dateVal : null,
                     submittedDate: initialStatus === 'submitted' ? dateVal : null,
@@ -877,7 +992,8 @@
             if (!app) return;
             document.getElementById('appId').value = app.id;
             document.getElementById('appName').value = app.name;
-            document.getElementById('appDetails').value = app.details;
+            document.getElementById('appDetails').value = app.details || '';
+            document.getElementById('appCoverLetter').value = app.coverLetter || '';
             document.getElementById('appInitialStatus').value = app.status === 'pending' ? 'pending' : 'submitted';
             document.getElementById('appInitialStatus').disabled = true;
             document.getElementById('appDateLabel').innerText = app.status === 'pending' ? 'Application Deadline' : 'Day of Submission';
@@ -980,7 +1096,7 @@
         // Next Round Modal
         function openNextRoundModal(id) {
             document.getElementById('roundAppId').value = id;
-            document.getElementById('roundStageName').value = '';
+            document.getElementById('roundStageName').value = 'Online Assessment';
             document.getElementById('roundDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('roundReflectionsList').innerHTML = `<input type="text" placeholder="Reflection note..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm round-reflection-input">`;
             document.getElementById('roundPeopleList').innerHTML = `
@@ -1032,7 +1148,6 @@
 
             const app = appState.applications.find(a => a.id === id);
             if (app) {
-                // Keep history updated
                 app.currentStage = stage;
                 app.history.push({ stage, date, notes: '', reflections, people });
             }
@@ -1068,10 +1183,10 @@
                 list.innerHTML = rejectedApps.map(a => `
                     <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
                         <div>
-                            <h4 class="text-sm font-bold text-slate-800">${a.name}</h4>
-                            <p class="text-xs text-slate-500">Furthest Stage: <strong class="text-rose-600">${a.currentStage || 'Application Submitted'}</strong></p>
+                            <h4 class="text-sm font-bold text-slate-900">${a.name}</h4>
+                            <p class="text-xs text-slate-500">Furthest Stage: <strong class="text-rose-900">${a.currentStage || 'Application Submitted'}</strong></p>
                         </div>
-                        <button onclick="openReviveModal('${a.id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow">Revive App</button>
+                        <button onclick="openReviveModal('${a.id}')" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-xl text-xs font-semibold shadow">Revive App</button>
                     </div>
                 `).join('');
             }
@@ -1082,7 +1197,7 @@
             const app = appState.applications.find(a => a.id === id);
             if (!app) return;
             document.getElementById('reviveAppId').value = id;
-            document.getElementById('reviveFirmSubtitle').innerText = `Reviving ${app.name} for the next cycle. Furthest stage previously: ${app.currentStage || 'N/A'}`;
+            document.getElementById('reviveFirmSubtitle').innerText = `Reviving ${app.name} for next cycle. Furthest stage previously: ${app.currentStage || 'N/A'}`;
             document.getElementById('reviveDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('reviveModal').classList.remove('hidden');
         }
@@ -1095,14 +1210,12 @@
 
             const app = appState.applications.find(a => a.id === id);
             if (app) {
-                // Save old cycle into cycles array
                 app.cycles.push({
                     furthestStage: app.currentStage,
                     history: [...app.history],
                     events: [...app.events]
                 });
 
-                // Reset for new cycle
                 app.status = action === 'pending' ? 'pending' : 'active';
                 app.deadline = action === 'pending' ? date : null;
                 app.submittedDate = action === 'submitted' ? date : null;
@@ -1117,78 +1230,144 @@
             saveState();
         }
 
-        // History Log Modal
+        // History Log Modal (Editable & Separated)
         function openHistoryModal(id) {
             const app = appState.applications.find(a => a.id === id);
             if (!app) return;
             document.getElementById('historyModalTitle').innerText = `${app.name} - Complete Timeline Log`;
             
-            let html = `<div class="space-y-4">`;
+            let html = `<div class="space-y-6">`;
             
-            if (app.cycles && app.cycles.length > 0) {
-                app.cycles.forEach((cyc, idx) => {
-                    html += `<div class="p-3 bg-slate-100 rounded-xl border border-slate-200 mb-2">
-                        <h4 class="text-xs font-bold text-slate-500 uppercase">Previous Cycle (Furthest: ${cyc.furthestStage})</h4>
-                    </div>`;
-                });
-            }
-
-            html += `<h4 class="text-sm font-bold text-indigo-600 border-b pb-1">Current Cycle</h4>`;
-            app.history.forEach(h => {
-                html += `<div class="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
-                    <div class="flex justify-between text-xs font-bold text-slate-700">
-                        <span>${h.stage}</span>
-                        <span class="text-slate-400">${h.date}</span>
+            // Section 1: Firm Name & Details
+            html += `<div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">1. Firm Information</h4>
+                <div class="space-y-2">
+                    <div>
+                        <label class="block text-[10px] text-slate-500 font-semibold">Firm Name</label>
+                        <input type="text" id="histFirmName" value="${app.name}" onchange="updateHistoryFirmName('${app.id}', this.value)" class="w-full border border-slate-200 rounded-lg px-2 py-1 text-xs bg-white font-bold">
                     </div>
-                    ${h.notes ? `<p class="text-xs text-slate-600">${h.notes}</p>` : ''}
-                    ${h.reflections && h.reflections.length > 0 ? `<div class="text-xs text-slate-500 italic">Reflections: ${h.reflections.join(', ')}</div>` : ''}
+                    <div>
+                        <label class="block text-[10px] text-slate-500 font-semibold">Details & Cover Letter</label>
+                        <textarea id="histFirmDetails" onchange="updateHistoryFirmDetails('${app.id}', this.value)" rows="2" class="w-full border border-slate-200 rounded-lg px-2 py-1 text-xs bg-white">${app.details || ''}</textarea>
+                    </div>
+                </div>
+            </div>`;
+
+            // Section 2: Stages and Dates & Notes/Reflections
+            html += `<div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">2. Stage Names, Dates & Reflections</h4>
+                <div class="space-y-3">`;
+            
+            app.history.forEach((h, hIdx) => {
+                html += `<div class="p-3 bg-white rounded-xl border border-slate-200 space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-slate-400 font-semibold">Stage Name</label>
+                            <input type="text" value="${h.stage}" onchange="updateHistoryStage('${app.id}', ${hIdx}, 'stage', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-full">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 font-semibold">Date</label>
+                            <input type="date" value="${h.date}" onchange="updateHistoryStage('${app.id}', ${hIdx}, 'date', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-full">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 font-semibold">Notes / Reflections</label>
+                        <input type="text" value="${h.notes || (h.reflections ? h.reflections.join(', ') : '')}" onchange="updateHistoryStage('${app.id}', ${hIdx}, 'notes', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-full">
+                    </div>
                 </div>`;
             });
 
-            if (app.events.length > 0) {
-                html += `<h4 class="text-sm font-bold text-indigo-600 border-b pb-1 pt-2">Firm Events</h4>`;
-                app.events.forEach(ev => {
-                    html += `<div class="p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 space-y-1">
-                        <div class="flex justify-between text-xs font-bold text-indigo-900">
-                            <span>${ev.type}</span>
-                            <span class="text-indigo-400">${ev.date}</span>
+            app.events.forEach((ev, eIdx) => {
+                html += `<div class="p-3 bg-white rounded-xl border border-slate-200 space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-indigo-500 font-semibold">Event: ${ev.type}</label>
+                            <input type="text" value="${ev.type}" onchange="updateHistoryEvent('${app.id}', ${eIdx}, 'type', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-full">
                         </div>
-                        ${ev.reflections && ev.reflections.length > 0 ? `<div class="text-xs text-indigo-700 italic">Reflections: ${ev.reflections.join(', ')}</div>` : ''}
+                        <div>
+                            <label class="block text-[10px] text-indigo-500 font-semibold">Date</label>
+                            <input type="date" value="${ev.date}" onchange="updateHistoryEvent('${app.id}', ${eIdx}, 'date', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-full">
+                        </div>
+                    </div>
+                </div>`;
+            });
+            html += `</div></div>`;
+
+            // Section 3: Compiled People Directory
+            html += `<div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">3. Compiled People Met</h4>
+                <div class="space-y-2">`;
+            
+            let firmPeople = [];
+            app.history.forEach(h => { if(h.people) h.people.forEach(p => firmPeople.push(p)); });
+            app.events.forEach(ev => { if(ev.people) ev.events.forEach(p => firmPeople.push(p)); });
+
+            if(firmPeople.length === 0) {
+                html += `<p class="text-xs text-slate-400 italic">No people logged for this firm.</p>`;
+            } else {
+                firmPeople.forEach(p => {
+                    html += `<div class="p-2 bg-white rounded-lg border border-slate-200 text-xs flex justify-between items-center">
+                        <div>
+                            <strong>${p.name}</strong> (${p.position || 'N/A'}) - <span class="text-slate-500">${p.practiceArea || 'N/A'}</span>
+                            ${p.commonalities ? `<div class="text-indigo-600 text-[10px]">Commonalities: ${p.commonalities}</div>` : ''}
+                        </div>
+                        <span class="text-[10px] text-slate-400">${p.date || ''}</span>
                     </div>`;
                 });
             }
+            html += `</div></div>`;
 
             html += `</div>`;
             document.getElementById('historyModalContent').innerHTML = html;
             document.getElementById('historyModal').classList.remove('hidden');
         }
 
-        // Networking Directory
+        function updateHistoryFirmName(id, val) {
+            const app = appState.applications.find(a => a.id === id);
+            if (app) { app.name = val; saveState(); }
+        }
+        function updateHistoryFirmDetails(id, val) {
+            const app = appState.applications.find(a => a.id === id);
+            if (app) { app.details = val; saveState(); }
+        }
+        function updateHistoryStage(id, idx, field, val) {
+            const app = appState.applications.find(a => a.id === id);
+            if (app && app.history[idx]) {
+                app.history[idx][field] = val;
+                saveState();
+            }
+        }
+        function updateHistoryEvent(id, idx, field, val) {
+            const app = appState.applications.find(a => a.id === id);
+            if (app && app.events[idx]) {
+                app.events[idx][field] = val;
+                saveState();
+            }
+        }
+
+        // Global Networking Directory
         function openNetworkingDirectory() {
+            const firmSelect = document.getElementById('netFirmFilter');
+            firmSelect.innerHTML = `<option value="">All Firms</option>` + appState.applications.map(a => `<option value="${a.name}">${a.name}</option>`).join('');
             renderNetworkingDirectory();
             document.getElementById('networkingModal').classList.remove('hidden');
         }
 
         function renderNetworkingDirectory() {
             const sortBy = document.getElementById('netSortBy').value;
+            const firmFilter = document.getElementById('netFirmFilter').value;
             let allPeople = [];
 
             appState.applications.forEach(a => {
-                a.history.forEach(h => {
-                    if (h.people) h.people.forEach(p => allPeople.push({ ...p, firm: a.name }));
-                });
-                a.events.forEach(ev => {
-                    if (ev.people) ev.people.forEach(p => allPeople.push({ ...p, firm: a.name }));
-                });
+                if (!firmFilter || a.name === firmFilter) {
+                    a.history.forEach(h => { if (h.people) h.people.forEach(p => allPeople.push({ ...p, firm: a.name })); });
+                    a.events.forEach(ev => { if (ev.people) ev.people.forEach(p => allPeople.push({ ...p, firm: a.name })); });
+                }
             });
 
-            if (sortBy === 'date') {
-                allPeople.sort((a,b) => new Date(b.date) - new Date(a.date));
-            } else if (sortBy === 'pa') {
-                allPeople.sort((a,b) => (a.practiceArea || '').localeCompare(b.practiceArea || ''));
-            } else if (sortBy === 'pos') {
-                allPeople.sort((a,b) => (a.position || '').localeCompare(b.position || ''));
-            }
+            if (sortBy === 'date') allPeople.sort((a,b) => new Date(b.date) - new Date(a.date));
+            else if (sortBy === 'pa') allPeople.sort((a,b) => (a.practiceArea || '').localeCompare(b.practiceArea || ''));
+            else if (sortBy === 'pos') allPeople.sort((a,b) => (a.position || '').localeCompare(b.position || ''));
 
             const listEl = document.getElementById('networkingDirectoryList');
             if (allPeople.length === 0) {
@@ -1197,11 +1376,11 @@
             }
 
             listEl.innerHTML = allPeople.map(p => `
-                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800">${p.name} <span class="text-xs font-normal text-slate-500">(${p.firm})</span></h4>
+                        <h4 class="text-sm font-bold text-slate-900">${p.name} <span class="text-xs font-normal text-slate-500">(${p.firm})</span></h4>
                         <p class="text-xs text-slate-500">Position: <strong>${p.position || 'N/A'}</strong> | Practice Area: <strong>${p.practiceArea || 'N/A'}</strong></p>
-                        ${p.commonalities ? `<p class="text-xs text-indigo-600 mt-1">Commonalities: ${p.commonalities}</p>` : ''}
+                        ${p.commonalities ? `<p class="text-xs text-slate-900 mt-1">Commonalities: ${p.commonalities}</p>` : ''}
                         ${p.insights ? `<p class="text-xs text-slate-600">Insights: ${p.insights}</p>` : ''}
                     </div>
                     <span class="text-xs font-semibold text-slate-400">${p.date || ''}</span>
@@ -1209,67 +1388,64 @@
             `).join('');
         }
 
-        // Render Applications
+        // Excel Export (Single spreadsheet formatted layout)
+        function exportExcelSpreadsheet() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "SECTION,FIRM NAME,STAGE / TYPE,DATE,DETAILS / NOTES / REFLECTIONS,PEOPLE MET\n";
+
+            appState.applications.forEach(a => {
+                csvContent += `Application,${a.name},${a.currentStage || a.status},${a.deadline || a.submittedDate || ''},"${a.details || ''}",""\n`;
+                a.history.forEach(h => {
+                    const peopleStr = h.people ? h.people.map(p => `${p.name} (${p.position})`).join('; ') : '';
+                    csvContent += `History Stage,${a.name},${h.stage},${h.date},"${h.notes || ''}","${peopleStr}"\n`;
+                });
+                a.events.forEach(ev => {
+                    const peopleStr = ev.people ? ev.people.map(p => `${p.name} (${p.position})`).join('; ') : '';
+                    csvContent += `Event,${a.name},${ev.type},${ev.date},"${ev.reflections ? ev.reflections.join(' | ') : ''}","${peopleStr}"\n`;
+                });
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `partner_in_law_export_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+
+        // Render Kanban Board & Applications
         function renderApplications() {
             const today = new Date();
             today.setHours(0,0,0,0);
 
-            // 1. Pending Apps (sorted by deadline)
-            const pendingEl = document.getElementById('pendingAppsList');
+            // Sort active and pending apps by furthest stage / deadline
             const pendingApps = appState.applications.filter(a => a.status === 'pending').sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
-            
-            if (pendingApps.length === 0) {
-                pendingEl.innerHTML = `<p class="text-xs text-slate-400 italic col-span-2 text-center py-4">No pending applications.</p>`;
-            } else {
-                pendingEl.innerHTML = pendingApps.map(a => {
-                    const daysLeft = Math.ceil((new Date(a.deadline) - today) / (1000 * 60 * 60 * 24));
-                    return `
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-start">
-                            <div>
-                                <h4 class="text-sm font-bold text-slate-800">${a.name}</h4>
-                                <p class="text-xs text-slate-500 mb-2">${a.details || ''}</p>
-                                <span class="text-xs font-semibold bg-amber-100 text-amber-700 px-2 py-0.5 rounded">Deadline: ${a.deadline} (${daysLeft} days left)</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <button onclick="promptSubmitApp('${a.id}')" title="Submit App" class="bg-emerald-600 text-white w-7 h-7 rounded-lg text-xs flex items-center justify-center"><i class="fa-solid fa-check"></i></button>
-                                <button onclick="openAppEventModal('${a.id}')" title="Add Event" class="bg-indigo-600 text-white w-7 h-7 rounded-lg text-xs flex items-center justify-center"><i class="fa-solid fa-calendar-plus"></i></button>
-                                <button onclick="editApplication('${a.id}')" class="text-slate-400 hover:text-indigo-600 text-xs"><i class="fa-solid fa-pen"></i></button>
-                                <button onclick="deleteApplication('${a.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
-
-            // 2. Active Apps (sorted by furthest stage - simulated by history length)
-            const activeEl = document.getElementById('activeAppsList');
             const activeApps = appState.applications.filter(a => a.status === 'active').sort((a,b) => b.history.length - a.history.length);
 
-            if (activeApps.length === 0) {
-                activeEl.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">No active applications.</p>`;
-            } else {
-                activeEl.innerHTML = activeApps.map(a => `
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center ${a.crowned ? 'border-amber-400 bg-amber-50/20' : ''}">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h4 class="text-sm font-bold text-slate-800">${a.name}</h4>
-                                ${a.crowned ? '<i class="fa-solid fa-crown text-amber-500"></i>' : ''}
-                            </div>
-                            <p class="text-xs text-slate-500">Current Stage: <strong class="text-indigo-600">${a.currentStage || 'Submitted'}</strong></p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="openNextRoundModal('${a.id}')" class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-xs font-semibold">Next Round</button>
-                            <button onclick="openAppEventModal('${a.id}')" class="bg-slate-700 text-white px-3 py-1 rounded-lg text-xs font-semibold">Add Event</button>
-                            <button onclick="receiveOffer('${a.id}')" class="bg-amber-500 text-slate-950 px-3 py-1 rounded-lg text-xs font-bold">Offer</button>
-                            <button onclick="rejectApplication('${a.id}')" class="bg-rose-600 text-white px-3 py-1 rounded-lg text-xs font-semibold">Reject</button>
-                            <button onclick="editApplication('${a.id}')" class="text-slate-400 hover:text-indigo-600 text-xs"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteApplication('${a.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
-                `).join('');
-            }
+            // Kanban columns assignment
+            const colPending = [];
+            const colSubmitted = [];
+            const colOA = [];
+            const colVI = [];
+            const colInPerson = [];
 
-            // 3. History Log Files
+            pendingApps.forEach(a => colPending.push(a));
+            activeApps.forEach(a => {
+                const stage = (a.currentStage || '').toLowerCase();
+                if (stage.includes('assessment')) colOA.push(a);
+                else if (stage.includes('video')) colVI.push(a);
+                else if (stage.includes('in-person') || stage.includes('interview')) colInPerson.push(a);
+                else colSubmitted.push(a);
+            });
+
+            document.getElementById('kanbanPending').innerHTML = renderKanbanCards(colPending, 'pending');
+            document.getElementById('kanbanSubmitted').innerHTML = renderKanbanCards(colSubmitted, 'active');
+            document.getElementById('kanbanOA').innerHTML = renderKanbanCards(colOA, 'active');
+            document.getElementById('kanbanVI').innerHTML = renderKanbanCards(colVI, 'active');
+            document.getElementById('kanbanInPerson').innerHTML = renderKanbanCards(colInPerson, 'active');
+
+            // History Log Files
             const historyEl = document.getElementById('historyAppsList');
             const historyApps = appState.applications.filter(a => a.history.length > 0 || a.events.length > 0);
 
@@ -1277,17 +1453,67 @@
                 historyEl.innerHTML = `<p class="text-xs text-slate-400 italic col-span-3 text-center py-4">No history records yet.</p>`;
             } else {
                 historyEl.innerHTML = historyApps.map(a => `
-                    <div onclick="openHistoryModal('${a.id}')" class="p-4 bg-white rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-indigo-500 transition">
+                    <div onclick="openHistoryModal('${a.id}')" class="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-slate-900 transition">
                         <div class="flex items-center gap-3">
-                            <div class="bg-indigo-50 text-indigo-600 p-3 rounded-xl"><i class="fa-solid fa-folder-closed text-lg"></i></div>
+                            <div class="bg-slate-100 text-slate-900 p-3 rounded-xl"><i class="fa-solid fa-folder-closed text-lg"></i></div>
                             <div>
-                                <h4 class="text-sm font-bold text-slate-800">${a.name}</h4>
+                                <h4 class="text-sm font-bold text-slate-900">${a.name}</h4>
                                 <p class="text-xs text-slate-400">${a.history.length} stages/events recorded</p>
                             </div>
                         </div>
                     </div>
                 `).join('');
             }
+        }
+
+        function renderKanbanCards(apps, type) {
+            if (apps.length === 0) return `<p class="text-[11px] text-slate-400 italic text-center py-6">No applications</p>`;
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            return apps.map(a => {
+                if (type === 'pending') {
+                    const daysLeft = Math.ceil((new Date(a.deadline) - today) / (1000 * 60 * 60 * 24));
+                    return `
+                        <div class="p-3 bg-white rounded-xl border border-slate-200 shadow-sm space-y-2">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-xs font-bold text-slate-900">${a.name}</h4>
+                                <div class="flex gap-1">
+                                    <button onclick="editApplication('${a.id}')" class="text-slate-400 hover:text-slate-900 text-[10px]"><i class="fa-solid fa-pen"></i></button>
+                                    <button onclick="deleteApplication('${a.id}')" class="text-slate-400 hover:text-rose-600 text-[10px]"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-slate-500">Deadline: ${a.deadline} (${daysLeft}d left)</p>
+                            <div class="flex gap-1 pt-1 border-t border-slate-100">
+                                <button onclick="promptSubmitApp('${a.id}')" class="flex-1 bg-emerald-700 text-white py-1 rounded text-[10px] font-semibold">Submit (+50)</button>
+                                <button onclick="openAppEventModal('${a.id}')" class="bg-slate-900 text-white px-2 py-1 rounded text-[10px]" title="Add Event"><i class="fa-solid fa-calendar-plus"></i></button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="p-3 bg-white rounded-xl border border-slate-200 shadow-sm space-y-2 ${a.crowned ? 'border-amber-400 bg-amber-50/20' : ''}">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center gap-1.5">
+                                    <h4 class="text-xs font-bold text-slate-900">${a.name}</h4>
+                                    ${a.crowned ? '<i class="fa-solid fa-crown text-amber-500 text-[10px]"></i>' : ''}
+                                </div>
+                                <div class="flex gap-1">
+                                    <button onclick="editApplication('${a.id}')" class="text-slate-400 hover:text-slate-900 text-[10px]"><i class="fa-solid fa-pen"></i></button>
+                                    <button onclick="deleteApplication('${a.id}')" class="text-slate-400 hover:text-rose-600 text-[10px]"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-slate-500">Stage: <strong class="text-slate-900">${a.currentStage || 'Submitted'}</strong></p>
+                            <div class="grid grid-cols-2 gap-1 pt-1 border-t border-slate-100">
+                                <button onclick="openNextRoundModal('${a.id}')" class="bg-slate-900 text-white py-1 rounded text-[10px] font-semibold">Next Round</button>
+                                <button onclick="openAppEventModal('${a.id}')" class="bg-slate-200 text-slate-800 py-1 rounded text-[10px] font-semibold">Add Event</button>
+                                <button onclick="receiveOffer('${a.id}')" class="bg-amber-400 text-slate-950 py-1 rounded text-[10px] font-bold">Offer (+100)</button>
+                                <button onclick="rejectApplication('${a.id}')" class="bg-rose-800 text-white py-1 rounded text-[10px] font-semibold">Reject</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
         }
 
         // Law School Logic
@@ -1311,7 +1537,7 @@
         }
 
         function addClassTask(classId) {
-            const title = prompt('Enter task for this class:');
+            const title = prompt('Enter task/reading for this class:');
             const deadline = prompt('Enter deadline (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
             if (!title || !deadline) return;
 
@@ -1319,8 +1545,7 @@
             if (cls) {
                 const taskId = 't_' + Date.now();
                 cls.tasks.push({ id: taskId, title, deadline, completed: false });
-                // Also add to global tasks so it syncs to calendar/master list
-                appState.tasks.push({ id: taskId, title, type: 'lawschool', deadline, completed: false });
+                appState.tasks.push({ id: taskId, title, type: 'reading', deadline, completed: false });
                 saveState();
             }
         }
@@ -1331,7 +1556,6 @@
                 const t = cls.tasks.find(x => x.id === taskId);
                 if (t) {
                     t.completed = !t.completed;
-                    // Sync with global task
                     const gt = appState.tasks.find(x => x.id === taskId);
                     if (gt) {
                         gt.completed = t.completed;
@@ -1374,27 +1598,47 @@
             }
         }
 
+        function deleteExam(id) {
+            if (!confirm('Delete this exam?')) return;
+            appState.exams = appState.exams.filter(e => e.id !== id);
+            saveState();
+        }
+
+        function calculateCumulativeGPA() {
+            const gradePoints = { 'A+': 4.0, 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'D': 1.0, 'F': 0.0 };
+            let totalPts = 0;
+            let count = 0;
+            appState.exams.forEach(ex => {
+                if (ex.grade && gradePoints[ex.grade.toUpperCase()] !== undefined) {
+                    totalPts += gradePoints[ex.grade.toUpperCase()];
+                    count++;
+                }
+            });
+            const gpa = count > 0 ? (totalPts / count).toFixed(2) : '0.00';
+            document.getElementById('cumulativeGPA').innerText = gpa;
+        }
+
         function renderClasses() {
             const container = document.getElementById('classesColumnsContainer');
             const today = new Date();
             today.setHours(0,0,0,0);
 
             container.innerHTML = appState.classes.map(cls => `
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
-                            <h4 class="text-base font-bold text-slate-800">${cls.name}</h4>
+                            <h4 class="text-base font-bold text-slate-900">${cls.name}</h4>
                             <button onclick="deleteClass('${cls.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
                         </div>
                         <div class="space-y-2 mb-4">
-                            ${cls.tasks.length === 0 ? '<p class="text-xs text-slate-400 italic">No tasks for this class.</p>' : cls.tasks.map(t => {
+                            ${cls.tasks.length === 0 ? '<p class="text-xs text-slate-400 italic">No tasks/readings for this class.</p>' : cls.tasks.map(t => {
                                 const daysLeft = Math.ceil((new Date(t.deadline) - today) / (1000 * 60 * 60 * 24));
                                 let badge = daysLeft < 0 ? `<span class="text-[10px] text-rose-600 font-bold">${Math.abs(daysLeft)}d overdue</span>` : daysLeft === 0 ? `<span class="text-[10px] text-amber-600 font-bold">TODAY</span>` : `<span class="text-[10px] text-slate-400">${daysLeft}d left</span>`;
                                 return `
                                     <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl">
                                         <div class="flex items-center gap-2">
-                                            <input type="checkbox" ${t.completed ? 'checked' : ''} onclick="toggleClassTask('${cls.id}', '${t.id}')" class="w-3.5 h-3.5 text-indigo-600 rounded">
-                                            <span class="text-xs ${t.completed ? 'line-through text-slate-400' : 'text-slate-700'}">${t.title}</span>
+                                            <input type="checkbox" ${t.completed ? 'checked' : ''} onclick="toggleClassTask('${cls.id}', '${t.id}')" class="w-3.5 h-3.5 text-slate-900 rounded">
+                                            <span class="text-xs ${t.completed ? 'line-through text-slate-400' : 'text-slate-800'}">${t.title}</span>
                                         </div>
                                         <div class="flex items-center gap-2">
                                             ${badge}
@@ -1406,7 +1650,7 @@
                         </div>
                     </div>
                     <button onclick="addClassTask('${cls.id}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-plus"></i> Add Task
+                        <i class="fa-solid fa-plus"></i> Add Reading / Task
                     </button>
                 </div>
             `).join('');
@@ -1433,10 +1677,13 @@
                 return `
                     <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
                         <div>
-                            <h4 class="text-sm font-bold text-slate-800">${ex.name}</h4>
+                            <h4 class="text-sm font-bold text-slate-900">${ex.name}</h4>
                             <p class="text-xs text-slate-500">Date: ${ex.date}</p>
                         </div>
-                        <span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-lg text-xs font-bold">${daysLeft === 0 ? 'TODAY' : daysLeft + ' days left'}</span>
+                        <div class="flex items-center gap-3">
+                            <span class="bg-slate-200 text-slate-800 px-2.5 py-1 rounded-lg text-xs font-bold">${daysLeft === 0 ? 'TODAY' : daysLeft + ' days left'}</span>
+                            <button onclick="deleteExam('${ex.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -1444,14 +1691,17 @@
             completedList.innerHTML = completed.length === 0 ? `<p class="text-xs text-slate-400 italic">No completed exams yet.</p>` : completed.map(ex => `
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
                     <div>
-                        <h4 class="text-sm font-bold text-slate-800">${ex.name}</h4>
+                        <h4 class="text-sm font-bold text-slate-900">${ex.name}</h4>
                         <p class="text-xs text-slate-500">Passed on ${ex.date}</p>
                     </div>
-                    <div>
-                        <input type="text" placeholder="Add Grade..." value="${ex.grade || ''}" onchange="updateExamGrade('${ex.id}', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-28">
+                    <div class="flex items-center gap-2">
+                        <input type="text" placeholder="Grade (e.g. A)" value="${ex.grade || ''}" onchange="updateExamGrade('${ex.id}', this.value)" class="border border-slate-200 rounded-lg px-2 py-1 text-xs w-28 uppercase text-center font-bold">
+                        <button onclick="deleteExam('${ex.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
+
+            calculateCumulativeGPA();
         }
     </script>
 </body>
